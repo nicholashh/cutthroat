@@ -3,3 +3,7 @@
 /.project
 /bin/
 /target/
+/src/main/java/.DS_Store
+/src/test/java/.DS_Store
+/.idea/
+/game.iml
