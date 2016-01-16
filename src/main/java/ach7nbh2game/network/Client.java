@@ -1,4 +1,4 @@
-package ach7nbh2game.client;
+package ach7nbh2game.network;
 
 import com.googlecode.blacken.colors.ColorNames;
 import com.googlecode.blacken.colors.ColorPalette;
