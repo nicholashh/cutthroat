@@ -1,4 +1,4 @@
-package server;
+package ach7nbh2game.server;
 
 public class Server {
 	
