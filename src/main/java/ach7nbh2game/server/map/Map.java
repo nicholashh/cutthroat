@@ -6,17 +6,33 @@ import ach7nbh2game.server.map.components.Player;
 import com.googlecode.blacken.grid.Grid;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Map {
 
     private Grid<IMapComponent> grid;
+    private int height;
+    private int width;
 
-    public Map (int height, int width) {
+    private Random rand;
+
+    public Map (int heightIn, int widthIn) {
+
+        height = heightIn;
+        width = widthIn;
 
         grid = new Grid<IMapComponent>(new Ground(), height, width);
         grid.clear();
 
-        grid.set(7, 11, new Player());
+        rand = new Random();
+
+    }
+
+    public void addNewPlayer (int playerID) {
+
+        int y = rand.nextInt(height);
+        int x = rand.nextInt(width);
+        grid.set(y, x, new Player(playerID));
 
     }
 
@@ -26,7 +42,7 @@ public class Map {
         for (int i = x; i < x + width; i++) {
             ArrayList<Integer> newRow = new ArrayList<Integer>();
             for (int j = y; j < y + height; j++) {
-                newRow.add(grid.get(i, j).getMapChar());
+                newRow.add(grid.get(j, i).getMapChar());
             }
             mapView.add(newRow);
         }

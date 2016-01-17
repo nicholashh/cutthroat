@@ -14,7 +14,7 @@
  * limitations under the License.
 */
 
-package ach7nbh2game.example.stumble;
+package ach7nbh2game.examples.stumble;
 
 import com.googlecode.blacken.colors.ColorHelper;
 import com.googlecode.blacken.colors.ColorPalette;
