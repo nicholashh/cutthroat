@@ -5,10 +5,7 @@ import com.googlecode.blacken.colors.ColorNames;
 import com.googlecode.blacken.colors.ColorPalette;
 import com.googlecode.blacken.grid.Point;
 import com.googlecode.blacken.swing.SwingTerminal;
-import com.googlecode.blacken.terminal.CellWalls;
-import com.googlecode.blacken.terminal.CursesLikeAPI;
-import com.googlecode.blacken.terminal.TerminalInterface;
-import com.googlecode.blacken.terminal.TerminalStyle;
+import com.googlecode.blacken.terminal.*;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -27,6 +24,11 @@ public class Client {
     private Point upperLeft = new Point(0, 0);
     private final static Point MAP_START = new Point(1, 0);
     private final static Point MAP_END = new Point(-1, 0);
+
+    private final int keyUp = BlackenKeys.KEY_UP;
+    private final int keyDown = BlackenKeys.KEY_DOWN;
+    private final int keyLeft = BlackenKeys.KEY_LEFT;
+    private final int keyRight = BlackenKeys.KEY_RIGHT;
 
     public Client (String nameIn, Server serverIn) {
 
@@ -74,7 +76,22 @@ public class Client {
 
             terminal.refresh();
 
-            int ch = terminal.getch(); // BLOCKING
+            int input = terminal.getch(); // BLOCKING
+
+            switch (input) {
+                case keyUp:
+                    server.moveUp(clientID, gameID);
+                    break;
+                //case keyDown:
+                //    server.moveDown(clientID, gameID);
+                //    break;
+                //case keyLeft:
+                //    server.moveLeft(clientID, gameID);
+                //    break;
+                //case keyRight:
+                //    server.moveRight(clientID, gameID);
+                //    break;
+            }
 
         }
 

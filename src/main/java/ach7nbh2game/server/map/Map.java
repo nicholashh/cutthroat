@@ -3,9 +3,11 @@ package ach7nbh2game.server.map;
 import ach7nbh2game.server.map.components.Ground;
 import ach7nbh2game.server.map.components.IMapComponent;
 import ach7nbh2game.server.map.components.Player;
+import ach7nbh2game.server.map.components.Wall;
 import com.googlecode.blacken.grid.Grid;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 public class Map {
@@ -13,6 +15,8 @@ public class Map {
     private Grid<IMapComponent> grid;
     private int height;
     private int width;
+
+    private java.util.Map<Integer, Player> players;
 
     private Random rand;
 
@@ -24,7 +28,15 @@ public class Map {
         grid = new Grid<IMapComponent>(new Ground(), height, width);
         grid.clear();
 
+        players = new HashMap<Integer, Player>();
+
         rand = new Random();
+
+        for (int i = 0; i < height * width * 0.05; i++) {
+            int y = rand.nextInt(height);
+            int x = rand.nextInt(width);
+            grid.set(y, x, new Wall());
+        }
 
     }
 
@@ -32,7 +44,9 @@ public class Map {
 
         int y = rand.nextInt(height);
         int x = rand.nextInt(width);
-        grid.set(y, x, new Player(playerID));
+        Player newPlayer = new Player(playerID, y, x);
+        players.put(playerID, newPlayer);
+        grid.set(y, x, newPlayer);
 
     }
 
@@ -47,6 +61,24 @@ public class Map {
             mapView.add(newRow);
         }
         return mapView;
+
+    }
+
+    public void moveUp (int playerID) {
+
+        if (players.containsKey(playerID)) {
+
+            Player player = players.get(playerID);
+            int playerX = player.getX();
+            int playerY = player.getY();
+
+            if (!(grid.get(playerY - 1, playerX) instanceof Wall)) {
+                player.setY(playerY - 1);
+                grid.set(playerY - 1, playerX, player);
+                grid.set(playerY, playerX, new Ground());
+            }
+
+        }
 
     }
 

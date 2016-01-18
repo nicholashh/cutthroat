@@ -101,4 +101,18 @@ public class Server {
 
     }
 
+    public ArrayList<ArrayList<Integer>> moveUp (int clientID, int gameID) {
+
+        if (clients.containsKey(clientID)) {
+            if (games.containsKey(gameID)) {
+                return games.get(gameID).moveUp(clientID);
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+
+    }
+
 }

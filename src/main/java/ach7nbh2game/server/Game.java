@@ -22,9 +22,12 @@ class Game extends APlayerContainer {
     }
 
     public ArrayList<ArrayList<Integer>> getMapView (int clientID) {
-
         return map.getMapView(0, 0, 20, 40);
+    }
 
+    public ArrayList<ArrayList<Integer>> moveUp (int clientID) {
+        map.moveUp(clientID);
+        return getMapView(clientID);
     }
 
 }
