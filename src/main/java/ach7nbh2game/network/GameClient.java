@@ -11,6 +11,15 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Set;
 
+import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
+import ach7nbh2game.network.Network.CmdMessage;
+import ach7nbh2game.network.Network.DiffMessage;
+import ach7nbh2game.network.Network.JoinMessage;
+import ach7nbh2game.network.Network.UpdateNames;
+import com.esotericsoftware.minlog.Log;
+
 public class GameClient {
 
     private String name;

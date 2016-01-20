@@ -2,12 +2,13 @@ package ach7nbh2game.network;
 
 // TODO: These were in the example, just to open a window with "the server is running"
 // idk how you want to handle the server's text GUI
-import ach7nbh2game.network.Network.DiffMessage;
-import ach7nbh2game.network.Network.RegisterName;
-import ach7nbh2game.network.Network.UpdateNames;
+import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import com.esotericsoftware.kryonet.Server;
+import ach7nbh2game.network.Network.CmdMessage;
+import ach7nbh2game.network.Network.DiffMessage;
+import ach7nbh2game.network.Network.JoinMessage;
+import ach7nbh2game.network.Network.UpdateNames;
 import com.esotericsoftware.minlog.Log;
 
 import javax.swing.*;
@@ -37,14 +38,20 @@ public class GameServer {
                 // We know all connections for this server are actually ChatConnections.
                 GameConnection connection = (GameConnection)c;
 
-                if (object instanceof RegisterName) {
+                if (object instanceof JoinMessage) {
                     // Ignore the object if a client has already registered a name.
-                    if (connection.name != null) return;
+                    if (connection.name != null) {
+                        return;
+                    }
                     // Ignore the object if the name is invalid.
-                    String name = ((RegisterName)object).name;
-                    if (name == null) return;
+                    String name = ((JoinMessage)object).name;
+                    if (name == null) {
+                        return;
+                    }
                     name = name.trim();
-                    if (name.length() == 0) return;
+                    if (name.length() == 0) {
+                        return;
+                    }
                     // Store the name on the connection.
                     connection.name = name;
                     // Send a "connected" message to everyone except the new client.
@@ -56,15 +63,21 @@ public class GameServer {
                     return;
                 }
 
-                if (object instanceof DiffMessage) {
+                if (object instanceof CmdMessage) {
                     // Ignore the object if a client tries to chat before registering a name.
-                    if (connection.name == null) return;
+                    if (connection.name == null) {
+                        return;
+                    }
                     DiffMessage chatMessage = (DiffMessage)object;
                     // Ignore the object if the chat message is invalid.
                     String message = chatMessage.text;
-                    if (message == null) return;
+                    if (message == null) {
+                        return;
+                    }
                     message = message.trim();
-                    if (message.length() == 0) return;
+                    if (message.length() == 0) {
+                        return;
+                    }
                     // Prepend the connection's name and send to everyone.
                     chatMessage.text = connection.name + ": " + message;
                     server.sendToAllTCP(chatMessage);

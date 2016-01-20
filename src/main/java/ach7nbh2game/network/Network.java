@@ -10,13 +10,13 @@ public class Network {
     // Register objects to be sent over the network.
     static public void register (EndPoint endPoint) {
         Kryo kryo = endPoint.getKryo();
-        kryo.register(RegisterName.class);
+        kryo.register(JoinMessage.class);
         kryo.register(String[].class);
         kryo.register(UpdateNames.class);
         kryo.register(DiffMessage.class);
     }
 
-    static public class RegisterName {
+    static public class JoinMessage {
         public String name;
     }
 
@@ -24,7 +24,13 @@ public class Network {
         public String[] names;
     }
 
+    static public class CmdMessage {
+        public String command;
+        public long tick;
+    }
+
     static public class DiffMessage {
-        public String text;
+        // maybe we should have a GameState object that has the next frame and game variables
+        public long tick;
     }
 }

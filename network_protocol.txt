@@ -3,8 +3,6 @@ Game Network Protocol
 Establish connection:
     - JoinMsg
         - username
-        - IP address
-        - connection ID (?)
 
 In game:
     - CmdMsg (client->server)
