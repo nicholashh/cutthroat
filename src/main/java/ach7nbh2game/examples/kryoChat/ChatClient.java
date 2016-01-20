@@ -29,9 +29,9 @@ package ach7nbh2game.examples.kryoChat;
         import com.esotericsoftware.kryonet.Client;
         import com.esotericsoftware.kryonet.Connection;
         import com.esotericsoftware.kryonet.Listener;
-        import com.esotericsoftware.kryonet.examples.chat.Network.ChatMessage;
-        import com.esotericsoftware.kryonet.examples.chat.Network.RegisterName;
-        import com.esotericsoftware.kryonet.examples.chat.Network.UpdateNames;
+        import ach7nbh2game.examples.kryoChat.Network.ChatMessage;
+        import ach7nbh2game.examples.kryoChat.Network.RegisterName;
+        import ach7nbh2game.examples.kryoChat.Network.UpdateNames;
         import com.esotericsoftware.minlog.Log;
 
 public class ChatClient {
