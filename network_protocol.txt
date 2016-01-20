@@ -1,0 +1,17 @@
+Game Network Protocol
+
+Establish connection:
+    - JoinMsg
+        - username
+        - IP address
+        - connection ID (?)
+
+In game:
+    - CmdMsg (client->server)
+        - client command (from set of client/server commands independent of
+          key bindings)
+        - client-side tick number
+    - DiffMsg (server->client)
+        - new frame and game state
+        - server-side tick number
+
