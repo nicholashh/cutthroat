@@ -14,4 +14,3 @@ In game:
     - DiffMsg (server->client)
         - new frame and game state
         - server-side tick number
-

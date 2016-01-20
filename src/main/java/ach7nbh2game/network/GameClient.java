@@ -1,4 +1,4 @@
-package ach7nbh2game.client;
+package ach7nbh2game.network;
 
 import ach7nbh2game.server.Server;
 import com.googlecode.blacken.colors.ColorNames;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Set;
 
-public class Client {
+public class GameClient {
 
     private String name;
     private Server server;
@@ -30,7 +30,7 @@ public class Client {
     private final int keyLeft = BlackenKeys.KEY_LEFT;
     private final int keyRight = BlackenKeys.KEY_RIGHT;
 
-    public Client (String nameIn, Server serverIn) {
+    public GameClient (String nameIn, Server serverIn) {
 
         name = nameIn;
 

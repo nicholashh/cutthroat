@@ -1,26 +1,26 @@
 package ach7nbh2game.server;
 
-import ach7nbh2game.client.Client;
+import ach7nbh2game.network.GameClient;
 
 import java.util.*;
 
 public class Server {
 
-    private Map<Integer, Client> clients;
+    private Map<Integer, GameClient> clients;
     private Map<Integer, Lobby> lobbies;
     private Map<Integer, Game> games;
     private Random rand;
 
     public Server () {
 
-        clients = new HashMap<Integer, Client>();
+        clients = new HashMap<Integer, GameClient>();
         lobbies = new HashMap<Integer, Lobby>();
         games = new HashMap<Integer, Game>();
         rand = new Random();
 
     }
 
-    public int registerNewClient (Client newClient) {
+    public int registerNewClient (GameClient newClient) {
 
         int newID = rand.nextInt();
         clients.put(newID, newClient);

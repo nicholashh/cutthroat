@@ -1,38 +1,38 @@
 package ach7nbh2game.examples.kryoChat;
 
-        import java.awt.BorderLayout;
-        import java.awt.CardLayout;
-        import java.awt.Container;
-        import java.awt.EventQueue;
-        import java.awt.GridBagConstraints;
-        import java.awt.GridBagLayout;
-        import java.awt.GridLayout;
-        import java.awt.Insets;
-        import java.awt.event.ActionEvent;
-        import java.awt.event.ActionListener;
-        import java.awt.event.WindowAdapter;
-        import java.awt.event.WindowEvent;
-        import java.io.IOException;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Container;
+import java.awt.EventQueue;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
 
-        import javax.swing.DefaultListModel;
-        import javax.swing.DefaultListSelectionModel;
-        import javax.swing.JButton;
-        import javax.swing.JFrame;
-        import javax.swing.JLabel;
-        import javax.swing.JList;
-        import javax.swing.JOptionPane;
-        import javax.swing.JPanel;
-        import javax.swing.JProgressBar;
-        import javax.swing.JScrollPane;
-        import javax.swing.JTextField;
+import javax.swing.DefaultListModel;
+import javax.swing.DefaultListSelectionModel;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 
-        import com.esotericsoftware.kryonet.Client;
-        import com.esotericsoftware.kryonet.Connection;
-        import com.esotericsoftware.kryonet.Listener;
-        import ach7nbh2game.examples.kryoChat.Network.ChatMessage;
-        import ach7nbh2game.examples.kryoChat.Network.RegisterName;
-        import ach7nbh2game.examples.kryoChat.Network.UpdateNames;
-        import com.esotericsoftware.minlog.Log;
+import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
+import ach7nbh2game.examples.kryoChat.Network.CmdMessage;
+import ach7nbh2game.examples.kryoChat.Network.JoinMessage;
+import ach7nbh2game.examples.kryoChat.Network.UpdateNames;
+import com.esotericsoftware.minlog.Log;
 
 public class ChatClient {
     ChatFrame chatFrame;
@@ -49,7 +49,7 @@ public class ChatClient {
 
         client.addListener(new Listener() {
             public void connected (Connection connection) {
-                RegisterName registerName = new RegisterName();
+                JoinMessage registerName = new JoinMessage();
                 registerName.name = name;
                 client.sendTCP(registerName);
             }
@@ -61,9 +61,9 @@ public class ChatClient {
                     return;
                 }
 
-                if (object instanceof ChatMessage) {
-                    ChatMessage chatMessage = (ChatMessage)object;
-                    chatFrame.addMessage(chatMessage.text);
+                if (object instanceof CmdMessage) {
+                    CmdMessage chatMessage = (CmdMessage)object;
+                    chatFrame.addMessage(chatMessage.command);
                     return;
                 }
             }
@@ -95,8 +95,8 @@ public class ChatClient {
         // This listener is called when the send button is clicked.
         chatFrame.setSendListener(new Runnable() {
             public void run () {
-                ChatMessage chatMessage = new ChatMessage();
-                chatMessage.text = chatFrame.getSendText();
+                CmdMessage chatMessage = new CmdMessage();
+                chatMessage.command = chatFrame.getSendText();
                 client.sendTCP(chatMessage);
             }
         });

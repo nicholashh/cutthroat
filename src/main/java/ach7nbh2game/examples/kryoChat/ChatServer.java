@@ -1,20 +1,20 @@
 package ach7nbh2game.examples.kryoChat;
 
-        import java.awt.event.WindowAdapter;
-        import java.awt.event.WindowEvent;
-        import java.io.IOException;
-        import java.util.ArrayList;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.util.ArrayList;
 
-        import javax.swing.JFrame;
-        import javax.swing.JLabel;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 
-        import com.esotericsoftware.kryonet.Connection;
-        import com.esotericsoftware.kryonet.Listener;
-        import com.esotericsoftware.kryonet.Server;
-        import ach7nbh2game.examples.kryoChat.Network.ChatMessage;
-        import ach7nbh2game.examples.kryoChat.Network.RegisterName;
-        import ach7nbh2game.examples.kryoChat.Network.UpdateNames;
-        import com.esotericsoftware.minlog.Log;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
+import com.esotericsoftware.kryonet.Server;
+import ach7nbh2game.examples.kryoChat.Network.CmdMessage;
+import ach7nbh2game.examples.kryoChat.Network.JoinMessage;
+import ach7nbh2game.examples.kryoChat.Network.UpdateNames;
+import com.esotericsoftware.minlog.Log;
 
 public class ChatServer {
     Server server;
@@ -37,37 +37,37 @@ public class ChatServer {
                 // We know all connections for this server are actually ChatConnections.
                 ChatConnection connection = (ChatConnection)c;
 
-                if (object instanceof RegisterName) {
+                if (object instanceof JoinMessage) {
                     // Ignore the object if a client has already registered a name. This is
                     // impossible with our client, but a hacker could send messages at any time.
                     if (connection.name != null) return;
                     // Ignore the object if the name is invalid.
-                    String name = ((RegisterName)object).name;
+                    String name = ((JoinMessage)object).name;
                     if (name == null) return;
                     name = name.trim();
                     if (name.length() == 0) return;
                     // Store the name on the connection.
                     connection.name = name;
                     // Send a "connected" message to everyone except the new client.
-                    ChatMessage chatMessage = new ChatMessage();
-                    chatMessage.text = name + " connected.";
+                    CmdMessage chatMessage = new CmdMessage();
+                    chatMessage.command = name + " connected.";
                     server.sendToAllExceptTCP(connection.getID(), chatMessage);
                     // Send everyone a new list of connection names.
                     updateNames();
                     return;
                 }
 
-                if (object instanceof ChatMessage) {
+                if (object instanceof CmdMessage) {
                     // Ignore the object if a client tries to chat before registering a name.
                     if (connection.name == null) return;
-                    ChatMessage chatMessage = (ChatMessage)object;
+                    CmdMessage chatMessage = (CmdMessage)object;
                     // Ignore the object if the chat message is invalid.
-                    String message = chatMessage.text;
+                    String message = chatMessage.command;
                     if (message == null) return;
                     message = message.trim();
                     if (message.length() == 0) return;
                     // Prepend the connection's name and send to everyone.
-                    chatMessage.text = connection.name + ": " + message;
+                    chatMessage.command = connection.name + ": " + message;
                     server.sendToAllTCP(chatMessage);
                     return;
                 }
@@ -77,8 +77,8 @@ public class ChatServer {
                 ChatConnection connection = (ChatConnection)c;
                 if (connection.name != null) {
                     // Announce to everyone that someone (with a registered name) has left.
-                    ChatMessage chatMessage = new ChatMessage();
-                    chatMessage.text = connection.name + " disconnected.";
+                    CmdMessage chatMessage = new CmdMessage();
+                    chatMessage.command = connection.name + " disconnected.";
                     server.sendToAllTCP(chatMessage);
                     updateNames();
                 }
