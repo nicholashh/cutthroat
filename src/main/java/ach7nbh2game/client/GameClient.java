@@ -1,6 +1,6 @@
-package ach7nbh2game.network;
+package ach7nbh2game.client;
 
-import ach7nbh2game.server.Server;
+import ach7nbh2game.server.GameServer;
 import com.googlecode.blacken.colors.ColorNames;
 import com.googlecode.blacken.colors.ColorPalette;
 import com.googlecode.blacken.grid.Point;
@@ -11,19 +11,10 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Set;
 
-import com.esotericsoftware.kryonet.Client;
-import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.kryonet.Listener;
-import ach7nbh2game.network.Network.CmdMessage;
-import ach7nbh2game.network.Network.DiffMessage;
-import ach7nbh2game.network.Network.JoinMessage;
-import ach7nbh2game.network.Network.UpdateNames;
-import com.esotericsoftware.minlog.Log;
-
 public class GameClient {
 
     private String name;
-    private Server server;
+    private GameServer server;
     private int clientID;
     private int gameID;
 
@@ -39,7 +30,7 @@ public class GameClient {
     private final int keyLeft = BlackenKeys.KEY_LEFT;
     private final int keyRight = BlackenKeys.KEY_RIGHT;
 
-    public GameClient (String nameIn, Server serverIn) {
+    public GameClient (String nameIn, GameServer serverIn) {
 
         name = nameIn;
 

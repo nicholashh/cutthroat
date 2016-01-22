@@ -1,17 +1,17 @@
 package ach7nbh2game.server;
 
-import ach7nbh2game.network.GameClient;
+import ach7nbh2game.client.GameClient;
 
 import java.util.*;
 
-public class Server {
+public class GameServer {
 
     private Map<Integer, GameClient> clients;
     private Map<Integer, Lobby> lobbies;
     private Map<Integer, Game> games;
     private Random rand;
 
-    public Server () {
+    public GameServer() {
 
         clients = new HashMap<Integer, GameClient>();
         lobbies = new HashMap<Integer, Lobby>();

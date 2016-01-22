@@ -9,16 +9,15 @@ import ach7nbh2game.network.Network.*;
 import com.esotericsoftware.minlog.Log;
 
 import javax.swing.*;
-import javax.xml.soap.Text;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class GameServer {
+public class NetServer {
     Server server;
 
-    public GameServer () throws IOException {
+    public NetServer() throws IOException {
         server = new Server() {
             protected Connection newConnection () {
                 // By providing our own connection implementation, we can store per
@@ -132,6 +131,6 @@ public class GameServer {
 
     public static void main (String[] args) throws IOException {
         Log.set(Log.LEVEL_DEBUG);
-        new GameServer();
+        new NetServer();
     }
 }
