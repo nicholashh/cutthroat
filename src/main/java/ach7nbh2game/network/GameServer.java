@@ -5,13 +5,11 @@ package ach7nbh2game.network;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import ach7nbh2game.network.Network.CmdMessage;
-import ach7nbh2game.network.Network.DiffMessage;
-import ach7nbh2game.network.Network.JoinMessage;
-import ach7nbh2game.network.Network.UpdateNames;
+import ach7nbh2game.network.Network.*;
 import com.esotericsoftware.minlog.Log;
 
 import javax.swing.*;
+import javax.xml.soap.Text;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -55,9 +53,9 @@ public class GameServer {
                     // Store the name on the connection.
                     connection.name = name;
                     // Send a "connected" message to everyone except the new client.
-                    DiffMessage diffMsg = new DiffMessage();
-                    diffMsg.text = name + " connected.";
-                    server.sendToAllExceptTCP(connection.getID(), diffMsg);
+                    TextMessage nameMsg = new TextMessage();
+                    nameMsg.msg = name + " connected.";
+                    server.sendToAllExceptTCP(connection.getID(), nameMsg);
                     // Send everyone a new list of connection names.
                     updateNames();
                     return;
@@ -68,9 +66,9 @@ public class GameServer {
                     if (connection.name == null) {
                         return;
                     }
-                    DiffMessage chatMessage = (DiffMessage)object;
+                    CmdMessage cmdMsg = (CmdMessage)object;
                     // Ignore the object if the chat message is invalid.
-                    String message = chatMessage.text;
+                    String message = cmdMsg.command;
                     if (message == null) {
                         return;
                     }
@@ -79,8 +77,8 @@ public class GameServer {
                         return;
                     }
                     // Prepend the connection's name and send to everyone.
-                    chatMessage.text = connection.name + ": " + message;
-                    server.sendToAllTCP(chatMessage);
+                    cmdMsg.command = connection.name + ": " + message;
+                    server.sendToAllTCP(cmdMsg);
                     return;
                 }
             }
@@ -89,9 +87,9 @@ public class GameServer {
                 GameConnection connection = (GameConnection)c;
                 if (connection.name != null) {
                     // Announce to everyone that someone (with a registered name) has left.
-                    DiffMessage chatMessage = new DiffMessage();
-                    chatMessage.text = connection.name + " disconnected.";
-                    server.sendToAllTCP(chatMessage);
+                    TextMessage tmsg = new TextMessage();
+                    tmsg.msg = connection.name + " disconnected.";
+                    server.sendToAllTCP(tmsg);
                     updateNames();
                 }
             }

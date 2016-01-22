@@ -29,8 +29,8 @@ import javax.swing.JTextField;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import ach7nbh2game.examples.kryoChat.Network.CmdMessage;
-import ach7nbh2game.examples.kryoChat.Network.JoinMessage;
+import ach7nbh2game.examples.kryoChat.Network.RegisterName;
+import ach7nbh2game.examples.kryoChat.Network.ChatMessage;
 import ach7nbh2game.examples.kryoChat.Network.UpdateNames;
 import com.esotericsoftware.minlog.Log;
 
@@ -49,7 +49,7 @@ public class ChatClient {
 
         client.addListener(new Listener() {
             public void connected (Connection connection) {
-                JoinMessage registerName = new JoinMessage();
+                RegisterName registerName = new RegisterName();
                 registerName.name = name;
                 client.sendTCP(registerName);
             }
@@ -61,9 +61,9 @@ public class ChatClient {
                     return;
                 }
 
-                if (object instanceof CmdMessage) {
-                    CmdMessage chatMessage = (CmdMessage)object;
-                    chatFrame.addMessage(chatMessage.command);
+                if (object instanceof ChatMessage) {
+                    ChatMessage chatMessage = (ChatMessage) object;
+                    chatFrame.addMessage(chatMessage.text);
                     return;
                 }
             }
@@ -95,8 +95,8 @@ public class ChatClient {
         // This listener is called when the send button is clicked.
         chatFrame.setSendListener(new Runnable() {
             public void run () {
-                CmdMessage chatMessage = new CmdMessage();
-                chatMessage.command = chatFrame.getSendText();
+                ChatMessage chatMessage = new ChatMessage();
+                chatMessage.text = chatFrame.getSendText();
                 client.sendTCP(chatMessage);
             }
         });

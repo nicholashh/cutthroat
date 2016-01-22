@@ -20,6 +20,10 @@ public class Network {
         public String name;
     }
 
+    static public class TextMessage {
+        public String msg;
+    }
+
     static public class UpdateNames {
         public String[] names;
     }
