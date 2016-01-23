@@ -405,8 +405,8 @@ public class Stumble {
     }
 
     private void recenterMap() {
-        //upperLeft.setY(player.getY() - (term.gridHeight()-2)/2);
-        //upperLeft.setX(player.getX() - (term.gridWidth()-2)/2);
+        upperLeft.setY(player.getY() - (term.gridHeight()-2)/2);
+        upperLeft.setX(player.getX() - (term.gridWidth()-2)/2);
     }
     
     

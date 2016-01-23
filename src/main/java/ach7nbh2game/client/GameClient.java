@@ -1,5 +1,6 @@
 package ach7nbh2game.client;
 
+import ach7nbh2game.main.Constants;
 import ach7nbh2game.server.GameServer;
 import com.googlecode.blacken.colors.ColorNames;
 import com.googlecode.blacken.colors.ColorPalette;
@@ -48,6 +49,13 @@ public class GameClient {
             server.startGame(lobbyID);
         }
 
+        // FOR TESTING ONLY
+        //if (name.equals("Client A")) {
+        //    int lobbyID = server.createNewLobby();
+        //    server.joinLobby(clientID, lobbyID);
+        //    server.startGame(lobbyID);
+        //}
+
     }
 
     public void enterGame (int gameIDIn) {
@@ -55,7 +63,7 @@ public class GameClient {
         gameID = gameIDIn;
 
         TerminalInterface newTerminal = new SwingTerminal();
-        newTerminal.init("Andrew Nick Game", 21, 41);
+        newTerminal.init("Andrew Nick Game", Constants.clientHeight + 1, Constants.clientWidth + 1);
         terminal = new CursesLikeAPI(newTerminal);
 
         ColorPalette palette = new ColorPalette();
@@ -67,12 +75,12 @@ public class GameClient {
 
         while (true) {
 
-            System.out.println(name + " in loop");
+            //System.out.println(name + " in loop");
 
             showMap();
 
-            terminal.setCursorLocation(player.getY() - upperLeft.getY() + MAP_START.getY(),
-                                       player.getX() - upperLeft.getX() + MAP_START.getX());
+            //terminal.setCursorLocation(player.getY() - upperLeft.getY() + MAP_START.getY(),
+            //        player.getX() - upperLeft.getX() + MAP_START.getX());
 
             terminal.refresh();
 
@@ -101,13 +109,48 @@ public class GameClient {
 
         ArrayList<ArrayList<Integer>> mapView = server.getMapView(clientID, gameID);
 
-        for (int i = 0; i < mapView.size(); i++) {
-            ArrayList<Integer> row = mapView.get(i);
-            for (int j = 0; j < row.size(); j++) {
-                terminal.set(j, i, new String(Character.toChars(row.get(j))), 7, 0,
-                        EnumSet.noneOf(TerminalStyle.class), EnumSet.noneOf(CellWalls.class));
+        //System.out.println("mapView");
+        //for (int i = 0; i < mapView.size(); i++) {
+        //    System.out.println(mapView.get(i));
+        //}
+
+        //System.out.println("terminal");
+        //for (int i = 0; i < terminal.getHeight(); i++) {
+        //    System.out.print("[");
+        //    for (int j = 0; j < terminal.getWidth(); j++) {
+        //        System.out.print(" " + terminal.get(i, j).getBackground());
+        //    }
+        //    System.out.println(" ]");
+        //}
+
+        for (int y = 0; y < Constants.clientHeight; y++) {
+            if (y < mapView.size() && y < terminal.getHeight()) {
+                ArrayList<Integer> row = mapView.get(y);
+                for (int x = 0; x < Constants.clientWidth; x++) {
+                    if (x < row.size() && x < terminal.getWidth()) {
+
+                        //System.out.println("Constants.clientHeight = " + Constants.clientHeight);
+                        //System.out.println("Constants.clientWidth = " + Constants.clientWidth);
+                        //System.out.println("terminal.getHeight() = " + terminal.getHeight());
+                        //System.out.println("terminal.getWidth() = " + terminal.getWidth());
+                        //System.out.println("mapView.size() = " + mapView.size());
+                        //System.out.println("row.size() = " + row.size());
+
+                        setTerminal(x, y, row.get(x));
+
+                    }
+                }
             }
         }
+
+    }
+
+    private void setTerminal (int x, int y, int character) {
+
+        //System.out.println("x = " + x + ", y = " + y);
+
+        terminal.set(y, x, new String(Character.toChars(character)), 7, 0,
+                EnumSet.noneOf(TerminalStyle.class), EnumSet.noneOf(CellWalls.class));
 
     }
 

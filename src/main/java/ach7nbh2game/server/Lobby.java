@@ -1,5 +1,7 @@
 package ach7nbh2game.server;
 
+import ach7nbh2game.main.Constants;
+
 import java.util.HashSet;
 
 public class Lobby extends APlayerContainer {
@@ -10,8 +12,8 @@ public class Lobby extends APlayerContainer {
     public Lobby () {
 
         playerIDs = new HashSet<Integer>();
-        gameMapHeight = 20;
-        gameMapWidth = 40;
+        gameMapHeight = Constants.mapHeight;
+        gameMapWidth = Constants.mapWidth;
 
     }
 

@@ -53,9 +53,9 @@ public class Map {
     public ArrayList<ArrayList<Integer>> getMapView (int x, int y, int height, int width) {
 
         ArrayList<ArrayList<Integer>> mapView = new ArrayList<ArrayList<Integer>>();
-        for (int i = x; i < x + width; i++) {
+        for (int j = y; j < y + height; j++) {
             ArrayList<Integer> newRow = new ArrayList<Integer>();
-            for (int j = y; j < y + height; j++) {
+            for (int i = x; i < x + width; i++) {
                 newRow.add(grid.get(j, i).getMapChar());
             }
             mapView.add(newRow);

@@ -1,4 +1,4 @@
-package ach7nbh2game;
+package ach7nbh2game.main;
 
 import ach7nbh2game.client.GameClient;
 import ach7nbh2game.server.GameServer;
