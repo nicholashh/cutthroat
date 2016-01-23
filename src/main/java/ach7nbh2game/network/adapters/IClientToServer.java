@@ -1,9 +1,6 @@
 package ach7nbh2game.network.adapters;
 
-import ach7nbh2game.main.Constants.*;
-import ach7nbh2game.network.StatePacket;
-
-import java.util.ArrayList;
+import ach7nbh2game.main.Constants.Directions;
 
 public interface IClientToServer {
 
@@ -11,13 +8,13 @@ public interface IClientToServer {
      * a client trying to create a new game lobby
      * how do you want to identify the lobby? a unique int? your choice
      */
-    // void createNewLobby ();
+     void createNewLobby ();
 
     /**
      * get all lobbies available
      * again, how to represent?
      */
-    // void getLobbies ();
+     void requestLobbies ();
 
     /**
      * request to join a lobby
@@ -29,27 +26,13 @@ public interface IClientToServer {
      * also, do we want to have private lobbies?
      * we should make this easily extensible to that later
      */
-    // boolean joinLobby (int clientID, int lobbyID);
+     void joinLobby (int lobbyID);
 
     /**
      * turn a lobby into a game
      * again, how to identify lobby? your choice
      */
-    void startGame (final int lobbyID);
-
-    /**
-     * Pass new game state from server.
-     */
-    void newState (StatePacket pkt);
-
-    /**
-     * get the view of the map from this player's perspective
-     * i agree with what you said earlier about making this more general
-     * perhaps a getGameState(clientID) method?
-     * you can determine return type, but i strongly thing it should change
-     * i think the best choice would be an object with getters
-     */
-    // ArrayList<ArrayList<Integer>> getMapView (int clientID, int gameID);
+    void startGame (int lobbyID);
 
     /**
      * move up, down, left, right, pick up things, etc
@@ -57,4 +40,5 @@ public interface IClientToServer {
      * this should be highly easily extensible
      */
     void move (Directions direction);
+
 }

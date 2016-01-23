@@ -1,20 +1,23 @@
 package ach7nbh2game.network.adapters;
 
-import ach7nbh2game.main.Constants.*;
-import ach7nbh2game.network.StatePacket;
+import java.util.ArrayList;
+import java.util.Map;
 
 public interface IServerToClient {
 
     /**
      * notify a client that the game (for the lobby they are in) has started
      */
-    void enterGame (int gameIDIn);
+    void enterGame (int clientID);
 
-    // TODO
-    // sendGameState() or something like this?
-    // so the server can send game state instead of just returning it
+    /**
+     * send a client a new game state
+     */
+    void updateGameState (int clientID, ArrayList<ArrayList<Integer>> frame);
 
-    void newState (StatePacket pkt);
+    /**
+     * send all available lobbies
+     */
+    void announceLobbies (int clientID, Map<Integer, String> lobbies);
 
-    void move (Directions direction);
 }
