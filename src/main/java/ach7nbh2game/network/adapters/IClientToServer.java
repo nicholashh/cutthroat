@@ -1,5 +1,8 @@
 package ach7nbh2game.network.adapters;
 
+import ach7nbh2game.main.Constants.*;
+import ach7nbh2game.network.StatePacket;
+
 import java.util.ArrayList;
 
 public interface IClientToServer {
@@ -37,7 +40,7 @@ public interface IClientToServer {
     /**
      * Pass new game state from server.
      */
-    void newState (GameState gs);
+    void newState (StatePacket pkt);
 
     /**
      * get the view of the map from this player's perspective
@@ -53,12 +56,5 @@ public interface IClientToServer {
      * should return the game state (same return type as previous function)
      * this should be highly easily extensible
      */
-    void moveUp (int clientID, int gameID);
-
-    void moveLeft (int clientID, int gameID);
-
-    void moveDown (int clientID, int gameID);
-
-    void moveRight (int clientID, int gameID);
-
+    void move (Directions direction);
 }
