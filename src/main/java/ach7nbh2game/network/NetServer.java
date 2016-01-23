@@ -2,6 +2,8 @@ package ach7nbh2game.network;
 
 // TODO: These were in the example, just to open a window with "the server is running"
 // idk how you want to handle the server's text GUI
+import ach7nbh2game.main.Constants.*;
+import ach7nbh2game.network.adapters.ServerToClient;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 
 public class NetServer {
     Server server;
+    ServerToClient adapter;
 
     public NetServer() throws IOException {
         server = new Server() {
@@ -60,24 +63,18 @@ public class NetServer {
                     return;
                 }
 
-                if (object instanceof CmdMessage) {
+                if (object instanceof MoveMessage) {
                     // Ignore the object if a client tries to chat before registering a name.
                     if (connection.name == null) {
                         return;
                     }
-                    CmdMessage cmdMsg = (CmdMessage)object;
+                    MoveMessage mvMsg = (MoveMessage) object;
                     // Ignore the object if the chat message is invalid.
-                    String message = cmdMsg.command;
+                    Directions message = mvMsg.direction;
                     if (message == null) {
                         return;
                     }
-                    message = message.trim();
-                    if (message.length() == 0) {
-                        return;
-                    }
-                    // Prepend the connection's name and send to everyone.
-                    cmdMsg.command = connection.name + ": " + message;
-                    server.sendToAllTCP(cmdMsg);
+                    adapter.move(message);
                     return;
                 }
             }
@@ -122,6 +119,16 @@ public class NetServer {
         UpdateNames updateNames = new UpdateNames();
         updateNames.names = (String[])names.toArray(new String[names.size()]);
         server.sendToAllTCP(updateNames);
+    }
+
+    public void installAdapter(ServerToClient newadapter) {
+        adapter = newadapter;
+    }
+
+    public void sendState(StatePacket pkt) {
+        DiffMessage diffMsg = new DiffMessage();
+        diffMsg.pkt = pkt;
+        server.sendToAllTCP(diffMsg);
     }
 
     // This holds per connection state.

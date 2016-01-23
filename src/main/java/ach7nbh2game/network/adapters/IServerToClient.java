@@ -1,5 +1,6 @@
 package ach7nbh2game.network.adapters;
 
+import ach7nbh2game.main.Constants.*;
 import ach7nbh2game.network.StatePacket;
 
 public interface IServerToClient {
@@ -14,4 +15,6 @@ public interface IServerToClient {
     // so the server can send game state instead of just returning it
 
     void newState (StatePacket pkt);
+
+    void move (Directions direction);
 }

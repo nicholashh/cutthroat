@@ -11,13 +11,13 @@ public interface IClientToServer {
      * a client trying to create a new game lobby
      * how do you want to identify the lobby? a unique int? your choice
      */
-    void createNewLobby ();
+    // void createNewLobby ();
 
     /**
      * get all lobbies available
      * again, how to represent?
      */
-    void getLobbies ();
+    // void getLobbies ();
 
     /**
      * request to join a lobby
@@ -29,7 +29,7 @@ public interface IClientToServer {
      * also, do we want to have private lobbies?
      * we should make this easily extensible to that later
      */
-    boolean joinLobby (int clientID, int lobbyID);
+    // boolean joinLobby (int clientID, int lobbyID);
 
     /**
      * turn a lobby into a game
@@ -49,7 +49,7 @@ public interface IClientToServer {
      * you can determine return type, but i strongly thing it should change
      * i think the best choice would be an object with getters
      */
-    ArrayList<ArrayList<Integer>> getMapView (int clientID, int gameID);
+    // ArrayList<ArrayList<Integer>> getMapView (int clientID, int gameID);
 
     /**
      * move up, down, left, right, pick up things, etc
