@@ -34,7 +34,7 @@ public class Network {
     }
 
     static public class DiffMessage {
-        // maybe we should have a GameState object that has the next frame and game variables
+        public StatePacket
         public long tick;
     }
 }

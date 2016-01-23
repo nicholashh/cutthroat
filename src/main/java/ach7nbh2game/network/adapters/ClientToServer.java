@@ -1,20 +1,27 @@
 package ach7nbh2game.network.adapters;
 
+import ach7nbh2game.network.NetClient;
+
 import java.util.ArrayList;
 
-public interface IClientToServer {
+/**
+ * Created by achuie on 1/23/16.
+ */
+public class ClientToServer implements IClientToServer {
+
+    ArrayList<NetClient> clients = new ArrayList<NetClient>();
 
     /**
      * a client trying to create a new game lobby
      * how do you want to identify the lobby? a unique int? your choice
      */
-    void createNewLobby ();
+    public void createNewLobby ();
 
     /**
      * get all lobbies available
      * again, how to represent?
      */
-    void getLobbies ();
+    public void getLobbies ();
 
     /**
      * request to join a lobby
@@ -26,24 +33,25 @@ public interface IClientToServer {
      * also, do we want to have private lobbies?
      * we should make this easily extensible to that later
      */
-    boolean joinLobby (int clientID, int lobbyID);
+    public boolean joinLobby (int clientID, int lobbyID);
 
     /**
      * turn a lobby into a game
      * again, how to identify lobby? your choice
      */
-    void startGame (final int lobbyID);
+    public void startGame(final int lobbyID) {
+        //TODO
+    }
 
-    /**
-     * Pass new game state from server.
-     */
-    void newState (GameState gs);
+    public void newState(GameState gs) {
+        //TODO
+    }
 
     /**
      * get the view of the map from this player's perspective
      * i agree with what you said earlier about making this more general
      * perhaps a getGameState(clientID) method?
-     * you can determine return type, but i strongly thing it should change
+     * you can determine return type, but i strongly thingchatFrame it should change
      * i think the best choice would be an object with getters
      */
     ArrayList<ArrayList<Integer>> getMapView (int clientID, int gameID);
@@ -53,12 +61,19 @@ public interface IClientToServer {
      * should return the game state (same return type as previous function)
      * this should be highly easily extensible
      */
-    void moveUp (int clientID, int gameID);
+    public void moveUp(int clientID, int gameID) {
+        clients.get(clientID).moveUp();
+    }
 
-    void moveLeft (int clientID, int gameID);
+    public void moveLeft(int clientID, int gameID) {
+        clients.get(clientID).moveLeft();
+    }
 
-    void moveDown (int clientID, int gameID);
+    public void moveDown(int clientID, int gameID) {
+        clients.get(clientID).moveDown();
+    }
 
-    void moveRight (int clientID, int gameID);
-
+    public void moveRight(int clientID, int gameID) {
+        clients.get(clientID).moveRight();
+    }
 }
