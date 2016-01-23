@@ -2,6 +2,8 @@ package ach7nbh2game.network;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
+import ach7nbh2game.main.Constants.*;
+
 
 // Holds things common to the client and the server, ostensibly all objects that will be sent between the two.
 public class Network {
@@ -28,13 +30,11 @@ public class Network {
         public String[] names;
     }
 
-    static public class CmdMessage {
-        public String command;
-        public long tick;
+    static public class MoveMessage {
+        public Directions direction;
     }
 
     static public class DiffMessage {
-        public StatePacket
-        public long tick;
+        public StatePacket pkt;
     }
 }
