@@ -114,6 +114,8 @@ public class GameServer {
                 playerToGame.put(playerID, lobbyID);
             }
 
+            sendGameState(newGame);
+
         } else {
             // TODO
         }
@@ -132,12 +134,18 @@ public class GameServer {
 
             game.move(clientID, direction);
 
-            for (int playerID : game.getPlayerIDs()) {
-                network.updateGameState(playerID, game.getMapView(playerID));
-            }
+            sendGameState(game);
 
         } else {
             // TODO
+        }
+
+    }
+
+    private void sendGameState (Game game) {
+
+        for (int playerID : game.getPlayerIDs()) {
+            network.updateGameState(playerID, game.getMapView(playerID));
         }
 
     }

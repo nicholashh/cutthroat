@@ -33,21 +33,103 @@ public class Map {
 
         rand = new Random();
 
-        for (int i = 0; i < height * width * 0.05; i++) {
-            int y = rand.nextInt(height);
-            int x = rand.nextInt(width);
-            grid.set(y, x, new Wall());
+        generateTerrain();
+
+    }
+
+    private void generateTerrain () {
+
+        System.out.println("in Map, generateTerrain()");
+
+        ArrayList<Double> factors = new ArrayList<Double>();
+        factors.add(0.4);
+        factors.add(0.2);
+        factors.add(0.1);
+
+        ArrayList<Integer> howMany = new ArrayList<Integer>();
+        howMany.add(2);
+        howMany.add(4);
+        howMany.add(8);
+
+        assert(factors.size() == howMany.size());
+
+        for (int i = 0; i < factors.size(); i++) {
+
+            for (int j = 0; j < howMany.get(i); j++) {
+
+                double factor = factors.get(i);
+
+                int thingHalfHeight = (int) (factor * 0.5 * height);
+                int thingHalfWidth = (int) (factor * 0.5 * width);
+
+                int thingHeight = thingHalfHeight * 2;
+                int thingWidth = thingHalfWidth * 2;
+
+                int yMid = rand.nextInt(height - thingHeight) + thingHalfHeight;
+                int xMid = rand.nextInt(width - thingWidth) + thingHalfWidth;
+
+                // TODO make this more efficient
+                int attempts = 0;
+                while (true) {
+
+                    boolean overlapping = false;
+
+                    for (int y = yMid - thingHalfHeight; y < yMid + thingHalfHeight; y++) {
+                        for (int x = xMid - thingHalfWidth; x < xMid + thingHalfWidth; x++) {
+                            if (!(grid.get(y, x) instanceof Ground)) {
+                                overlapping = true;
+                            }
+                        }
+                    }
+
+                    if (!overlapping) {
+
+                        for (int y = yMid - thingHalfHeight; y < yMid + thingHalfHeight; y++) {
+                            for (int x = xMid - thingHalfWidth; x < xMid + thingHalfWidth; x++) {
+                                grid.set(y, x, new Wall());
+                            }
+                        }
+
+                        System.out.println("  factor = " + factor + ", which one = " + j + ", SUCCESS");
+                        break;
+
+                    } else if (attempts > 5) {
+
+                        System.out.println("  factor = " + factor + ", which one = " + j + ", overlapping");
+                        break;
+
+                    } else {
+
+                        attempts++;
+
+                    }
+
+                }
+
+            }
+
         }
 
     }
 
     public void addNewPlayer (int playerID) {
 
-        int y = rand.nextInt(height);
-        int x = rand.nextInt(width);
-        Player newPlayer = new Player(playerID, y, x);
-        players.put(playerID, newPlayer);
-        grid.set(y, x, newPlayer);
+        while (true) {
+
+            int y = rand.nextInt(height);
+            int x = rand.nextInt(width);
+
+            if (grid.get(y, x) instanceof Ground) {
+
+                Player newPlayer = new Player(playerID, y, x);
+                players.put(playerID, newPlayer);
+                grid.set(y, x, newPlayer);
+
+                break;
+
+            }
+
+        }
 
     }
 
