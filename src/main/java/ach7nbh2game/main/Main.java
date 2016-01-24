@@ -7,9 +7,15 @@ public class Main {
 
     public static void main (String[] args) {
 
-        GameServer server = new GameServer();
-        new GameClient("Client A", server);
-        new GameClient("Client B", server);
+        try {
+
+            GameServer server = new GameServer();
+            GameClient gameA = new GameClient("Client A");
+            GameClient gameB = new GameClient("Client B");
+
+        } catch (Exception e) {
+            // TODO
+        }
 
     }
 

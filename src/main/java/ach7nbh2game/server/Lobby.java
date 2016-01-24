@@ -6,11 +6,14 @@ import java.util.HashSet;
 
 public class Lobby extends APlayerContainer {
 
+    private String name;
+
     private int gameMapHeight;
     private int gameMapWidth;
 
-    public Lobby () {
+    public Lobby (String nameIn) {
 
+        name = nameIn;
         playerIDs = new HashSet<Integer>();
         gameMapHeight = Constants.mapHeight;
         gameMapWidth = Constants.mapWidth;
@@ -26,6 +29,12 @@ public class Lobby extends APlayerContainer {
     public Game startGame () {
 
         return new Game(playerIDs, gameMapHeight, gameMapWidth);
+
+    }
+
+    public String getName () {
+
+        return name;
 
     }
 

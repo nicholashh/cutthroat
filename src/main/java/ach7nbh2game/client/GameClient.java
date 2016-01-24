@@ -1,69 +1,68 @@
 package ach7nbh2game.client;
 
 import ach7nbh2game.main.Constants;
-import ach7nbh2game.server.GameServer;
+import ach7nbh2game.network.NetClient;
+import ach7nbh2game.network.adapters.ClientGTON;
+import ach7nbh2game.network.adapters.ClientNTOG;
+import ach7nbh2game.network.adapters.IClientToServer;
+import ach7nbh2game.network.adapters.IServerToClient;
 import com.googlecode.blacken.colors.ColorNames;
 import com.googlecode.blacken.colors.ColorPalette;
-import com.googlecode.blacken.grid.Point;
 import com.googlecode.blacken.swing.SwingTerminal;
 import com.googlecode.blacken.terminal.*;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.Set;
+import java.util.Map;
 
 public class GameClient {
 
     private String name;
-    private GameServer server;
-    private int clientID;
-    private int gameID;
+
+    private IClientToServer server;
 
     private CursesLikeAPI terminal;
-
-    private Point player = new Point(-1, -1);
-    private Point upperLeft = new Point(0, 0);
-    private final static Point MAP_START = new Point(1, 0);
-    private final static Point MAP_END = new Point(-1, 0);
 
     private final int keyUp = BlackenKeys.KEY_UP;
     private final int keyDown = BlackenKeys.KEY_DOWN;
     private final int keyLeft = BlackenKeys.KEY_LEFT;
     private final int keyRight = BlackenKeys.KEY_RIGHT;
 
-    public GameClient (String nameIn, GameServer serverIn) {
+    public GameClient (String nameIn) {
 
         name = nameIn;
 
-        server = serverIn;
-        clientID = server.registerNewClient(this);
+        NetClient netClient = new NetClient();
+        IServerToClient adapterNTOG = new ClientNTOG(this);
+        IClientToServer adapterGTON = new ClientGTON(netClient);
+        netClient.installAdapter(adapterNTOG);
+        server = adapterGTON;
 
         // FOR TESTING ONLY
         if (name.equals("Client A")) {
-            int lobbyID = server.createNewLobby();
-            server.joinLobby(clientID, lobbyID);
+            server.createNewLobby(0, "Test Lobby");
         } else if (name.equals("Client B")) {
-            Set<Integer> lobbyIDSet = server.getLobbies();
-            int lobbyID = lobbyIDSet.toArray(new Integer[lobbyIDSet.size()])[0];
-            server.joinLobby(clientID, lobbyID);
-            server.startGame(lobbyID);
+            server.requestLobbies(0);
         }
-
-        // FOR TESTING ONLY
-        //if (name.equals("Client A")) {
-        //    int lobbyID = server.createNewLobby();
-        //    server.joinLobby(clientID, lobbyID);
-        //    server.startGame(lobbyID);
-        //}
 
     }
 
-    public void enterGame (int gameIDIn) {
+    public void updateLobbyList (Map<Integer, String> lobbies) {
 
-        gameID = gameIDIn;
+        // FOR TESTING ONLY
+        if (name.equals("Client B")) {
+            int lobbyID = lobbies.keySet().toArray(new Integer[lobbies.size()])[0];
+            server.joinLobby(0, lobbyID);
+            server.startGame(lobbyID);
+        }
+
+    }
+
+    public void enterGame () {
 
         TerminalInterface newTerminal = new SwingTerminal();
-        newTerminal.init("Andrew Nick Game", Constants.clientHeight + 1, Constants.clientWidth + 1);
+        newTerminal.init("Andrew Nick Game",
+                Constants.clientHeight + 1, Constants.clientWidth + 1);
         terminal = new CursesLikeAPI(newTerminal);
 
         ColorPalette palette = new ColorPalette();
@@ -73,41 +72,44 @@ public class GameClient {
 
         terminal.move(-1, -1);
 
-        while (true) {
+        (new Thread() {
+            public void run() {
 
-            //System.out.println(name + " in loop");
+                while (true) {
 
-            showMap();
+                    int input = terminal.getch(); // BLOCKING
 
-            //terminal.setCursorLocation(player.getY() - upperLeft.getY() + MAP_START.getY(),
-            //        player.getX() - upperLeft.getX() + MAP_START.getX());
+                    switch (input) {
+                        case keyUp:
+                            server.move(0, Constants.Directions.UP);
+                            break;
+                        case keyDown:
+                            server.move(0, Constants.Directions.DOWN);
+                            break;
+                        case keyLeft:
+                            server.move(0, Constants.Directions.LEFT);
+                            break;
+                        case keyRight:
+                            server.move(0, Constants.Directions.RIGHT);
+                            break;
+                    }
 
-            terminal.refresh();
+                }
 
-            int input = terminal.getch(); // BLOCKING
-
-            switch (input) {
-                case keyUp:
-                    server.moveUp(clientID, gameID);
-                    break;
-                //case keyDown:
-                //    server.moveDown(clientID, gameID);
-                //    break;
-                //case keyLeft:
-                //    server.moveLeft(clientID, gameID);
-                //    break;
-                //case keyRight:
-                //    server.moveRight(clientID, gameID);
-                //    break;
             }
-
-        }
+        }).start();
 
     }
 
-    private void showMap () {
+    public void updateState (ArrayList<ArrayList<Integer>> mapView) {
 
-        ArrayList<ArrayList<Integer>> mapView = server.getMapView(clientID, gameID);
+        showMap(mapView);
+
+        terminal.refresh();
+
+    }
+
+    private void showMap (ArrayList<ArrayList<Integer>> mapView) {
 
         //System.out.println("mapView");
         //for (int i = 0; i < mapView.size(); i++) {

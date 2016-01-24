@@ -1,5 +1,6 @@
 package ach7nbh2game.server.map;
 
+import ach7nbh2game.main.Constants.Directions;
 import ach7nbh2game.server.map.components.Ground;
 import ach7nbh2game.server.map.components.IMapComponent;
 import ach7nbh2game.server.map.components.Player;
@@ -64,18 +65,40 @@ public class Map {
 
     }
 
-    public void moveUp (int playerID) {
+    public void move (int playerID, Directions direction) {
 
         if (players.containsKey(playerID)) {
 
             Player player = players.get(playerID);
-            int playerX = player.getX();
-            int playerY = player.getY();
+            int curX = player.getX();
+            int curY = player.getY();
 
-            if (!(grid.get(playerY - 1, playerX) instanceof Wall)) {
-                player.setY(playerY - 1);
-                grid.set(playerY - 1, playerX, player);
-                grid.set(playerY, playerX, new Ground());
+            int newX = curX;
+            int newY = curY;
+            switch (direction) {
+                case UP:
+                    newX = curX;
+                    newY = curY - 1;
+                    break;
+                case DOWN:
+                    newX = curX;
+                    newY = curY + 1;
+                    break;
+                case LEFT:
+                    newX = curX - 1;
+                    newY = curY;
+                    break;
+                case RIGHT:
+                    newX = curX + 1;
+                    newY = curY;
+                    break;
+            }
+
+            if (grid.get(newY, newX) instanceof Ground) {
+                player.setY(newY);
+                player.setX(newX);
+                grid.set(newY, newX, player);
+                grid.set(curY, curX, new Ground());
             }
 
         }

@@ -1,64 +1,76 @@
 package ach7nbh2game.server;
 
-import ach7nbh2game.client.GameClient;
+import ach7nbh2game.main.Constants.Directions;
+import ach7nbh2game.network.NetServer;
+import ach7nbh2game.network.adapters.*;
 
-import java.util.*;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 public class GameServer {
 
-    private Map<Integer, GameClient> clients;
+    private IServerToClient network;
+
     private Map<Integer, Lobby> lobbies;
     private Map<Integer, Game> games;
+    private Map<Integer, Integer> playerToGame;
     private Random rand;
 
-    public GameServer() {
+    public GameServer () throws IOException {
 
-        clients = new HashMap<Integer, GameClient>();
+        NetServer netServer = new NetServer();
+        IClientToServer adapterGTON = new ServerNTOG(this);
+        IServerToClient adapterNTOG = new ServerGTON(netServer);
+        netServer.installAdapter(adapterGTON);
+        network = adapterNTOG;
+
         lobbies = new HashMap<Integer, Lobby>();
         games = new HashMap<Integer, Game>();
+        playerToGame = new HashMap<Integer, Integer>();
         rand = new Random();
 
     }
 
-    public int registerNewClient (GameClient newClient) {
+    public void createNewLobby (int clientID, String name) {
 
-        int newID = rand.nextInt();
-        clients.put(newID, newClient);
-        return newID;
+        int newLobbyID = rand.nextInt();
+        Lobby newLobby = new Lobby(name);
+        lobbies.put(newLobbyID, newLobby);
 
-    }
-
-    public int createNewLobby () {
-
-        int newID = rand.nextInt();
-        Lobby newLobby = new Lobby();
-        lobbies.put(newID, newLobby);
-        return newID;
+        joinLobby(clientID, newLobbyID);
 
     }
 
-    public Set<Integer> getLobbies () {
+    public void joinLobby (int clientID, int lobbyID) {
 
-        return lobbies.keySet();
-
-    }
-
-    public boolean joinLobby (int clientID, int lobbyID) {
-
-        if (clients.containsKey(clientID)) {
-            if (lobbies.containsKey(lobbyID)) {
-                lobbies.get(lobbyID).join(clientID);
-                return true;
-            } else {
-                return false;
-            }
+        if (lobbies.containsKey(lobbyID)) {
+            lobbies.get(lobbyID).join(clientID);
         } else {
-            return false;
+            // TODO
         }
 
     }
 
-    public boolean startGame (final int lobbyID) {
+    private Map<Integer, String> getLobbies () {
+
+        Map<Integer, String> toReturn = new HashMap<Integer, String>();
+        for (Map.Entry<Integer, Lobby> entry : lobbies.entrySet()) {
+            toReturn.put(entry.getKey(), entry.getValue().getName());
+        }
+
+        return toReturn;
+
+    }
+
+    public void requestLobbies (int clientID) {
+
+        network.announceLobbies(clientID, getLobbies());
+
+    }
+
+    public void startGame (int lobbyID) {
 
         if (lobbies.containsKey(lobbyID)) {
 
@@ -68,49 +80,30 @@ public class GameServer {
             games.put(lobbyID, newGame);
 
             for (int playerID : newGame.getPlayerIDs()) {
-
-                final int thisPlayerID = playerID;
-
-                (new Thread() {
-                    public void run(){
-                        clients.get(thisPlayerID).enterGame(lobbyID);
-                    }
-                }).start();
-
+                network.enterGame(playerID);
+                playerToGame.put(playerID, lobbyID);
             }
 
-            return true;
-
         } else {
-            return false;
+            // TODO
         }
 
     }
 
-    public ArrayList<ArrayList<Integer>> getMapView (int clientID, int gameID) {
+    public void move (int clientID, Directions direction) {
 
-        if (clients.containsKey(clientID)) {
-            if (games.containsKey(gameID)) {
-                return games.get(gameID).getMapView(clientID);
-            } else {
-                return null;
+        if (playerToGame.containsKey(clientID)) {
+
+            Game game = games.get(playerToGame.get(clientID));
+
+            game.move(clientID, direction);
+
+            for (int playerID : game.getPlayerIDs()) {
+                network.updateGameState(playerID, game.getMapView(playerID));
             }
+
         } else {
-            return null;
-        }
-
-    }
-
-    public ArrayList<ArrayList<Integer>> moveUp (int clientID, int gameID) {
-
-        if (clients.containsKey(clientID)) {
-            if (games.containsKey(gameID)) {
-                return games.get(gameID).moveUp(clientID);
-            } else {
-                return null;
-            }
-        } else {
-            return null;
+            // TODO
         }
 
     }
