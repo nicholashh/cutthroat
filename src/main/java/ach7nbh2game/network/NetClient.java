@@ -5,18 +5,19 @@ import java.io.IOException;
 import javax.swing.JOptionPane;
 
 import ach7nbh2game.main.Constants.*;
+import ach7nbh2game.network.adapters.ClientGTON;
+import ach7nbh2game.network.adapters.IServerToClient;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import ach7nbh2game.network.Network.*;
-import ach7nbh2game.network.adapters.ClientToServer;
 import com.esotericsoftware.minlog.Log;
 
 public class NetClient {
 
     Client client;
     String name;
-    ClientToServer adapter;
+    IServerToClient adapter;
 
     public NetClient () {
         client = new Client();
@@ -28,7 +29,7 @@ public class NetClient {
 
         client.addListener(new Listener() {
             public void connected (Connection connection) {
-                JoinMessage regName = new JoinMessage();
+                RegisterMessage regName = new RegisterMessage();
                 regName.name = name;
                 client.sendTCP(regName);
             }
@@ -41,8 +42,17 @@ public class NetClient {
 
                 if (object instanceof DiffMessage) {
                     DiffMessage diffMsg = (DiffMessage) object;
-                    adapter.newState(diffMsg.pkt);
+                    adapter.updateGameState(client.getID(), diffMsg.pkt.frame);
                     return;
+                }
+
+                if (object instanceof EnterGame) {
+                    adapter.enterGame(connection.getID());
+                }
+
+                if (object instanceof LobbyList) {
+                    LobbyList msg = (LobbyList) object;
+                    adapter.announceLobbies(connection.getID(), msg.lobbies);
                 }
             }
 
@@ -78,8 +88,32 @@ public class NetClient {
         }.start();
     }
 
-    public void installAdapter(ClientToServer newadapter) {
+    public void installAdapter(IServerToClient newadapter) {
         adapter = newadapter;
+    }
+
+    public void createLobby(String name) {
+        CreateLobby clobby = new CreateLobby();
+        clobby.name = name;
+        client.sendTCP(clobby);
+    }
+
+    public void reqLobbies() {
+        ReqLobbies req = new ReqLobbies();
+        req.uname = name;
+        client.sendTCP(req);
+    }
+
+    public void joinLobby(int lobbyID) {
+        JoinLobby join = new JoinLobby();
+        join.lobbyID = lobbyID;
+        client.sendTCP(join);
+    }
+
+    public void startGame(int lobbyID) {
+        StartGame start = new StartGame();
+        start.lobbyID = lobbyID;
+        client.sendTCP(start);
     }
 
     public void move(Directions direction) {
