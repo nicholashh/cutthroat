@@ -1,20 +1,23 @@
 package ach7nbh2game.network.adapters;
 
-import ach7nbh2game.main.Constants.Directions;
+import ach7nbh2game.main.Constants.*;
 
-public interface IClientToServer {
+/**
+ * Created by achuie on 1/23/16.
+ */
+public class ServerNTOG implements IClientToServer {
 
     /**
      * a client trying to create a new game lobby
      * how do you want to identify the lobby? a unique int? your choice
      */
-     void createNewLobby (String name);
+    public void createNewLobby (String name);
 
     /**
      * get all lobbies available
      * again, how to represent?
      */
-     void requestLobbies ();
+    void requestLobbies ();
 
     /**
      * request to join a lobby
@@ -26,7 +29,7 @@ public interface IClientToServer {
      * also, do we want to have private lobbies?
      * we should make this easily extensible to that later
      */
-     void joinLobby (int lobbyID);
+    void joinLobby (int lobbyID);
 
     /**
      * turn a lobby into a game
@@ -40,5 +43,4 @@ public interface IClientToServer {
      * this should be highly easily extensible
      */
     void move (Directions direction);
-
 }

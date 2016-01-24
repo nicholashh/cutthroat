@@ -1,31 +1,31 @@
 package ach7nbh2game.network.adapters;
 
-import ach7nbh2game.client.GameClient;
 import ach7nbh2game.main.Constants.*;
 import ach7nbh2game.network.NetClient;
-import ach7nbh2game.network.StatePacket;
 
-public class ClientToServer implements IClientToServer {
+public class ClientGTON implements IClientToServer {
 
-    private NetClient nclient;
-    private GameClient gclient;
+    NetClient nclient;
 
-    public ClientToServer(NetClient newnclient, GameClient newgclient) {
-        nclient = newnclient;
-        gclient = newgclient;
+    public ClientGTON(NetClient netclient) {
+        nclient = netclient;
     }
 
     /**
      * a client trying to create a new game lobby
      * how do you want to identify the lobby? a unique int? your choice
      */
-    // public void createNewLobby ();
+    public void createNewLobby (String name) {
+        nclient.createLobby(name);
+    }
 
     /**
      * get all lobbies available
      * again, how to represent?
      */
-    // public void getLobbies ();
+    public void requestLobbies () {
+        nclient.reqLobbies();
+    }
 
     /**
      * request to join a lobby
@@ -37,35 +37,24 @@ public class ClientToServer implements IClientToServer {
      * also, do we want to have private lobbies?
      * we should make this easily extensible to that later
      */
-    // public boolean joinLobby (int clientID, int lobbyID);
+    public void joinLobby (int lobbyID) {
+        nclient.joinLobby(lobbyID);
+    }
 
     /**
      * turn a lobby into a game
      * again, how to identify lobby? your choice
      */
-    public void startGame(final int lobbyID) {
-        //TODO
+    public void startGame (int lobbyID) {
+        nclient.startGame(lobbyID);
     }
-
-    public void newState(StatePacket pkt) {
-        //TODO
-    }
-
-    /**
-     * get the view of the map from this player's perspective
-     * i agree with what you said earlier about making this more general
-     * perhaps a getGameState(clientID) method?
-     * you can determine return type, but i strongly thingchatFrame it should change
-     * i think the best choice would be an object with getters
-     */
-    // ArrayList<ArrayList<Integer>> getMapView (int clientID, int gameID);
 
     /**
      * move up, down, left, right, pick up things, etc
      * should return the game state (same return type as previous function)
      * this should be highly easily extensible
      */
-    public void move(Directions direction) {
+    public void move (Directions direction) {
         nclient.move(direction);
     }
 }
