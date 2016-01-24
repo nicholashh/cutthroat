@@ -18,13 +18,19 @@ public class GameServer {
     private Map<Integer, Integer> playerToGame;
     private Random rand;
 
-    public GameServer () throws IOException {
+    public GameServer (boolean localGame) throws IOException {
 
-        NetServer netServer = new NetServer();
-        IClientToServer adapterGTON = new ServerNTOG(this);
-        IServerToClient adapterNTOG = new ServerGTON(netServer);
-        netServer.installAdapter(adapterGTON);
-        network = adapterNTOG;
+        System.out.println("making GameServer");
+
+        if (!localGame) {
+
+            NetServer netServer = new NetServer();
+            IClientToServer adapterGTON = new ServerNTOG(this);
+            IServerToClient adapterNTOG = new ServerGTON(netServer);
+            netServer.installAdapter(adapterGTON);
+            network = adapterNTOG;
+
+        }
 
         lobbies = new HashMap<Integer, Lobby>();
         games = new HashMap<Integer, Game>();
@@ -33,7 +39,21 @@ public class GameServer {
 
     }
 
+    public void installAdapter (IServerToClient adapter) {
+
+        System.out.println("in GameServer, installAdapter()");
+
+        network = adapter;
+
+        // TODO need to add safety for what if installAdapter() is never called?
+
+    }
+
     public void createNewLobby (int clientID, String name) {
+
+        System.out.println("in GameServer, createNewLobby()");
+        System.out.println("  clientID = " + clientID);
+        System.out.println("  name = " + name);
 
         int newLobbyID = rand.nextInt();
         Lobby newLobby = new Lobby(name);
@@ -44,6 +64,10 @@ public class GameServer {
     }
 
     public void joinLobby (int clientID, int lobbyID) {
+
+        System.out.println("in GameServer, joinLobby()");
+        System.out.println("  clientID = " + clientID);
+        System.out.println("  lobbyID = " + lobbyID);
 
         if (lobbies.containsKey(lobbyID)) {
             lobbies.get(lobbyID).join(clientID);
@@ -66,11 +90,17 @@ public class GameServer {
 
     public void requestLobbies (int clientID) {
 
+        System.out.println("in GameServer, requestLobbies()");
+        System.out.println("  clientID = " + clientID);
+
         network.announceLobbies(clientID, getLobbies());
 
     }
 
     public void startGame (int lobbyID) {
+
+        System.out.println("in GameServer, startGame()");
+        System.out.println("  lobbyID = " + lobbyID);
 
         if (lobbies.containsKey(lobbyID)) {
 
@@ -91,6 +121,10 @@ public class GameServer {
     }
 
     public void move (int clientID, Directions direction) {
+
+        System.out.println("in GameServer, move()");
+        System.out.println("  clientID = " + clientID);
+        System.out.println("  direction = " + direction);
 
         if (playerToGame.containsKey(clientID)) {
 
