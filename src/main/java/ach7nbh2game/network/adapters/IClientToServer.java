@@ -8,13 +8,13 @@ public interface IClientToServer {
      * a client trying to create a new game lobby
      * how do you want to identify the lobby? a unique int? your choice
      */
-     void createNewLobby (String name);
+     void createNewLobby (int clientID, String name);
 
     /**
      * get all lobbies available
      * again, how to represent?
      */
-     void requestLobbies ();
+     void requestLobbies (int clientID);
 
     /**
      * request to join a lobby
@@ -26,7 +26,7 @@ public interface IClientToServer {
      * also, do we want to have private lobbies?
      * we should make this easily extensible to that later
      */
-     void joinLobby (int lobbyID);
+     void joinLobby (int clientID, int lobbyID);
 
     /**
      * turn a lobby into a game
@@ -39,6 +39,6 @@ public interface IClientToServer {
      * should return the game state (same return type as previous function)
      * this should be highly easily extensible
      */
-    void move (Directions direction);
+    void move (int clientID, Directions direction);
 
 }

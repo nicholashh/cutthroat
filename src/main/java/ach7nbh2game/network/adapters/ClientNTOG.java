@@ -1,25 +1,27 @@
 package ach7nbh2game.network.adapters;
 
+import ach7nbh2game.client.GameClient;
 import java.util.ArrayList;
 import java.util.Map;
 
-/**
- * Created by achuie on 1/23/16.
- */
-public class ClientNTOG {
+public class ClientNTOG implements IServerToClient {
 
-    /**
-     * notify a client that the game (for the lobby they are in) has started
-     */
-    void enterGame (int clientID);
+    private GameClient client;
 
-    /**
-     * send a client a new game state
-     */
-    void updateGameState (int clientID, ArrayList<ArrayList<Integer>> frame);
+    public ClientNTOG (GameClient clientIn) {
+        client = clientIn;
+    }
 
-    /**
-     * send all available lobbies
-     */
-    void announceLobbies (int clientID, Map<Integer, String> lobbies);
+    public void enterGame (int clientID) {
+        client.enterGame();
+    }
+
+    public void updateGameState (int clientID, ArrayList<ArrayList<Integer>> frame) {
+        client.updateState(frame);
+    }
+
+    public void announceLobbies (int clientID, Map<Integer, String> lobbies) {
+        client.updateLobbyList(lobbies);
+    }
+
 }
