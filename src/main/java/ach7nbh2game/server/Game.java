@@ -1,6 +1,5 @@
 package ach7nbh2game.server;
 
-import ach7nbh2game.main.Constants;
 import ach7nbh2game.main.Constants.Directions;
 import ach7nbh2game.server.map.Map;
 
@@ -25,8 +24,7 @@ class Game extends APlayerContainer {
 
     public ArrayList<ArrayList<Integer>> getMapView (int clientID) {
 
-        // TODO
-        return map.getMapView(0, 0, Constants.clientHeight, Constants.clientWidth);
+        return map.getMapView(clientID);
 
     }
 

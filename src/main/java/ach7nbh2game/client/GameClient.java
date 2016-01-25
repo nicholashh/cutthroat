@@ -142,7 +142,11 @@ public class GameClient {
 
     public void updateState (ArrayList<ArrayList<Integer>> mapView) {
 
-        System.out.println("in " + name + ", updateState()");
+        //System.out.println("in " + name + ", updateState()");
+        //System.out.println("  height = " + Constants.clientHeight);
+        //System.out.println("  width = " + Constants.clientWidth);
+        //System.out.println("  mapView.size() = " + mapView.size());
+        //System.out.println("  mapView.get(0).size() = " + mapView.get(0).size());
 
         showMap(mapView);
 
