@@ -5,6 +5,7 @@ import ach7nbh2game.network.adapters.IClientToServer;
 import ach7nbh2game.network.adapters.LocalSTOC;
 import ach7nbh2game.network.adapters.ServerNTOG;
 import ach7nbh2game.server.GameServer;
+import com.esotericsoftware.minlog.Log;
 
 public class Main {
 
@@ -12,7 +13,7 @@ public class Main {
 
         try {
 
-            boolean localGame = true;
+            boolean localGame = false;
             if (localGame) {
 
                 GameServer gameServer = new GameServer(true);
@@ -33,10 +34,15 @@ public class Main {
                 clientB.runTest();
 
             } else {
+                Log.set(Log.LEVEL_DEBUG);
+                GameServer gs = new GameServer(false);
+                Log.set(Log.LEVEL_DEBUG);
+                GameClient gcA = new GameClient("Client A", false, null);
+                Log.set(Log.LEVEL_DEBUG);
+                GameClient gcB = new GameClient("Client B", false, null);
 
-                new GameServer(false);
-                new GameClient("Client A", false, null);
-                new GameClient("Client B", false, null);
+                gcA.runTest();
+                gcB.runTest();
 
             }
 

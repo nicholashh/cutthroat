@@ -175,7 +175,8 @@ public class NetServer {
     }
 
     public void updateGameState(int clientID, ArrayList<ArrayList<Integer>> frame) {
-        StatePacket pkt = new StatePacket(frame);
+        StatePacket pkt = new StatePacket();
+        pkt.setFrame(frame);
         DiffMessage diffMsg = new DiffMessage();
         diffMsg.pkt = pkt;
         server.sendToTCP(clientID, diffMsg);
@@ -184,7 +185,7 @@ public class NetServer {
     public void announceLobbies(int clientID, Map<Integer, String> lobbies) {
         LobbyList listMsg = new LobbyList();
         listMsg.lobbies = lobbies;
-        server.sendToTCP(clientID, lobbies);
+        server.sendToTCP(clientID, listMsg);
     }
 
     // This holds per connection state.

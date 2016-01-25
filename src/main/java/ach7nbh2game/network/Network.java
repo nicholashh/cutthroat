@@ -4,6 +4,8 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
 import ach7nbh2game.main.Constants.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -14,18 +16,24 @@ public class Network {
     // Register objects to be sent over the network.
     static public void register (EndPoint endPoint) {
         Kryo kryo = endPoint.getKryo();
-        kryo.register(RegisterMessage.class);
-        kryo.register(TextMessage.class);
-        kryo.register(StartGame.class);
-        kryo.register(EnterGame.class);
-        kryo.register(String[].class);
-        kryo.register(UpdateNames.class);
-        kryo.register(MoveMessage.class);
-        kryo.register(DiffMessage.class);
-        kryo.register(CreateLobby.class);
-        kryo.register(ReqLobbies.class);
-        kryo.register(LobbyList.class);
-        kryo.register(JoinLobby.class);
+        kryo.register(String[].class, 13381);
+        kryo.register(Directions.class, 13382);
+        kryo.register(StatePacket.class, 13383);
+        kryo.register(Map.class, 13384);
+        kryo.register(HashMap.class, 13385);
+        kryo.register(ArrayList.class, 13386);
+
+        kryo.register(RegisterMessage.class, 13370);
+        kryo.register(TextMessage.class, 13371);
+        kryo.register(StartGame.class, 13372);
+        kryo.register(EnterGame.class, 13373);
+        kryo.register(UpdateNames.class, 13374);
+        kryo.register(MoveMessage.class, 13375);
+        kryo.register(DiffMessage.class, 13376);
+        kryo.register(CreateLobby.class, 13377);
+        kryo.register(ReqLobbies.class, 13378);
+        kryo.register(LobbyList.class, 13379);
+        kryo.register(JoinLobby.class, 13380);
     }
 
     static public class RegisterMessage {

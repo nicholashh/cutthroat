@@ -6,7 +6,10 @@ public class StatePacket {
     public ArrayList<ArrayList<Integer>> frame;
     //TODO
 
-    public StatePacket(ArrayList<ArrayList<Integer>> newframe) {
+    public StatePacket() {
+    }
+
+    public void setFrame(ArrayList<ArrayList<Integer>> newframe) {
         frame = newframe;
     }
 }
