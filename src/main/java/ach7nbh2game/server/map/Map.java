@@ -8,15 +8,13 @@ import ach7nbh2game.server.map.components.Player;
 import ach7nbh2game.server.map.components.Wall;
 import com.googlecode.blacken.grid.Grid;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 
 public class Map {
 
     private Grid<IMapComponent> grid;
-    private final int height;
-    private final int width;
+    private int height;
+    private int width;
 
     private java.util.Map<Integer, Player> players;
 
@@ -28,12 +26,16 @@ public class Map {
         width = widthIn;
 
         grid = new Grid<IMapComponent>(new Ground(), height, width);
-        grid.clear();
-
         players = new HashMap<Integer, Player>();
-
         rand = new Random();
 
+        initMap();
+
+    }
+
+    private void initMap () {
+
+        grid.clear();
         generateTerrain();
 
     }
@@ -264,14 +266,36 @@ public class Map {
             }
 
             if (newX >= 0 && newY >= 0 && newX < width && newY < height) {
-                if (grid.get(newY, newX) instanceof Ground) {
+                IMapComponent thing = grid.get(newY, newX);
+                if (thing instanceof Ground) {
                     player.setY(newY);
                     player.setX(newX);
                     grid.set(newY, newX, player);
                     grid.set(curY, curX, new Ground());
+                } else if (thing instanceof Player) {
+                    restartGame();
                 }
             }
 
+        }
+
+    }
+
+    private void restartGame () {
+
+        System.out.println("in Map, restartGame()");
+
+        initMap();
+
+        Set<Integer> allPlayers = new HashSet<Integer>();
+        for (Integer playerID : players.keySet()) {
+            allPlayers.add(playerID);
+        }
+
+        players.clear();
+
+        for (Integer playerID : allPlayers) {
+            addNewPlayer(playerID);
         }
 
     }

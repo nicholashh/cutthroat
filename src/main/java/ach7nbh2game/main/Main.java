@@ -21,6 +21,9 @@ public class Main {
                 GameClient clientA = new GameClient("Client A", true, adapter);
                 GameClient clientB = new GameClient("Client B", true, adapter);
 
+                clientA.setClientID(0);
+                clientB.setClientID(1);
+
                 LocalSTOC serverAdapter = new LocalSTOC();
                 serverAdapter.addClient(clientA.getClientID(), clientA);
                 serverAdapter.addClient(clientB.getClientID(), clientB);

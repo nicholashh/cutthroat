@@ -72,9 +72,12 @@ public class GameClient {
     }
 
     public int getClientID () {
-
         return clientID;
+    }
 
+    // FOR TESTING ONLY
+    public void setClientID (int newClientID) {
+        clientID = newClientID;
     }
 
     public void updateLobbyList (Map<Integer, String> lobbies) {
@@ -119,18 +122,34 @@ public class GameClient {
                     System.out.println("  input = " + input);
 
                     switch (input) {
+
                         case keyUp:
-                            server.move(clientID, Constants.Directions.UP);
+                            server.move(0, Constants.Directions.UP);
                             break;
                         case keyDown:
-                            server.move(clientID, Constants.Directions.DOWN);
+                            server.move(0, Constants.Directions.DOWN);
                             break;
                         case keyLeft:
-                            server.move(clientID, Constants.Directions.LEFT);
+                            server.move(0, Constants.Directions.LEFT);
                             break;
                         case keyRight:
-                            server.move(clientID, Constants.Directions.RIGHT);
+                            server.move(0, Constants.Directions.RIGHT);
                             break;
+
+                        // FOR TESTING ONLY
+                        case 119:
+                            server.move(1, Constants.Directions.UP);
+                            break;
+                        case 115:
+                            server.move(1, Constants.Directions.DOWN);
+                            break;
+                        case 97:
+                            server.move(1, Constants.Directions.LEFT);
+                            break;
+                        case 100:
+                            server.move(1, Constants.Directions.RIGHT);
+                            break;
+
                     }
 
                 }
