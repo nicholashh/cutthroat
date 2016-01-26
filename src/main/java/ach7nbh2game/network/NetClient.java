@@ -5,7 +5,6 @@ import java.io.IOException;
 import javax.swing.JOptionPane;
 
 import ach7nbh2game.main.Constants.*;
-import ach7nbh2game.network.adapters.ClientGTON;
 import ach7nbh2game.network.adapters.IServerToClient;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
@@ -20,7 +19,7 @@ public class NetClient {
     IServerToClient adapter;
 
     public NetClient () {
-        client = new Client();
+        client = new Client(16384, 16384);
         client.start();
 
         // For consistency, the classes to be sent over the network are
@@ -52,7 +51,7 @@ public class NetClient {
 
                 if (object instanceof LobbyList) {
                     LobbyList msg = (LobbyList) object;
-                    adapter.announceLobbies(connection.getID(), msg.lobbies);
+                    adapter.announceLobbies(client.getID(), msg.lobbies);
                 }
             }
 

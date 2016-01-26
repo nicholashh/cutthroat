@@ -63,7 +63,9 @@ public class GameClient {
         // FOR TESTING ONLY
         if (name.equals("Client A")) {
             System.out.println("STEP 1");
+            try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
             server.createNewLobby(clientID, "Test Lobby");
+            // server.move(1, Constants.Directions.UP);
         } else if (name.equals("Client B")) {
             System.out.println("STEP 2");
             server.requestLobbies(clientID);
@@ -89,6 +91,7 @@ public class GameClient {
         if (name.equals("Client B")) {
             System.out.println("STEP 3");
             int lobbyID = lobbies.keySet().toArray(new Integer[lobbies.size()])[0];
+            try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
             server.joinLobby(clientID, lobbyID);
             server.startGame(lobbyID);
         }
