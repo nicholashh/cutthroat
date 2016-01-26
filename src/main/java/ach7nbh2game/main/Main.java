@@ -39,11 +39,11 @@ public class Main {
                 try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
                 Log.set(Log.LEVEL_DEBUG);
                 GameClient gcA = new GameClient("Client A", false, null);
-                // Log.set(Log.LEVEL_DEBUG);
-                // GameClient gcB = new GameClient("Client B", false, null);
+                Log.set(Log.LEVEL_DEBUG);
+                GameClient gcB = new GameClient("Client B", false, null);
 
-                 gcA.runTest();
-                 // gcB.runTest();
+                gcA.runTest();
+                gcB.runTest();
             }
         } catch (Exception e) {
             // TODO
