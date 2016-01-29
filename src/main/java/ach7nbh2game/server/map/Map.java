@@ -149,11 +149,11 @@ public class Map {
         //System.out.println("  player.getX() = " + player.getX());
         //System.out.println("  player.getY() = " + player.getY());
 
-        int halfWidth = Constants.clientWidth / 2;
+        int halfWidth = Constants.clientMapWidth / 2;
         int xLow = x - halfWidth;
         int xHigh = x + halfWidth + 1;
 
-        int halfHeight = Constants.clientHeight / 2;
+        int halfHeight = Constants.clientMapHeight / 2;
         int yLow = y - halfHeight;
         int yHigh = y + halfHeight + 1;
 

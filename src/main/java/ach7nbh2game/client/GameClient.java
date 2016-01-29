@@ -29,6 +29,8 @@ public class GameClient {
 
     private CursesLikeAPI terminal;
 
+    private boolean inGame = false; // TODO state design pattern
+
     private final int keyUp = BlackenKeys.KEY_UP;
     private final int keyDown = BlackenKeys.KEY_DOWN;
     private final int keyLeft = BlackenKeys.KEY_LEFT;
@@ -45,33 +47,43 @@ public class GameClient {
         Random rand = new Random();
         clientID = rand.nextInt();
 
+        playerInfo = new PlayerInfo();
+        playerInfo.setUname(askForUsername());
+
         if (localGame) {
 
             server = serverIn;
 
         } else {
 
-            // Request the host from the user
-            String input = (String) JOptionPane.showInputDialog(
-                    null, "Host:", "Connect to chat server",
-                    JOptionPane.QUESTION_MESSAGE, null, null, "localhost");
-            if (input == null || input.trim().length() == 0) System.exit(1);
-            final String host = input.trim();
-
-            // Request the user's name
-            input = (String) JOptionPane.showInputDialog(null, "Name:", "Connect to chat server",
-                    JOptionPane.QUESTION_MESSAGE, null, null, "Test");
-            if (input == null || input.trim().length() == 0) System.exit(1);
-            playerInfo = new PlayerInfo();
-            playerInfo.setUname(input.trim());
-
-            NetClient netClient = new NetClient(host, playerInfo);
+            NetClient netClient = new NetClient(askForServerIP(), playerInfo);
             IServerToClient adapterNTOG = new ClientNTOG(this);
             IClientToServer adapterGTON = new ClientGTON(netClient);
             netClient.installAdapter(adapterNTOG);
             server = adapterGTON;
 
         }
+
+        setUpTerminal();
+        showWelcomeMessage();
+        beingAcceptingCharacterInput();
+
+    }
+
+    private String askForServerIP () {
+        return askForThing("Server IP:", "localhost", "Connecting to Server...");
+    }
+
+    private String askForUsername() {
+        return askForThing("Username:", "Gandalf The Grey", "Configuring User Settings...");
+    }
+
+    private String askForThing (String label, String value, String title) {
+
+        String input = (String) JOptionPane.showInputDialog(
+                null, label, title, JOptionPane.QUESTION_MESSAGE, null, null, value);
+        if (input == null || input.trim().length() == 0) return "";
+        else return input.trim();
 
     }
 
@@ -112,19 +124,20 @@ public class GameClient {
             System.out.println("STEP B2");
             int lobbyID = lobbies.keySet().toArray(new Integer[lobbies.size()])[0];
             server.joinLobby(clientID, lobbyID, playerInfo);
-            try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
+            try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
             server.startGame(lobbyID);
         }
 
     }
 
-    public void enterGame () {
+    private void setUpTerminal () {
 
-        System.out.println("in " + name + ", enterGame()");
+        System.out.println("in " + name + ", setUpTerminal()");
 
         TerminalInterface newTerminal = new SwingTerminal();
         newTerminal.init("Andrew Nick Game",
-                Constants.clientHeight + 1, Constants.clientWidth + 1);
+                Constants.clientMapHeight + 1,
+                Constants.clientWidthTotal + 1);
         terminal = new CursesLikeAPI(newTerminal);
 
         ColorPalette palette = new ColorPalette();
@@ -134,61 +147,40 @@ public class GameClient {
 
         terminal.move(-1, -1);
 
-        (new Thread() {
-            public void run() {
+    }
 
-                while (true) {
+    public void enterGame () {
 
-                    int input = terminal.getch(); // BLOCKING
+        System.out.println("in " + name + ", enterGame()");
 
-                    System.out.println("in " + name + " loop");
-                    System.out.println("  input = " + input);
+        inGame = true;
 
-                    switch (input) {
+    }
 
-                        case keyUp:
-                            server.move(0, Constants.Directions.UP);
-                            break;
-                        case keyDown:
-                            server.move(0, Constants.Directions.DOWN);
-                            break;
-                        case keyLeft:
-                            server.move(0, Constants.Directions.LEFT);
-                            break;
-                        case keyRight:
-                            server.move(0, Constants.Directions.RIGHT);
-                            break;
+    private void beingAcceptingCharacterInput () {
 
-                        // FOR TESTING ONLY
-                        case 119:
-                            server.move(1, Constants.Directions.UP);
-                            break;
-                        case 115:
-                            server.move(1, Constants.Directions.DOWN);
-                            break;
-                        case 97:
-                            server.move(1, Constants.Directions.LEFT);
-                            break;
-                        case 100:
-                            server.move(1, Constants.Directions.RIGHT);
-                            break;
+        System.out.println("in " + name + ", beingAcceptingCharacterInput()");
 
-                    }
+        (new Thread() { public void run() {
 
+            while (true) {
+
+                int input = terminal.getch(); // BLOCKING
+
+                if (inGame) switch (input) {
+                    case keyUp:    server.move(clientID, Constants.Directions.UP);    break;
+                    case keyDown:  server.move(clientID, Constants.Directions.DOWN);  break;
+                    case keyLeft:  server.move(clientID, Constants.Directions.LEFT);  break;
+                    case keyRight: server.move(clientID, Constants.Directions.RIGHT); break;
                 }
 
             }
-        }).start();
+
+        }}).start();
 
     }
 
     public void updateState (GameState state) {
-
-        //System.out.println("in " + name + ", updateState()");
-        //System.out.println("  height = " + Constants.clientHeight);
-        //System.out.println("  width = " + Constants.clientWidth);
-        //System.out.println("  mapView.size() = " + mapView.size());
-        //System.out.println("  mapView.get(0).size() = " + mapView.get(0).size());
 
         showMap(state.getFrame());
 
@@ -196,36 +188,76 @@ public class GameClient {
 
     }
 
-    private void showMap (ArrayList<ArrayList<Integer>> mapView) {
+    private void showMap (ArrayList<ArrayList<Integer>> map) {
 
-        //System.out.println("mapView");
-        //for (int i = 0; i < mapView.size(); i++) {
-        //    System.out.println(mapView.get(i));
-        //}
+        showSomething(map,
+                0, Constants.clientMapHeight, 0,
+                0, Constants.clientMapWidth, 0);
 
-        //System.out.println("terminal");
-        //for (int i = 0; i < terminal.getHeight(); i++) {
-        //    System.out.print("[");
-        //    for (int j = 0; j < terminal.getWidth(); j++) {
-        //        System.out.print(" " + terminal.get(i, j).getBackground());
+        //for (int y = 0; y < Constants.clientMapHeight; y++) {
+        //    if (y < mapView.size() && y < terminal.getHeight()) {
+        //        ArrayList<Integer> row = mapView.get(y);
+        //        for (int x = 0; x < Constants.clientMapWidth; x++) {
+        //            if (x < row.size() && x < terminal.getWidth()) {
+        //
+        //                setTerminal(x, y, row.get(x));
+        //
+        //            }
+        //        }
         //    }
-        //    System.out.println(" ]");
         //}
 
-        for (int y = 0; y < Constants.clientHeight; y++) {
-            if (y < mapView.size() && y < terminal.getHeight()) {
-                ArrayList<Integer> row = mapView.get(y);
-                for (int x = 0; x < Constants.clientWidth; x++) {
+    }
+
+    private ArrayList<Integer> stringToInts (String string) {
+
+        ArrayList<Integer> ints = new ArrayList<Integer>();
+        for (char c : string.toCharArray()) ints.add((int)c);
+        return ints;
+
+    }
+
+    private void showWelcomeMessage () {
+
+        ArrayList<ArrayList<Integer>> message = new ArrayList<ArrayList<Integer>>();
+        message.add(stringToInts(""));
+        message.add(stringToInts(" Welcome!"));
+
+        showMessage(message);
+
+    }
+
+    private void showMessage (ArrayList<ArrayList<Integer>> message) {
+
+        showSomething(message,
+                0, Constants.clientMapHeight, 0,
+                0, Constants.clientSidebarWidth, Constants.clientMapWidth);
+
+        //for (int y = 0; y < Constants.clientMapHeight; y++) {
+        //    if (y < message.size() && y < terminal.getHeight()) {
+        //        ArrayList<Integer> row = message.get(y);
+        //        for (int x = 0; x < Constants.clientSidebarWidth; x++) {
+        //            if (x < row.size() && x < terminal.getWidth()) {
+        //
+        //                setTerminal(x + Constants.clientMapWidth, y, row.get(x));
+        //
+        //            }
+        //        }
+        //    }
+        //}
+
+    }
+
+    private void showSomething (ArrayList<ArrayList<Integer>> thing,
+            int yLow, int yHigh, int yOffset, int xLow, int xHigh, int xOffset) {
+
+        for (int y = yLow; y < yHigh; y++) {
+            if (y < thing.size() && y < terminal.getHeight()) {
+                ArrayList<Integer> row = thing.get(y);
+                for (int x = xLow; x < xHigh; x++) {
                     if (x < row.size() && x < terminal.getWidth()) {
 
-                        //System.out.println("Constants.clientHeight = " + Constants.clientHeight);
-                        //System.out.println("Constants.clientWidth = " + Constants.clientWidth);
-                        //System.out.println("terminal.getHeight() = " + terminal.getHeight());
-                        //System.out.println("terminal.getWidth() = " + terminal.getWidth());
-                        //System.out.println("mapView.size() = " + mapView.size());
-                        //System.out.println("row.size() = " + row.size());
-
-                        setTerminal(x, y, row.get(x));
+                        setTerminal(x + xOffset, y + yOffset, row.get(x));
 
                     }
                 }
@@ -235,8 +267,6 @@ public class GameClient {
     }
 
     private void setTerminal (int x, int y, int character) {
-
-        //System.out.println("x = " + x + ", y = " + y);
 
         terminal.set(y, x, new String(Character.toChars(character)), 7, 0,
                 EnumSet.noneOf(TerminalStyle.class), EnumSet.noneOf(CellWalls.class));
