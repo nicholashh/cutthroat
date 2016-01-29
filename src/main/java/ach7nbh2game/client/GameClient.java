@@ -259,12 +259,12 @@ public class GameClient {
     private void clearMessageArea () {
 
         ArrayList<Integer> row = new ArrayList<Integer>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < Constants.clientSidebarWidth; i++) {
             row.add((int)' ');
         }
 
         ArrayList<ArrayList<Integer>> message = new ArrayList<ArrayList<Integer>>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < Constants.clientMapHeight; i++) {
             message.add(row);
         }
 

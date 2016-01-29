@@ -348,12 +348,15 @@ public class GameMap {
         int i = 0;
         int size = players.keySet().size();
         int index = rand.nextInt(size);
-        for (Player player : players.values()) {
-            if (i == index) {
-                gameState.setWhoItIs(player.getPlayerInfo().getUsername());
-                i++;
-            } else break;
-        }
+        gameState.setWhoItIs(((Player)players.values().toArray()[rand.nextInt(size)]).getPlayerInfo().getUsername());
+        // for (Player player : players.values()) {
+        //     if (i == index) {
+        //         gameState.setWhoItIs(player.getPlayerInfo().getUsername());
+        //         break;
+        //     } else {
+        //         i++;
+        //     }
+        // }
 
         (new Thread () { public void run () {
 
