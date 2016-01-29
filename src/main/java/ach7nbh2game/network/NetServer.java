@@ -2,11 +2,9 @@ package ach7nbh2game.network;
 
 // TODO: These were in the example, just to open a window with "the server is running"
 // idk how you want to handle the server's text GUI
-import ach7nbh2game.client.GameClient;
 import ach7nbh2game.main.Constants.*;
 import ach7nbh2game.network.adapters.IClientToServer;
-import ach7nbh2game.network.adapters.IServerToClient;
-import ach7nbh2game.network.adapters.ServerNTOG;
+import ach7nbh2game.server.GameState;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -175,7 +173,7 @@ public class NetServer {
     }
 
     public void updateGameState(int clientID, ArrayList<ArrayList<Integer>> frame) {
-        StatePacket pkt = new StatePacket();
+        GameState pkt = new GameState();
         pkt.setFrame(frame);
         DiffMessage diffMsg = new DiffMessage();
         diffMsg.pkt = pkt;

@@ -1,6 +1,7 @@
 package ach7nbh2game.network.adapters;
 
-import java.util.ArrayList;
+import ach7nbh2game.server.GameState;
+
 import java.util.Map;
 
 public interface IServerToClient {
@@ -13,7 +14,7 @@ public interface IServerToClient {
     /**
      * send a client a new game state
      */
-    void updateGameState (int clientID, ArrayList<ArrayList<Integer>> frame);
+    void updateGameState (int clientID, GameState state);
 
     /**
      * send all available lobbies

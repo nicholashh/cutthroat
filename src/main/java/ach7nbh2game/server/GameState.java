@@ -1,12 +1,12 @@
-package ach7nbh2game.network;
+package ach7nbh2game.server;
 
 import java.util.ArrayList;
 
-public class StatePacket {
+public class GameState {
     public ArrayList<ArrayList<Integer>> frame;
     //TODO
 
-    public StatePacket() {
+    public GameState() {
     }
 
     public void setFrame(ArrayList<ArrayList<Integer>> newframe) {

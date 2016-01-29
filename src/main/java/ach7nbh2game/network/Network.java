@@ -1,5 +1,6 @@
 package ach7nbh2game.network;
 
+import ach7nbh2game.server.GameState;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
 import ach7nbh2game.main.Constants.*;
@@ -18,7 +19,7 @@ public class Network {
         Kryo kryo = endPoint.getKryo();
         kryo.register(String[].class, 13381);
         kryo.register(Directions.class, 13382);
-        kryo.register(StatePacket.class, 13383);
+        kryo.register(GameState.class, 13383);
         kryo.register(Map.class, 13384);
         kryo.register(HashMap.class, 13385);
         kryo.register(ArrayList.class, 13386);
@@ -61,7 +62,7 @@ public class Network {
     }
 
     static public class DiffMessage {
-        public StatePacket pkt;
+        public GameState pkt;
     }
 
     static public class CreateLobby {
