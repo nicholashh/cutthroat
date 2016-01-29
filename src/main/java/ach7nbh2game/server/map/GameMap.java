@@ -28,6 +28,8 @@ public class GameMap {
 
     private int levelID;
 
+    private Thread timer;
+
     public GameMap (Game gameIn, int heightIn, int widthIn) {
 
         game = gameIn;
@@ -310,7 +312,7 @@ public class GameMap {
 
                     }
 
-                    restartGame();
+                    restartGame(timer);
 
                 }
 
@@ -320,9 +322,11 @@ public class GameMap {
 
     }
 
-    private void restartGame () {
+    private void restartGame (Thread timer) {
 
         System.out.println("in Map, restartGame()");
+
+        timer.interrupt();
 
         initMap();
 
@@ -345,10 +349,9 @@ public class GameMap {
 
         levelID = rand.nextInt();
 
-        int i = 0;
-        int size = players.keySet().size();
-        int index = rand.nextInt(size);
-        gameState.setWhoItIs(((Player)players.values().toArray()[rand.nextInt(size)]).getPlayerInfo().getUsername());
+        Object[] values = players.values().toArray();
+        Player randPlayer = (Player) values[rand.nextInt(values.length)];
+        gameState.setWhoItIs(randPlayer.getPlayerInfo().getUsername());
         // for (Player player : players.values()) {
         //     if (i == index) {
         //         gameState.setWhoItIs(player.getPlayerInfo().getUsername());
@@ -358,21 +361,45 @@ public class GameMap {
         //     }
         // }
 
-        (new Thread () { public void run () {
-
-            final int thisLevelID = levelID;
-            for (int i = 30; i >= 0; i--) {
-
-                if (thisLevelID == levelID) {
-                    gameState.setTimeRemaining(i);
-                    game.broadcastState();
+        timer = new Thread(new Runnable() {
+            public void run() {
+                try {
+                    while (!Thread.currentThread().isInterrupted()) {
+                        final int thisLevelID = levelID;
+                        for (int i = 30; i >= 0; i--) {
+                            if (thisLevelID == levelID) {
+                                gameState.setTimeRemaining(i);
+                                game.broadcastState();
+                            }
+                            Thread.sleep(1000);
+                        }
+                        restartGame(Thread.currentThread());
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                 }
-
-                try { this.sleep(1000);} catch (Exception e) {}
-
             }
+        });
+        timer.start();
 
-        }}).start();
+        // (new Thread () { public void run () {
+
+        //     final int thisLevelID = levelID;
+        //     for (int i = 30; i >= 0; i--) {
+
+        //         if (thisLevelID == levelID) {
+        //             gameState.setTimeRemaining(i);
+        //             game.broadcastState();
+        //         }
+
+        //         try {
+        //             this.sleep(1000);
+        //         } catch (Exception e) {
+        //         }
+
+        //     }
+
+        // }}).start();
 
     }
 
