@@ -113,7 +113,7 @@ public class NetServer {
                         return;
                     }
                     JoinLobby msg = (JoinLobby) object;
-                    adapter.joinLobby(connection.getID(), msg.lobbyID);
+                    adapter.joinLobby(connection.getID(), msg.lobbyID, msg.info);
                     return;
                 }
             }

@@ -1,5 +1,6 @@
 package ach7nbh2game.network.adapters;
 
+import ach7nbh2game.client.PlayerInfo;
 import ach7nbh2game.main.Constants.*;
 import ach7nbh2game.network.NetClient;
 
@@ -19,8 +20,8 @@ public class ClientGTON implements IClientToServer {
         nclient.reqLobbies();
     }
 
-    public void joinLobby (int clientID, int lobbyID) {
-        nclient.joinLobby(lobbyID);
+    public void joinLobby (int clientID, int lobbyID, PlayerInfo info) {
+        nclient.joinLobby(lobbyID, info);
     }
 
     public void startGame (int lobbyID) {

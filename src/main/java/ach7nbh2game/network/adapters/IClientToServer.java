@@ -1,5 +1,6 @@
 package ach7nbh2game.network.adapters;
 
+import ach7nbh2game.client.PlayerInfo;
 import ach7nbh2game.main.Constants.Directions;
 
 public interface IClientToServer {
@@ -26,7 +27,7 @@ public interface IClientToServer {
      * also, do we want to have private lobbies?
      * we should make this easily extensible to that later
      */
-     void joinLobby (int clientID, int lobbyID);
+     void joinLobby (int clientID, int lobbyID, PlayerInfo info);
 
     /**
      * turn a lobby into a game

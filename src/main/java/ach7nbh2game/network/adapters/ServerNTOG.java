@@ -1,5 +1,6 @@
 package ach7nbh2game.network.adapters;
 
+import ach7nbh2game.client.PlayerInfo;
 import ach7nbh2game.main.Constants.Directions;
 import ach7nbh2game.server.GameServer;
 
@@ -19,8 +20,8 @@ public class ServerNTOG implements IClientToServer {
         server.requestLobbies(clientID);
     }
 
-    public void joinLobby (int clientID, int lobbyID) {
-        server.joinLobby(clientID, lobbyID);
+    public void joinLobby (int clientID, int lobbyID, PlayerInfo info) {
+        server.joinLobby(clientID, lobbyID, info);
     }
 
     public void startGame (int lobbyID) {

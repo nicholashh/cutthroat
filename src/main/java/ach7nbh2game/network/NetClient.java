@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.swing.JOptionPane;
 
+import ach7nbh2game.client.PlayerInfo;
 import ach7nbh2game.main.Constants.*;
 import ach7nbh2game.network.adapters.IServerToClient;
 import com.esotericsoftware.kryonet.Client;
@@ -16,11 +17,14 @@ public class NetClient {
 
     Client client;
     String name;
+    String host;
     IServerToClient adapter;
 
-    public NetClient () {
+    public NetClient (String hostn, PlayerInfo info) {
         client = new Client(16384, 16384);
         client.start();
+        host = hostn;
+        name = info.getUname();
 
         // For consistency, the classes to be sent over the network are
         // registered by the same method for both the client and server.
@@ -61,16 +65,18 @@ public class NetClient {
         });
 
         // Request the host from the user.
-        String input = (String)JOptionPane.showInputDialog(null, "Host:", "Connect to chat server", JOptionPane.QUESTION_MESSAGE,
-                null, null, "localhost");
-        if (input == null || input.trim().length() == 0) System.exit(1);
-        final String host = input.trim();
+        // String input = (String)JOptionPane.showInputDialog(null, "Host:", "Connect to chat server", JOptionPane
+        //         .QUESTION_MESSAGE,
+        //         null, null, "localhost");
+        // if (input == null || input.trim().length() == 0) System.exit(1);
+        // final String host = input.trim();
 
         // Request the user's name.
-        input = (String)JOptionPane.showInputDialog(null, "Name:", "Connect to chat server", JOptionPane.QUESTION_MESSAGE, null,
-                null, "Test");
-        if (input == null || input.trim().length() == 0) System.exit(1);
-        name = input.trim();
+        // input = (String)JOptionPane.showInputDialog(null, "Name:", "Connect to chat server", JOptionPane
+        //         .QUESTION_MESSAGE, null,
+        //         null, "Test");
+        // if (input == null || input.trim().length() == 0) System.exit(1);
+        // name = input.trim();
 
         // We'll do the connect on a new thread so the ChatFrame can show a progress bar.
         // Connecting to localhost is usually so fast you won't see the progress bar.
@@ -103,9 +109,10 @@ public class NetClient {
         client.sendTCP(req);
     }
 
-    public void joinLobby(int lobbyID) {
+    public void joinLobby(int lobbyID, PlayerInfo info) {
         JoinLobby join = new JoinLobby();
         join.lobbyID = lobbyID;
+        join.info = info;
         client.sendTCP(join);
     }
 
@@ -123,6 +130,6 @@ public class NetClient {
 
     public static void main (String[] args) {
         Log.set(Log.LEVEL_DEBUG);
-        new NetClient();
+        new NetClient("localhost", new PlayerInfo("Test"));
     }
 }
