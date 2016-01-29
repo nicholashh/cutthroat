@@ -310,9 +310,9 @@ public class GameMap {
                         gameState.updateScore(whoItIs, curScore + 1);
                         // TODO this should use a teamID instead of a string
 
-                    }
+                        restartGame();
 
-                    restartGame();
+                    }
 
                 }
 

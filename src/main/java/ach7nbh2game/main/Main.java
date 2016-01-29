@@ -9,11 +9,13 @@ import com.esotericsoftware.minlog.Log;
 
 public class Main {
 
+    static boolean localGame = false;
+    static boolean isServer = false;
+
     public static void main (String[] args) {
 
         try {
 
-            boolean localGame = false;
             if (localGame) {
 
                 GameServer gameServer = new GameServer(true);
@@ -35,22 +37,28 @@ public class Main {
 
             } else {
 
-                Log.set(Log.LEVEL_DEBUG);
-                GameServer gs = new GameServer(false);
-                //try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+                if (isServer) {
 
-                Log.set(Log.LEVEL_DEBUG);
-                GameClient gcA = new GameClient("Client A", false, null);
-                //try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+                    Log.set(Log.LEVEL_DEBUG);
+                    GameServer gs = new GameServer(false);
 
-                Log.set(Log.LEVEL_DEBUG);
-                GameClient gcB = new GameClient("Client B", false, null);
-                //try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+                    Log.set(Log.LEVEL_DEBUG);
+                    GameClient gcA = new GameClient("Client A", false, null);
 
-                gcA.runTest();
-                //try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+                    gcA.runTest();
 
-                gcB.runTest();
+                } else {
+
+                    Log.set(Log.LEVEL_DEBUG);
+                    GameClient gcB = new GameClient("Client B", false, null);
+
+                    Log.set(Log.LEVEL_DEBUG);
+                    GameClient gcC = new GameClient("Client C", false, null);
+
+                    gcC.runTest();
+                    gcB.runTest();
+
+                }
 
             }
         } catch (Exception e) {
