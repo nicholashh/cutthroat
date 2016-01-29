@@ -1,10 +1,10 @@
 package ach7nbh2game.network;
 
 import ach7nbh2game.client.PlayerInfo;
+import ach7nbh2game.main.Constants.Directions;
 import ach7nbh2game.server.GameState;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
-import ach7nbh2game.main.Constants.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +24,7 @@ public class Network {
         kryo.register(Map.class, 13384);
         kryo.register(HashMap.class, 13385);
         kryo.register(ArrayList.class, 13386);
+        kryo.register(PlayerInfo.class, 13387);
 
         kryo.register(RegisterMessage.class, 13370);
         kryo.register(TextMessage.class, 13371);

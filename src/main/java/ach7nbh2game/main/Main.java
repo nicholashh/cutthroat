@@ -34,16 +34,24 @@ public class Main {
                 clientB.runTest();
 
             } else {
+
                 Log.set(Log.LEVEL_DEBUG);
                 GameServer gs = new GameServer(false);
-                 try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
+                try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+
                 Log.set(Log.LEVEL_DEBUG);
                 GameClient gcA = new GameClient("Client A", false, null);
-                // Log.set(Log.LEVEL_DEBUG);
-                // GameClient gcB = new GameClient("Client B", false, null);
+                try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+
+                Log.set(Log.LEVEL_DEBUG);
+                GameClient gcB = new GameClient("Client B", false, null);
+                try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
 
                 gcA.runTest();
-                // gcB.runTest();
+                try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+
+                gcB.runTest();
+
             }
         } catch (Exception e) {
             // TODO

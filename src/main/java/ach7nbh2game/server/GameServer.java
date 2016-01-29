@@ -1,5 +1,6 @@
 package ach7nbh2game.server;
 
+import ach7nbh2game.client.PlayerInfo;
 import ach7nbh2game.main.Constants.Directions;
 import ach7nbh2game.network.NetServer;
 import ach7nbh2game.network.adapters.*;
@@ -59,15 +60,15 @@ public class GameServer {
         Lobby newLobby = new Lobby(name);
         lobbies.put(newLobbyID, newLobby);
 
-        joinLobby(clientID, newLobbyID);
-
     }
 
-    public void joinLobby (int clientID, int lobbyID) {
+    public void joinLobby (int clientID, int lobbyID, PlayerInfo info) {
 
         System.out.println("in GameServer, joinLobby()");
         System.out.println("  clientID = " + clientID);
         System.out.println("  lobbyID = " + lobbyID);
+
+        // TODO use info
 
         if (lobbies.containsKey(lobbyID)) {
             lobbies.get(lobbyID).join(clientID);

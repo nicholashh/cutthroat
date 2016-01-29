@@ -12,6 +12,7 @@ import com.googlecode.blacken.colors.ColorPalette;
 import com.googlecode.blacken.swing.SwingTerminal;
 import com.googlecode.blacken.terminal.*;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -22,6 +23,7 @@ public class GameClient {
 
     private String name;
     private int clientID;
+    private PlayerInfo playerInfo;
 
     private IClientToServer server;
 
@@ -49,7 +51,20 @@ public class GameClient {
 
         } else {
 
-            NetClient netClient = new NetClient();
+            // Request the host from the user
+            String input = (String) JOptionPane.showInputDialog(
+                    null, "Host:", "Connect to chat server",
+                    JOptionPane.QUESTION_MESSAGE, null, null, "localhost");
+            if (input == null || input.trim().length() == 0) System.exit(1);
+            final String host = input.trim();
+
+            // Request the user's name
+            input = (String) JOptionPane.showInputDialog(null, "Name:", "Connect to chat server",
+                    JOptionPane.QUESTION_MESSAGE, null, null, "Test");
+            if (input == null || input.trim().length() == 0) System.exit(1);
+            playerInfo = new PlayerInfo(input.trim());
+
+            NetClient netClient = new NetClient(host, playerInfo);
             IServerToClient adapterNTOG = new ClientNTOG(this);
             IClientToServer adapterGTON = new ClientGTON(netClient);
             netClient.installAdapter(adapterNTOG);
@@ -63,11 +78,11 @@ public class GameClient {
 
         // FOR TESTING ONLY
         if (name.equals("Client A")) {
-            System.out.println("STEP 1");
+            System.out.println("STEP A1");
             server.createNewLobby(clientID, "Test Lobby");
-            // server.move(1, Constants.Directions.UP);
+            server.requestLobbies(clientID);
         } else if (name.equals("Client B")) {
-            System.out.println("STEP 2");
+            System.out.println("STEP B1");
             server.requestLobbies(clientID);
         }
 
@@ -88,10 +103,14 @@ public class GameClient {
         System.out.println("  lobbies = " + lobbies);
 
         // FOR TESTING ONLY
-        if (name.equals("Client B")) {
-            System.out.println("STEP 3");
+        if (name.equals("Client A")) {
+            System.out.println("STEP A2");
             int lobbyID = lobbies.keySet().toArray(new Integer[lobbies.size()])[0];
-            server.joinLobby(clientID, lobbyID);
+            server.joinLobby(clientID, lobbyID, playerInfo);
+        } else if (name.equals("Client B")) {
+            System.out.println("STEP B2");
+            int lobbyID = lobbies.keySet().toArray(new Integer[lobbies.size()])[0];
+            server.joinLobby(clientID, lobbyID, playerInfo);
             server.startGame(lobbyID);
         }
 
