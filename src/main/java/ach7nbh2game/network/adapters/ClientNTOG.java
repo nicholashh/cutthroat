@@ -1,7 +1,8 @@
 package ach7nbh2game.network.adapters;
 
 import ach7nbh2game.client.GameClient;
-import java.util.ArrayList;
+import ach7nbh2game.server.GameState;
+
 import java.util.Map;
 
 public class ClientNTOG implements IServerToClient {
@@ -16,8 +17,8 @@ public class ClientNTOG implements IServerToClient {
         client.enterGame();
     }
 
-    public void updateGameState (int clientID, ArrayList<ArrayList<Integer>> frame) {
-        client.updateState(frame);
+    public void updateGameState (int clientID, GameState state) {
+        client.updateState(state);
     }
 
     public void announceLobbies (int clientID, Map<Integer, String> lobbies) {

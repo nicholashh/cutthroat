@@ -6,6 +6,7 @@ import ach7nbh2game.network.adapters.ClientGTON;
 import ach7nbh2game.network.adapters.ClientNTOG;
 import ach7nbh2game.network.adapters.IClientToServer;
 import ach7nbh2game.network.adapters.IServerToClient;
+import ach7nbh2game.server.GameState;
 import com.googlecode.blacken.colors.ColorNames;
 import com.googlecode.blacken.colors.ColorPalette;
 import com.googlecode.blacken.swing.SwingTerminal;
@@ -160,7 +161,7 @@ public class GameClient {
 
     }
 
-    public void updateState (ArrayList<ArrayList<Integer>> mapView) {
+    public void updateState (GameState state) {
 
         //System.out.println("in " + name + ", updateState()");
         //System.out.println("  height = " + Constants.clientHeight);
@@ -168,7 +169,7 @@ public class GameClient {
         //System.out.println("  mapView.size() = " + mapView.size());
         //System.out.println("  mapView.get(0).size() = " + mapView.get(0).size());
 
-        showMap(mapView);
+        showMap(state.getFrame());
 
         terminal.refresh();
 

@@ -145,7 +145,13 @@ public class GameServer {
     private void sendGameState (Game game) {
 
         for (int playerID : game.getPlayerIDs()) {
-            network.updateGameState(playerID, game.getMapView(playerID));
+
+            // TODO GameState better
+            GameState state = new GameState();
+            state.setFrame(game.getMapView(playerID));
+
+            network.updateGameState(playerID, state);
+
         }
 
     }

@@ -1,8 +1,8 @@
 package ach7nbh2game.network.adapters;
 
 import ach7nbh2game.client.GameClient;
+import ach7nbh2game.server.GameState;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,8 +22,8 @@ public class LocalSTOC implements IServerToClient {
         clients.get(clientID).enterGame();
     }
 
-    public void updateGameState (int clientID, ArrayList<ArrayList<Integer>> frame) {
-        clients.get(clientID).updateState(frame);
+    public void updateGameState (int clientID, GameState state) {
+        clients.get(clientID).updateState(state);
     }
 
     public void announceLobbies (int clientID, Map<Integer, String> lobbies) {
