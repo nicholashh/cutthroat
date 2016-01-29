@@ -1,37 +1,45 @@
 package ach7nbh2game.server;
 
+import ach7nbh2game.client.PlayerInfo;
 import ach7nbh2game.main.Constants.Directions;
-import ach7nbh2game.server.map.Map;
+import ach7nbh2game.server.map.GameMap;
 
-import java.util.ArrayList;
-import java.util.Set;
+import java.util.Map;
 
-class Game extends APlayerContainer {
+public class Game extends APlayerContainer {
 
-    private Map map;
+    private GameServer server;
+    private GameMap map;
 
-    public Game (Set<Integer> playerIDsIn, int height, int width) {
+    public Game (GameServer serverIn, Map<Integer, PlayerInfo> playerIDsIn, int height, int width) {
 
-        playerIDs = playerIDsIn;
+        server = serverIn;
+        playerInfo = playerIDsIn;
 
-        map = new Map(height, width);
+        map = new GameMap(this, height, width);
 
-        for (int playerID : playerIDs) {
-            map.addNewPlayer(playerID);
+        for (int playerID : playerInfo.keySet()) {
+            map.addNewPlayer(playerID, playerInfo.get(playerID));
         }
+
+        map.startLevel();
 
     }
 
-    public ArrayList<ArrayList<Integer>> getMapView (int clientID) {
+    public GameState getGameState (int clientID) {
 
-        return map.getMapView(clientID);
+        GameState gameState = map.getGameState();
+        gameState.setFrame(map.getMapView(clientID));
+        return gameState;
 
     }
 
     public void move (int clientID, Directions direction) {
-
         map.move(clientID, direction);
+    }
 
+    public void broadcastState() {
+        server.sendGameState(this);
     }
 
 }

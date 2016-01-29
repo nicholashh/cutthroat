@@ -1,7 +1,10 @@
 package ach7nbh2game.server.map;
 
+import ach7nbh2game.client.PlayerInfo;
 import ach7nbh2game.main.Constants;
 import ach7nbh2game.main.Constants.Directions;
+import ach7nbh2game.server.Game;
+import ach7nbh2game.server.GameState;
 import ach7nbh2game.server.map.components.Ground;
 import ach7nbh2game.server.map.components.IMapComponent;
 import ach7nbh2game.server.map.components.Player;
@@ -10,27 +13,38 @@ import com.googlecode.blacken.grid.Grid;
 
 import java.util.*;
 
-public class Map {
+public class GameMap {
+
+    private Game game;
 
     private Grid<IMapComponent> grid;
     private int height;
     private int width;
 
-    private java.util.Map<Integer, Player> players;
+    private Map<Integer, Player> players;
+    private GameState gameState;
 
     private Random rand;
 
-    public Map (int heightIn, int widthIn) {
+    private int levelID;
 
+    public GameMap (Game gameIn, int heightIn, int widthIn) {
+
+        game = gameIn;
         height = heightIn;
         width = widthIn;
 
         grid = new Grid<IMapComponent>(new Ground(), height, width);
         players = new HashMap<Integer, Player>();
+        gameState = new GameState();
         rand = new Random();
 
         initMap();
 
+    }
+
+    public GameState getGameState () {
+        return gameState;
     }
 
     private void initMap () {
@@ -116,7 +130,7 @@ public class Map {
 
     }
 
-    public void addNewPlayer (int playerID) {
+    public void addNewPlayer (int playerID, PlayerInfo info) {
 
         while (true) {
 
@@ -125,9 +139,14 @@ public class Map {
 
             if (grid.get(y, x) instanceof Ground) {
 
-                Player newPlayer = new Player(playerID, y, x);
+                Player newPlayer = new Player(playerID, info, y, x);
                 players.put(playerID, newPlayer);
                 grid.set(y, x, newPlayer);
+
+                String username = newPlayer.getPlayerInfo().getUsername();
+                if (!gameState.getScores().containsKey(username)) {
+                    gameState.updateScore(username, 0);
+                }
 
                 break;
 
@@ -267,14 +286,34 @@ public class Map {
 
             if (newX >= 0 && newY >= 0 && newX < width && newY < height) {
                 IMapComponent thing = grid.get(newY, newX);
+
                 if (thing instanceof Ground) {
+
                     player.setY(newY);
                     player.setX(newX);
                     grid.set(newY, newX, player);
                     grid.set(curY, curX, new Ground());
+
                 } else if (thing instanceof Player) {
+                    // TODO don't use instanceof
+
+                    String myPlayerName = players.get(playerID).getPlayerInfo().getUsername();
+                    String otherPlayerName = players.get(((Player)thing).getID()).getPlayerInfo().getUsername();
+
+                    String whoItIs = gameState.getWhoItIs();
+                    if (myPlayerName.equals(whoItIs) ||
+                            otherPlayerName.equals(whoItIs)) {
+
+                        int curScore = gameState.getScores().get(whoItIs);
+                        gameState.updateScore(whoItIs, curScore + 1);
+                        // TODO this should use a teamID instead of a string
+
+                    }
+
                     restartGame();
+
                 }
+
             }
 
         }
@@ -287,16 +326,50 @@ public class Map {
 
         initMap();
 
-        Set<Integer> allPlayers = new HashSet<Integer>();
+        Map<Integer, PlayerInfo> allPlayers = new HashMap<Integer, PlayerInfo>();
         for (Integer playerID : players.keySet()) {
-            allPlayers.add(playerID);
+            allPlayers.put(playerID, players.get(playerID).getPlayerInfo());
         }
 
         players.clear();
 
-        for (Integer playerID : allPlayers) {
-            addNewPlayer(playerID);
+        for (Integer playerID : allPlayers.keySet()) {
+            addNewPlayer(playerID, allPlayers.get(playerID));
         }
+
+        startLevel();
+
+    }
+
+    public void startLevel () {
+
+        levelID = rand.nextInt();
+
+        int i = 0;
+        int size = players.keySet().size();
+        int index = rand.nextInt(size);
+        for (Player player : players.values()) {
+            if (i == index) {
+                gameState.setWhoItIs(player.getPlayerInfo().getUsername());
+                i++;
+            } else break;
+        }
+
+        (new Thread () { public void run () {
+
+            final int thisLevelID = levelID;
+            for (int i = 30; i >= 0; i--) {
+
+                if (thisLevelID == levelID) {
+                    gameState.setTimeRemaining(i);
+                    game.broadcastState();
+                }
+
+                try { this.sleep(1000);} catch (Exception e) {}
+
+            }
+
+        }}).start();
 
     }
 

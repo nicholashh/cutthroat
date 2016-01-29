@@ -57,21 +57,19 @@ public class GameServer {
         System.out.println("  name = " + name);
 
         int newLobbyID = rand.nextInt();
-        Lobby newLobby = new Lobby(name);
+        Lobby newLobby = new Lobby(this, name);
         lobbies.put(newLobbyID, newLobby);
 
     }
 
-    public void joinLobby (int clientID, int lobbyID, PlayerInfo info) {
+    public void joinLobby (int clientID, int lobbyID, PlayerInfo clientInfo) {
 
         System.out.println("in GameServer, joinLobby()");
         System.out.println("  clientID = " + clientID);
         System.out.println("  lobbyID = " + lobbyID);
 
-        // TODO use info
-
         if (lobbies.containsKey(lobbyID)) {
-            lobbies.get(lobbyID).join(clientID);
+            lobbies.get(lobbyID).join(clientID, clientInfo);
         } else {
             // TODO
         }
@@ -110,7 +108,7 @@ public class GameServer {
             lobbies.remove(lobbyID);
             games.put(lobbyID, newGame);
 
-            for (int playerID : newGame.getPlayerIDs()) {
+            for (int playerID : newGame.getPlayerInfo().keySet()) {
                 network.enterGame(playerID);
                 playerToGame.put(playerID, lobbyID);
             }
@@ -143,16 +141,10 @@ public class GameServer {
 
     }
 
-    private void sendGameState (Game game) {
+    protected void sendGameState (Game game) {
 
-        for (int playerID : game.getPlayerIDs()) {
-
-            // TODO GameState better
-            GameState state = new GameState();
-            state.setFrame(game.getMapView(playerID));
-
-            network.updateGameState(playerID, state);
-
+        for (int playerID : game.getPlayerInfo().keySet()) {
+            network.updateGameState(playerID, game.getGameState(playerID));
         }
 
     }

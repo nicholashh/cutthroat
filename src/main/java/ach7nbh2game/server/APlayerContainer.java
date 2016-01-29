@@ -1,14 +1,16 @@
 package ach7nbh2game.server;
 
-import java.util.Set;
+import ach7nbh2game.client.PlayerInfo;
+
+import java.util.Map;
 
 abstract class APlayerContainer {
 
-    protected Set<Integer> playerIDs;
+    protected Map<Integer, PlayerInfo> playerInfo;
 
-    public Set<Integer> getPlayerIDs () {
+    public Map<Integer, PlayerInfo> getPlayerInfo () {
 
-        return playerIDs;
+        return playerInfo;
 
     }
 

@@ -2,8 +2,6 @@ package ach7nbh2game.network;
 
 import java.io.IOException;
 
-import javax.swing.JOptionPane;
-
 import ach7nbh2game.client.PlayerInfo;
 import ach7nbh2game.main.Constants.*;
 import ach7nbh2game.network.adapters.IServerToClient;
@@ -24,7 +22,7 @@ public class NetClient {
         client = new Client(16384, 16384);
         client.start();
         host = hostn;
-        name = info.getUname();
+        name = info.getUsername();
 
         // For consistency, the classes to be sent over the network are
         // registered by the same method for both the client and server.
@@ -131,7 +129,7 @@ public class NetClient {
     public static void main (String[] args) {
         Log.set(Log.LEVEL_DEBUG);
         PlayerInfo info = new PlayerInfo();
-        info.setUname("Test");
+        info.setUsername("Test");
         new NetClient("localhost", info);
     }
 }

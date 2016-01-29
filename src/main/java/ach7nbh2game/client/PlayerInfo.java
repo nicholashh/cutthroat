@@ -2,16 +2,23 @@ package ach7nbh2game.client;
 
 public class PlayerInfo {
 
-    private String uname;
+    private String username;
+    private int icon;
 
-    public PlayerInfo() {
+    public void setUsername (String usernameIn) {
+        username = usernameIn;
     }
 
-    public void setUname(String newname) {
-        uname = newname;
+    public String getUsername () {
+        return username;
     }
 
-    public String getUname() {
-        return uname;
+    public void setIcon (int iconIn) {
+        icon = iconIn;
     }
+
+    public int getIcon () {
+        return icon;
+    }
+
 }

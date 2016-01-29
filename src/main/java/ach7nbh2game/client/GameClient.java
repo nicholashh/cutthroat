@@ -48,7 +48,9 @@ public class GameClient {
         clientID = rand.nextInt();
 
         playerInfo = new PlayerInfo();
-        playerInfo.setUname(askForUsername());
+        String username = askForUsername();
+        playerInfo.setUsername(username);
+        playerInfo.setIcon(username.toUpperCase().toCharArray()[0]);
 
         if (localGame) {
 
@@ -75,7 +77,7 @@ public class GameClient {
     }
 
     private String askForUsername() {
-        return askForThing("Username:", "Gandalf The Grey", "Configuring User Settings...");
+        return askForThing("Username:", "", "Configuring User Settings...");
     }
 
     private String askForThing (String label, String value, String title) {
@@ -93,6 +95,7 @@ public class GameClient {
         if (name.equals("Client A")) {
             System.out.println("STEP A1");
             server.createNewLobby(clientID, "Test Lobby");
+            try {Thread.sleep(250);} catch (InterruptedException e) {e.printStackTrace();}
             server.requestLobbies(clientID);
         } else if (name.equals("Client B")) {
             System.out.println("STEP B1");
@@ -124,7 +127,7 @@ public class GameClient {
             System.out.println("STEP B2");
             int lobbyID = lobbies.keySet().toArray(new Integer[lobbies.size()])[0];
             server.joinLobby(clientID, lobbyID, playerInfo);
-            try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+            try {Thread.sleep(250);} catch (InterruptedException e) {e.printStackTrace();}
             server.startGame(lobbyID);
         }
 
@@ -161,7 +164,7 @@ public class GameClient {
 
         System.out.println("in " + name + ", beingAcceptingCharacterInput()");
 
-        (new Thread() { public void run() {
+        (new Thread() { public void run () {
 
             while (true) {
 
@@ -183,6 +186,7 @@ public class GameClient {
     public void updateState (GameState state) {
 
         showMap(state.getFrame());
+        showScores(state);
 
         terminal.refresh();
 
@@ -220,14 +224,59 @@ public class GameClient {
     private void showWelcomeMessage () {
 
         ArrayList<ArrayList<Integer>> message = new ArrayList<ArrayList<Integer>>();
-        message.add(stringToInts(""));
-        message.add(stringToInts(" Welcome!"));
+        message.add(stringToInts(" "));
+        message.add(stringToInts(" Welcome"));
+        message.add(stringToInts(" to Cutthroat!"));
 
-        showMessage(message);
+        showMessage(message, true);
 
     }
 
-    private void showMessage (ArrayList<ArrayList<Integer>> message) {
+    private void showScores (GameState gameState) {
+
+        Map<String, Integer> scores = gameState.getScores();
+
+        ArrayList<ArrayList<Integer>> message = new ArrayList<ArrayList<Integer>>();
+        message.add(stringToInts(" "));
+        message.add(stringToInts(" Scores:"));
+        message.add(stringToInts(" "));
+
+        for (String player : scores.keySet()) {
+            message.add(stringToInts(" " + player + ": " + scores.get(player)));
+        }
+
+        message.add(stringToInts(" "));
+        message.add(stringToInts(" Who's \"it\"?"));
+        message.add(stringToInts(" " + gameState.getWhoItIs()));
+
+        message.add(stringToInts(" "));
+        message.add(stringToInts(" Time Left: " + gameState.getTimeRemaining()));
+
+        showMessage(message, true);
+
+    }
+
+    private void clearMessageArea () {
+
+        ArrayList<Integer> row = new ArrayList<Integer>();
+        for (int i = 0; i < 5; i++) {
+            row.add((int)' ');
+        }
+
+        ArrayList<ArrayList<Integer>> message = new ArrayList<ArrayList<Integer>>();
+        for (int i = 0; i < 5; i++) {
+            message.add(row);
+        }
+
+        showMessage(message, false);
+
+    }
+
+    private void showMessage (ArrayList<ArrayList<Integer>> message, boolean shouldClear) {
+
+        if (shouldClear) {
+            clearMessageArea();
+        }
 
         showSomething(message,
                 0, Constants.clientMapHeight, 0,

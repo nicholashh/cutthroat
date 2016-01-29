@@ -1,17 +1,29 @@
 package ach7nbh2game.server.map.components;
 
+import ach7nbh2game.client.PlayerInfo;
+
 public class Player extends AMapComponent {
 
     private int id;
+    private PlayerInfo info;
     private int y;
     private int x;
 
-    public Player (int idIn, int yIn, int xIn) {
+    public Player (int idIn, PlayerInfo infoIn, int yIn, int xIn) {
 
         id = idIn;
+        info = infoIn;
         y = yIn;
         x = xIn;
 
+    }
+
+    public int getID () {
+        return id;
+    }
+
+    public PlayerInfo getPlayerInfo () {
+        return info;
     }
 
     public int getY () {
@@ -31,7 +43,7 @@ public class Player extends AMapComponent {
     }
 
     public int getMapChar () {
-        return 42;
+        return info.getIcon();
     }
 
 }
