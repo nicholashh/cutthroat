@@ -42,15 +42,11 @@ public class Main {
                 Log.set(Log.LEVEL_DEBUG);
                 GameClient gcB = new GameClient("Client B", false, null);
 
-                 gcA.runTest();
-                 gcB.runTest();
-
+                gcA.runTest();
+                gcB.runTest();
             }
-
         } catch (Exception e) {
             // TODO
         }
-
     }
-
 }
