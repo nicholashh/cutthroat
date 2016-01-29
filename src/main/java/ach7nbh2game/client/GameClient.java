@@ -62,7 +62,8 @@ public class GameClient {
             input = (String) JOptionPane.showInputDialog(null, "Name:", "Connect to chat server",
                     JOptionPane.QUESTION_MESSAGE, null, null, "Test");
             if (input == null || input.trim().length() == 0) System.exit(1);
-            playerInfo = new PlayerInfo(input.trim());
+            playerInfo = new PlayerInfo();
+            playerInfo.setUname(input.trim());
 
             NetClient netClient = new NetClient(host, playerInfo);
             IServerToClient adapterNTOG = new ClientNTOG(this);
@@ -111,6 +112,7 @@ public class GameClient {
             System.out.println("STEP B2");
             int lobbyID = lobbies.keySet().toArray(new Integer[lobbies.size()])[0];
             server.joinLobby(clientID, lobbyID, playerInfo);
+            try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
             server.startGame(lobbyID);
         }
 

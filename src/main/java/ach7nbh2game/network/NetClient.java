@@ -130,6 +130,8 @@ public class NetClient {
 
     public static void main (String[] args) {
         Log.set(Log.LEVEL_DEBUG);
-        new NetClient("localhost", new PlayerInfo("Test"));
+        PlayerInfo info = new PlayerInfo();
+        info.setUname("Test");
+        new NetClient("localhost", info);
     }
 }

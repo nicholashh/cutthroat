@@ -4,7 +4,10 @@ public class PlayerInfo {
 
     private String uname;
 
-    public PlayerInfo(String newname) {
+    public PlayerInfo() {
+    }
+
+    public void setUname(String newname) {
         uname = newname;
     }
 

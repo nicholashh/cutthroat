@@ -18,25 +18,25 @@ public class Network {
     // Register objects to be sent over the network.
     static public void register (EndPoint endPoint) {
         Kryo kryo = endPoint.getKryo();
-        kryo.register(String[].class, 13381);
-        kryo.register(Directions.class, 13382);
-        kryo.register(GameState.class, 13383);
-        kryo.register(Map.class, 13384);
-        kryo.register(HashMap.class, 13385);
-        kryo.register(ArrayList.class, 13386);
-        kryo.register(PlayerInfo.class, 13387);
+        kryo.register(String[].class, 3381);
+        kryo.register(Directions.class, 3382);
+        kryo.register(GameState.class, 3383);
+        kryo.register(Map.class, 3384);
+        kryo.register(HashMap.class, 3385);
+        kryo.register(ArrayList.class, 3386);
+        kryo.register(PlayerInfo.class, 3387);
 
-        kryo.register(RegisterMessage.class, 13370);
-        kryo.register(TextMessage.class, 13371);
-        kryo.register(StartGame.class, 13372);
-        kryo.register(EnterGame.class, 13373);
-        kryo.register(UpdateNames.class, 13374);
-        kryo.register(MoveMessage.class, 13375);
-        kryo.register(DiffMessage.class, 13376);
-        kryo.register(CreateLobby.class, 13377);
+        kryo.register(RegisterMessage.class, 3370);
+        kryo.register(TextMessage.class, 3371);
+        kryo.register(StartGame.class, 3372);
+        kryo.register(EnterGame.class, 3373);
+        kryo.register(UpdateNames.class, 3374);
+        kryo.register(MoveMessage.class, 3375);
+        kryo.register(DiffMessage.class, 3376);
+        kryo.register(CreateLobby.class, 3377);
         kryo.register(ReqLobbies.class, 13378);
-        kryo.register(LobbyList.class, 13379);
-        kryo.register(JoinLobby.class, 13380);
+        kryo.register(LobbyList.class, 3379);
+        kryo.register(JoinLobby.class, 3380);
     }
 
     static public class RegisterMessage {

@@ -109,6 +109,7 @@ public class NetServer {
                 }
 
                 if (object instanceof JoinLobby) {
+                    System.out.println("___*** got here");
                     if (connection.name == null) {
                         return;
                     }
