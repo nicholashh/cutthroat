@@ -312,7 +312,7 @@ public class GameMap {
 
                     }
 
-                    restartGame(timer);
+                    restartGame();
 
                 }
 
@@ -322,7 +322,7 @@ public class GameMap {
 
     }
 
-    private void restartGame (Thread timer) {
+    private void restartGame () {
 
         System.out.println("in Map, restartGame()");
 
@@ -365,6 +365,7 @@ public class GameMap {
             public void run() {
                 try {
                     while (!Thread.currentThread().isInterrupted()) {
+
                         final int thisLevelID = levelID;
                         for (int i = 30; i >= 0; i--) {
                             if (thisLevelID == levelID) {
@@ -373,7 +374,18 @@ public class GameMap {
                             }
                             Thread.sleep(1000);
                         }
-                        restartGame(Thread.currentThread());
+
+                        String whoItIs = gameState.getWhoItIs();
+                        for (Player player : players.values()) {
+                            String playerName = player.getPlayerInfo().getUsername();
+                            if (!playerName.equals(whoItIs)) {
+                                int curScore = gameState.getScores().get(playerName);
+                                gameState.updateScore(playerName, curScore + 1);
+                            }
+                        }
+
+                        restartGame();
+
                     }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
