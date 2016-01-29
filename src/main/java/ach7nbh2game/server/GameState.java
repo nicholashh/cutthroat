@@ -1,9 +1,10 @@
 package ach7nbh2game.server;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class GameState {
-    public ArrayList<ArrayList<Integer>> frame;
+    private ArrayList<ArrayList<Integer>> frame;
     //TODO
 
     public GameState() {
@@ -11,5 +12,9 @@ public class GameState {
 
     public void setFrame(ArrayList<ArrayList<Integer>> newframe) {
         frame = newframe;
+    }
+
+    public ArrayList<ArrayList<Integer>> getFrame() {
+        return frame;
     }
 }

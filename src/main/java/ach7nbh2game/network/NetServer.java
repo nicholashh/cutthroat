@@ -172,11 +172,9 @@ public class NetServer {
         server.sendToTCP(clientID, start);
     }
 
-    public void updateGameState(int clientID, ArrayList<ArrayList<Integer>> frame) {
-        GameState pkt = new GameState();
-        pkt.setFrame(frame);
+    public void updateGameState(int clientID, GameState state) {
         DiffMessage diffMsg = new DiffMessage();
-        diffMsg.pkt = pkt;
+        diffMsg.pkt = state;
         server.sendToTCP(clientID, diffMsg);
     }
 

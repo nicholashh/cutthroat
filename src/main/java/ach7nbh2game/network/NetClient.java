@@ -41,7 +41,7 @@ public class NetClient {
 
                 if (object instanceof DiffMessage) {
                     DiffMessage diffMsg = (DiffMessage) object;
-                    adapter.updateGameState(client.getID(), diffMsg.pkt.frame);
+                    adapter.updateGameState(client.getID(), diffMsg.pkt);
                     return;
                 }
 

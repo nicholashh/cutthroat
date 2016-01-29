@@ -1,6 +1,7 @@
 package ach7nbh2game.network.adapters;
 
 import ach7nbh2game.network.NetServer;
+import ach7nbh2game.server.GameState;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -23,8 +24,8 @@ public class ServerGTON implements IServerToClient {
     /**
      * send a client a new game state
      */
-    public void updateGameState (int clientID, ArrayList<ArrayList<Integer>> frame) {
-        nserver.updateGameState(clientID, frame);
+    public void updateGameState (int clientID, GameState state) {
+        nserver.updateGameState(clientID, state);
     }
 
     /**
