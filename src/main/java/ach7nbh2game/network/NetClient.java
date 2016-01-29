@@ -74,8 +74,8 @@ public class NetClient {
 
         // We'll do the connect on a new thread so the ChatFrame can show a progress bar.
         // Connecting to localhost is usually so fast you won't see the progress bar.
-        new Thread("Connect") {
-            public void run () {
+        // new Thread("Connect") {
+        //     public void run () {
                 try {
                     client.connect(5000, host, Network.port);
                     // Server communication after connection can go here, or in Listener#connected().
@@ -83,8 +83,8 @@ public class NetClient {
                     ex.printStackTrace();
                     System.exit(1);
                 }
-            }
-        }.start();
+        //     }
+        // }.start();
     }
 
     public void installAdapter(IServerToClient newadapter) {
