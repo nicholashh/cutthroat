@@ -42,11 +42,11 @@
 
   <repositories>
 
-   <repository>
-    <id>clojars</id>
-    <url>http://clojars.org/repo/</url>
-  </repository>
+    <repository>
+      <id>clojars</id>
+      <url>http://clojars.org/repo/</url>
+    </repository>
 
-</repositories>
+  </repositories>
 
 </project>
