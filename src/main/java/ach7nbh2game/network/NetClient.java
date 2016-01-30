@@ -1,15 +1,14 @@
 package ach7nbh2game.network;
 
-import java.io.IOException;
-
 import ach7nbh2game.client.PlayerInfo;
-import ach7nbh2game.main.Constants.*;
+import ach7nbh2game.main.Constants.Directions;
+import ach7nbh2game.network.Network.*;
 import ach7nbh2game.network.adapters.IServerToClient;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import ach7nbh2game.network.Network.*;
-import com.esotericsoftware.minlog.Log;
+
+import java.io.IOException;
 
 public class NetClient {
 
@@ -18,7 +17,7 @@ public class NetClient {
     String host;
     IServerToClient adapter;
 
-    public NetClient (String hostn, PlayerInfo info) {
+    public NetClient (String hostn, PlayerInfo info) throws IOException {
         client = new Client(16384, 16384);
         client.start();
         host = hostn;
@@ -80,15 +79,21 @@ public class NetClient {
         // Connecting to localhost is usually so fast you won't see the progress bar.
         // new Thread("Connect") {
         //     public void run () {
-                try {
-                    client.connect(5000, host, Network.port);
-                    // Server communication after connection can go here, or in Listener#connected().
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                    System.exit(1);
-                }
+
+                //try {
+                //    client.connect(5000, host, Network.port);
+                //    // Server communication after connection can go here, or in Listener#connected().
+                //} catch (IOException ex) {
+                //    ex.printStackTrace();
+                //    System.exit(1);
+                //}
+
         //     }
         // }.start();
+
+        // just let this throw the exception if the connection fails
+        client.connect(5000, host, Network.port);
+
     }
 
     public void installAdapter(IServerToClient newadapter) {
@@ -126,10 +131,4 @@ public class NetClient {
         client.sendTCP(mvMsg);
     }
 
-    public static void main (String[] args) {
-        Log.set(Log.LEVEL_DEBUG);
-        PlayerInfo info = new PlayerInfo();
-        info.setUsername("Test");
-        new NetClient("localhost", info);
-    }
 }

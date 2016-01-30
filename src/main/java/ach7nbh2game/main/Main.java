@@ -5,18 +5,20 @@ import ach7nbh2game.network.adapters.IClientToServer;
 import ach7nbh2game.network.adapters.LocalSTOC;
 import ach7nbh2game.network.adapters.ServerNTOG;
 import ach7nbh2game.server.GameServer;
-import com.esotericsoftware.minlog.Log;
 
 public class Main {
 
-    static boolean localGame = false;
-    static boolean isServer = false;
+    static final boolean localGame = false;
+    static final boolean isServer = true;
+    static final boolean isClient = true;
 
     public static void main (String[] args) {
 
         try {
 
             if (localGame) {
+
+                // TODO this should be more robust
 
                 GameServer gameServer = new GameServer(true);
 
@@ -37,32 +39,16 @@ public class Main {
 
             } else {
 
-                if (isServer) {
+                if (isServer) { new GameServer(false); }
 
-                    Log.set(Log.LEVEL_DEBUG);
-                    GameServer gs = new GameServer(false);
-
-                    Log.set(Log.LEVEL_DEBUG);
-                    GameClient gcA = new GameClient("Client A", false, null);
-
-                    gcA.runTest();
-
-                } else {
-
-                    Log.set(Log.LEVEL_DEBUG);
-                    GameClient gcB = new GameClient("Client B", false, null);
-
-                    Log.set(Log.LEVEL_DEBUG);
-                    GameClient gcC = new GameClient("Client C", false, null);
-
-                    gcC.runTest();
-                    gcB.runTest();
-
-                }
+                if (isClient) { new GameClient("Game Client", false, null); }
 
             }
+
         } catch (Exception e) {
             // TODO
         }
+
     }
+
 }

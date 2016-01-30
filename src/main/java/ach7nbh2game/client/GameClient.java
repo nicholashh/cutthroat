@@ -14,10 +14,7 @@ import com.googlecode.blacken.terminal.*;
 
 import javax.swing.*;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class GameClient {
 
@@ -58,7 +55,13 @@ public class GameClient {
 
         } else {
 
-            NetClient netClient = new NetClient(askForServerIP(), playerInfo);
+            NetClient netClient = null;
+
+            while (netClient == null) {
+                try { netClient = new NetClient(askForServerIP(), playerInfo); }
+                catch (Exception e) { System.err.println(e.toString()); }
+            }
+
             IServerToClient adapterNTOG = new ClientNTOG(this);
             IClientToServer adapterGTON = new ClientGTON(netClient);
             netClient.installAdapter(adapterNTOG);
@@ -70,20 +73,64 @@ public class GameClient {
         showWelcomeMessage();
         beingAcceptingCharacterInput();
 
+        server.requestLobbies(clientID);
+
     }
 
     private String askForServerIP () {
-        return askForThing("Server IP:", "localhost", "Connecting to Server...");
+
+        String prompt = "";
+        prompt += "Connect to a game server!\n";
+        prompt += "What is the server's IP?";
+
+        return askForThing(prompt , "localhost");
+
     }
 
-    private String askForUsername() {
-        return askForThing("Username:", "", "Configuring User Settings...");
+    private boolean isAlphanumeric (String string) {
+
+        boolean isAlphanumeric = true;
+
+        for (char c : string.toCharArray()) {
+            if (!Character.isLetterOrDigit(c)) {
+                isAlphanumeric = false;
+            }
+        }
+
+        return isAlphanumeric;
+
     }
 
-    private String askForThing (String label, String value, String title) {
+    private boolean isInteger (String string) {
+
+        try { Integer.parseInt(string); return true; }
+        catch (NumberFormatException nfe) { return false; }
+
+    }
+
+    private String askForUsername () {
+
+        String prompt = "";
+        prompt += "Pick a username!\n";
+        prompt += "(Must be alphanumeric.)\n";
+        prompt += "(Must be 1-10 character long.)";
+
+        String name = askForThing(prompt, "");
+
+        int length = name.length();
+        if (!isAlphanumeric(name) || length < 1 || length > 10) {
+            System.err.println("invalid username chosen; trying again...");
+            return askForUsername();
+        } else {
+            return name;
+        }
+
+    }
+
+    private String askForThing (String label, String value) {
 
         String input = (String) JOptionPane.showInputDialog(
-                null, label, title, JOptionPane.QUESTION_MESSAGE, null, null, value);
+                null, label, null, JOptionPane.QUESTION_MESSAGE, null, null, value);
         if (input == null || input.trim().length() == 0) return "";
         else return input.trim();
 
@@ -113,6 +160,9 @@ public class GameClient {
         clientID = newClientID;
     }
 
+    // TODO make this better (add a SuccessfullyJoinedMessage?)
+    private int myLobbyID = 0;
+
     public void updateLobbyList (Map<Integer, String> lobbies) {
 
         System.out.println("in " + name + ", updateLobbyList()");
@@ -129,6 +179,74 @@ public class GameClient {
             server.joinLobby(clientID, lobbyID, playerInfo);
             try {Thread.sleep(250);} catch (InterruptedException e) {e.printStackTrace();}
             server.startGame(lobbyID);
+        } else {
+
+            // NORMAL BEHAVIOR
+
+            Map<Integer, Integer> smallIntToLobbyID = new HashMap<Integer, Integer>();
+            String prompt = "";
+            int i = 0;
+
+            prompt += "Lobbies available for you to join:\n";
+            if (lobbies.isEmpty()) {
+                prompt += "    There are no lobbies for you to join.\n";
+            } else {
+                for (int lobbyID : lobbies.keySet()) {
+                    smallIntToLobbyID.put(i, lobbyID);
+                    prompt += "    " + i + ": " + lobbies.get(lobbyID) + "\n";
+                    i++;
+                }
+            }
+
+            prompt += "To join an existing lobby, enter it's numeric ID.\n";
+            prompt += "To create a new lobby, enter it's alphanumeric name.\n";
+            prompt += "To update this list of lobbies, click \"cancel.\"\n";
+            prompt += "To start your game, first join a lobby then type \"start.\"";
+
+            String action = askForThing(prompt, "");
+
+            if (action.equals("")) {
+
+                System.out.println("  requesting lobbies...");
+
+            } else {
+
+                if (isInteger(action)) {
+
+                    int smallInt = Integer.parseInt(action);
+                    if (smallIntToLobbyID.containsKey(smallInt)) {
+                        myLobbyID = smallIntToLobbyID.get(smallInt);
+                        System.out.println("  joining lobby " + myLobbyID + "...");
+                        server.joinLobby(clientID, myLobbyID, playerInfo);
+                    }
+
+                } else if (isAlphanumeric(action)) {
+
+                    if (myLobbyID != 0 && action.equals("start")) {
+
+                        System.out.println("  starting lobby " + myLobbyID + "...");
+                        server.startGame(myLobbyID);
+
+                        return; // do not request lobbies
+
+                    } else {
+
+                        System.out.println("  creating lobby " + action + "...");
+                        server.createNewLobby(clientID, action);
+
+                    }
+
+                } else {
+
+                    System.out.println("  invalid input. trying again...");
+                    updateLobbyList(lobbies);
+
+                }
+
+            }
+
+            server.requestLobbies(clientID);
+
         }
 
     }
