@@ -17,7 +17,7 @@ public class NetClient {
     String host;
     IServerToClient adapter;
 
-    public NetClient (String hostn, PlayerInfo info) throws IOException {
+    public NetClient (String hostn, final PlayerInfo info) throws IOException {
         client = new Client(16384, 16384);
         client.start();
         host = hostn;
@@ -32,6 +32,7 @@ public class NetClient {
                 RegisterMessage regName = new RegisterMessage();
                 regName.name = name;
                 client.sendTCP(regName);
+                info.setID(connection.getID());
             }
 
             public void received (Connection connection, Object object) {
@@ -52,7 +53,8 @@ public class NetClient {
 
                 if (object instanceof LobbyList) {
                     LobbyList msg = (LobbyList) object;
-                    adapter.announceLobbies(client.getID(), msg.lobbies);
+                    adapter.announceLobbies(client.getID(),
+                            msg.lobbies, msg.players, msg.lobbyToPlayers);
                 }
             }
 

@@ -4,6 +4,7 @@ public class PlayerInfo {
 
     private String username;
     private int icon;
+    private int id;
 
     public void setUsername (String usernameIn) {
         username = usernameIn;
@@ -19,6 +20,14 @@ public class PlayerInfo {
 
     public int getIcon () {
         return icon;
+    }
+
+    public void setID (int idIn) {
+        id = idIn;
+    }
+
+    public int getID () {
+        return id;
     }
 
 }

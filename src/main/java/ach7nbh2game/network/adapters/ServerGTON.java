@@ -3,8 +3,8 @@ package ach7nbh2game.network.adapters;
 import ach7nbh2game.network.NetServer;
 import ach7nbh2game.server.GameState;
 
-import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
 
 public class ServerGTON implements IServerToClient {
 
@@ -31,7 +31,11 @@ public class ServerGTON implements IServerToClient {
     /**
      * send all available lobbies
      */
-    public void announceLobbies (int clientID, Map<Integer, String> lobbies) {
-        nserver.announceLobbies(clientID, lobbies);
+    public void announceLobbies (int clientID,
+            Map<Integer, String> lobbies,
+            Map<Integer, String> players,
+            Map<Integer, Set<Integer>> lobbyToPlayers) {
+        nserver.announceLobbies(clientID, lobbies, players, lobbyToPlayers);
     }
+
 }

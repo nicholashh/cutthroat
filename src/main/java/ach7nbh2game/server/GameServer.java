@@ -6,14 +6,13 @@ import ach7nbh2game.network.NetServer;
 import ach7nbh2game.network.adapters.*;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class GameServer {
 
     private IServerToClient network;
 
+    private Map<Integer, String> players;
     private Map<Integer, Lobby> lobbies;
     private Map<Integer, Game> games;
     private Map<Integer, Integer> playerToGame;
@@ -33,6 +32,7 @@ public class GameServer {
 
         }
 
+        players = new HashMap<Integer, String>();
         lobbies = new HashMap<Integer, Lobby>();
         games = new HashMap<Integer, Game>();
         playerToGame = new HashMap<Integer, Integer>();
@@ -70,17 +70,32 @@ public class GameServer {
 
         if (lobbies.containsKey(lobbyID)) {
             lobbies.get(lobbyID).join(clientID, clientInfo);
+            players.put(clientID, clientInfo.getUsername());
         } else {
             // TODO
         }
 
     }
 
-    private Map<Integer, String> getLobbies () {
+    private Map<Integer, String> getLobbyToName () {
 
         Map<Integer, String> toReturn = new HashMap<Integer, String>();
+
         for (Map.Entry<Integer, Lobby> entry : lobbies.entrySet()) {
             toReturn.put(entry.getKey(), entry.getValue().getName());
+        }
+
+        return toReturn;
+
+    }
+
+    private Map<Integer, Set<Integer>> getLobbyToPlayers () {
+
+        Map<Integer, Set<Integer>> toReturn = new HashMap<Integer, Set<Integer>>();
+
+        for (Map.Entry<Integer, Lobby> entry : lobbies.entrySet()) {
+            Set<Integer> toAdd = new HashSet<Integer>(entry.getValue().getPlayers());
+            toReturn.put(entry.getKey(), toAdd);
         }
 
         return toReturn;
@@ -92,7 +107,7 @@ public class GameServer {
         System.out.println("in GameServer, requestLobbies()");
         System.out.println("  clientID = " + clientID);
 
-        network.announceLobbies(clientID, getLobbies());
+        network.announceLobbies(clientID, getLobbyToName(), players, getLobbyToPlayers());
 
     }
 

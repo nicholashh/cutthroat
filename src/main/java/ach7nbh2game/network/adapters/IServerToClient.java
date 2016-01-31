@@ -3,6 +3,7 @@ package ach7nbh2game.network.adapters;
 import ach7nbh2game.server.GameState;
 
 import java.util.Map;
+import java.util.Set;
 
 public interface IServerToClient {
 
@@ -19,6 +20,9 @@ public interface IServerToClient {
     /**
      * send all available lobbies
      */
-    void announceLobbies (int clientID, Map<Integer, String> lobbies);
+    void announceLobbies (int clientID,
+            Map<Integer, String> lobbies,
+            Map<Integer, String> players,
+            Map<Integer, Set<Integer>> lobbyToPlayers);
 
 }

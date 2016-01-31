@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class NetServer {
     Server server;
@@ -179,9 +180,14 @@ public class NetServer {
         server.sendToTCP(clientID, diffMsg);
     }
 
-    public void announceLobbies(int clientID, Map<Integer, String> lobbies) {
+    public void announceLobbies(int clientID,
+            Map<Integer, String> lobbies,
+            Map<Integer, String> players,
+            Map<Integer, Set<Integer>> lobbyToPlayers) {
         LobbyList listMsg = new LobbyList();
         listMsg.lobbies = lobbies;
+        listMsg.players = players;
+        listMsg.lobbyToPlayers = lobbyToPlayers;
         server.sendToTCP(clientID, listMsg);
     }
 

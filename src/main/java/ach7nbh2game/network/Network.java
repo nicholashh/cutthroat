@@ -6,9 +6,7 @@ import ach7nbh2game.server.GameState;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 
 // Holds things common to the client and the server, ostensibly all objects that will be sent between the two.
@@ -25,6 +23,7 @@ public class Network {
         kryo.register(HashMap.class, 3385);
         kryo.register(ArrayList.class, 3386);
         kryo.register(PlayerInfo.class, 3387);
+        kryo.register(HashSet.class, 3388);
 
         kryo.register(RegisterMessage.class, 3370);
         kryo.register(TextMessage.class, 3371);
@@ -77,6 +76,8 @@ public class Network {
 
     static public class LobbyList {
         public Map<Integer, String> lobbies;
+        public Map<Integer, String> players;
+        public Map<Integer, Set<Integer>> lobbyToPlayers;
     }
 
     static public class JoinLobby {

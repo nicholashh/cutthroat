@@ -4,6 +4,7 @@ import ach7nbh2game.client.GameClient;
 import ach7nbh2game.server.GameState;
 
 import java.util.Map;
+import java.util.Set;
 
 public class ClientNTOG implements IServerToClient {
 
@@ -21,8 +22,11 @@ public class ClientNTOG implements IServerToClient {
         client.updateState(state);
     }
 
-    public void announceLobbies (int clientID, Map<Integer, String> lobbies) {
-        client.updateLobbyList(lobbies);
+    public void announceLobbies (int clientID,
+            Map<Integer, String> lobbies,
+            Map<Integer, String> players,
+            Map<Integer, Set<Integer>> lobbyToPlayers) {
+        client.updateLobbyList(lobbies, players, lobbyToPlayers);
     }
 
 }

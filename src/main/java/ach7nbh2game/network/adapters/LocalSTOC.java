@@ -5,6 +5,7 @@ import ach7nbh2game.server.GameState;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class LocalSTOC implements IServerToClient {
 
@@ -26,8 +27,11 @@ public class LocalSTOC implements IServerToClient {
         clients.get(clientID).updateState(state);
     }
 
-    public void announceLobbies (int clientID, Map<Integer, String> lobbies) {
-        clients.get(clientID).updateLobbyList(lobbies);
+    public void announceLobbies (int clientID,
+            Map<Integer, String> lobbies,
+            Map<Integer, String> players,
+            Map<Integer, Set<Integer>> lobbyToPlayers) {
+        clients.get(clientID).updateLobbyList(lobbies, players, lobbyToPlayers);
     }
 
 }

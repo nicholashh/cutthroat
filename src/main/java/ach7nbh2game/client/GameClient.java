@@ -81,7 +81,7 @@ public class GameClient {
 
         String prompt = "";
         prompt += "Connect to a game server!\n";
-        prompt += "What is the server's IP?";
+        prompt += "What is the server's IP address?";
 
         return askForThing(prompt , "localhost");
 
@@ -113,7 +113,7 @@ public class GameClient {
         String prompt = "";
         prompt += "Pick a username!\n";
         prompt += "(Must be alphanumeric.)\n";
-        prompt += "(Must be 1-10 character long.)";
+        prompt += "(Must be 1-10 characters long.)";
 
         String name = askForThing(prompt, "");
 
@@ -160,13 +160,15 @@ public class GameClient {
         clientID = newClientID;
     }
 
-    // TODO make this better (add a SuccessfullyJoinedMessage?)
-    private int myLobbyID = 0;
-
-    public void updateLobbyList (Map<Integer, String> lobbies) {
+    public void updateLobbyList (
+            Map<Integer, String> lobbies,
+            Map<Integer, String> players,
+            Map<Integer, Set<Integer>> lobbyToPlayers) {
 
         System.out.println("in " + name + ", updateLobbyList()");
         System.out.println("  lobbies = " + lobbies);
+        System.out.println("  players = " + players);
+        System.out.println("  lobbyToPlayers = " + lobbyToPlayers);
 
         // FOR TESTING ONLY
         if (name.equals("Client A") || name.equals("Client C")) {
@@ -183,25 +185,43 @@ public class GameClient {
 
             // NORMAL BEHAVIOR
 
-            Map<Integer, Integer> smallIntToLobbyID = new HashMap<Integer, Integer>();
             String prompt = "";
-            int i = 0;
-
             prompt += "Lobbies available for you to join:\n";
+
+            Set<Integer> myLobbies = new HashSet<Integer>();
+            Map<Integer, Integer> smallIntToLobbyID = new HashMap<Integer, Integer>();
+
             if (lobbies.isEmpty()) {
+
                 prompt += "    There are no lobbies for you to join.\n";
+
             } else {
+
+                int i = 0;
                 for (int lobbyID : lobbies.keySet()) {
+
                     smallIntToLobbyID.put(i, lobbyID);
                     prompt += "    " + i + ": " + lobbies.get(lobbyID) + "\n";
                     i++;
+
+                    for (int playerID : lobbyToPlayers.get(lobbyID)) {
+                        if (playerID == playerInfo.getID()) {
+                            myLobbies.add(lobbyID);
+                            prompt += "        me! (" + playerInfo.getUsername() + ")\n";
+                        } else {
+                            String username = players.get(playerID);
+                            prompt += "        player: " + username + "\n";
+                        }
+                    }
+
                 }
+
             }
 
-            prompt += "To join an existing lobby, enter it's numeric ID.\n";
-            prompt += "To create a new lobby, enter it's alphanumeric name.\n";
             prompt += "To update this list of lobbies, click \"cancel.\"\n";
-            prompt += "To start your game, first join a lobby then type \"start.\"";
+            prompt += "To create a new lobby, enter it's alphanumeric name.\n";
+            prompt += "To join an existing lobby, enter it's numeric ID.\n";
+            prompt += "To start your game, re-enter your lobby's numeric ID.";
 
             String action = askForThing(prompt, "");
 
@@ -215,31 +235,33 @@ public class GameClient {
 
                     int smallInt = Integer.parseInt(action);
                     if (smallIntToLobbyID.containsKey(smallInt)) {
-                        myLobbyID = smallIntToLobbyID.get(smallInt);
-                        System.out.println("  joining lobby " + myLobbyID + "...");
-                        server.joinLobby(clientID, myLobbyID, playerInfo);
+                        int lobbyID = smallIntToLobbyID.get(smallInt);
+
+                        if (myLobbies.contains(lobbyID)) {
+
+                            System.out.println("  starting game " + lobbyID + "...");
+                            server.startGame(lobbyID);
+
+                            return; // do not request lobbies
+
+                        } else {
+
+                            System.out.println("  joining lobby " + lobbyID + "...");
+                            server.joinLobby(clientID, lobbyID, playerInfo);
+
+                        }
+
                     }
 
                 } else if (isAlphanumeric(action)) {
 
-                    if (myLobbyID != 0 && action.equals("start")) {
-
-                        System.out.println("  starting lobby " + myLobbyID + "...");
-                        server.startGame(myLobbyID);
-
-                        return; // do not request lobbies
-
-                    } else {
-
-                        System.out.println("  creating lobby " + action + "...");
-                        server.createNewLobby(clientID, action);
-
-                    }
+                    System.out.println("  creating lobby " + action + "...");
+                    server.createNewLobby(clientID, action);
 
                 } else {
 
                     System.out.println("  invalid input. trying again...");
-                    updateLobbyList(lobbies);
+                    updateLobbyList(lobbies, players, lobbyToPlayers);
 
                 }
 
@@ -274,7 +296,11 @@ public class GameClient {
 
         System.out.println("in " + name + ", enterGame()");
 
-        inGame = true;
+        if (!inGame) {
+            inGame = true;
+        } else {
+            // TODO what if in multiple lobbies and a second one starts?
+        }
 
     }
 
