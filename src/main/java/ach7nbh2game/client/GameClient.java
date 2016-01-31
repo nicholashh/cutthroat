@@ -445,10 +445,10 @@ public class GameClient {
             int yLow, int yHigh, int yOffset, int xLow, int xHigh, int xOffset) {
 
         for (int y = yLow; y < yHigh; y++) {
-            if (y < thing.size() && y < terminal.getHeight()) {
+            if (y < thing.size()) {
                 ArrayList<Integer> row = thing.get(y);
                 for (int x = xLow; x < xHigh; x++) {
-                    if (x < row.size() && x < terminal.getWidth()) {
+                    if (x < row.size()) {
 
                         setTerminal(x + xOffset, y + yOffset, row.get(x));
 
@@ -461,8 +461,15 @@ public class GameClient {
 
     private void setTerminal (int x, int y, int character) {
 
-        terminal.set(y, x, new String(Character.toChars(character)), 7, 0,
-                EnumSet.noneOf(TerminalStyle.class), EnumSet.noneOf(CellWalls.class));
+        try { if (y < terminal.getHeight() && x < terminal.getWidth()) {
+
+            terminal.set(y, x, new String(Character.toChars(character)), 7, 0,
+                    EnumSet.noneOf(TerminalStyle.class), EnumSet.noneOf(CellWalls.class));
+
+        } } catch (IndexOutOfBoundsException e) {
+            // TODO this is not ideal, but it almost never happens, sooooo...
+            System.err.println("error in setTerminal(): " + e.toString());
+        }
 
     }
 
