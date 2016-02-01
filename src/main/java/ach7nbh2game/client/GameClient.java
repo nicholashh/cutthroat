@@ -161,9 +161,9 @@ public class GameClient {
     }
 
     public void updateLobbyList (
-            Map<Integer, String> lobbies,
-            Map<Integer, String> players,
-            Map<Integer, Set<Integer>> lobbyToPlayers) {
+            final Map<Integer, String> lobbies,
+            final Map<Integer, String> players,
+            final Map<Integer, Set<Integer>> lobbyToPlayers) {
 
         System.out.println("in " + name + ", updateLobbyList()");
         System.out.println("  lobbies = " + lobbies);
@@ -188,8 +188,8 @@ public class GameClient {
             String prompt = "";
             prompt += "Lobbies available for you to join:\n";
 
-            Set<Integer> myLobbies = new HashSet<Integer>();
-            Map<Integer, Integer> smallIntToLobbyID = new HashMap<Integer, Integer>();
+            final Set<Integer> myLobbies = new HashSet<Integer>();
+            final Map<Integer, Integer> smallIntToLobbyID = new HashMap<Integer, Integer>();
 
             if (lobbies.isEmpty()) {
 
@@ -223,51 +223,57 @@ public class GameClient {
             prompt += "To join an existing lobby, enter it's numeric ID.\n";
             prompt += "To start your game, re-enter your lobby's numeric ID.";
 
-            String action = askForThing(prompt, "");
+            final String promptFinal = prompt;
 
-            if (action.equals("")) {
+            (new Thread() { public void run() {
 
-                System.out.println("  requesting lobbies...");
+                String action = askForThing(promptFinal, "");
 
-            } else {
+                if (action.equals("")) {
 
-                if (isInteger(action)) {
-
-                    int smallInt = Integer.parseInt(action);
-                    if (smallIntToLobbyID.containsKey(smallInt)) {
-                        int lobbyID = smallIntToLobbyID.get(smallInt);
-
-                        if (myLobbies.contains(lobbyID)) {
-
-                            System.out.println("  starting game " + lobbyID + "...");
-                            server.startGame(lobbyID);
-
-                            return; // do not request lobbies
-
-                        } else {
-
-                            System.out.println("  joining lobby " + lobbyID + "...");
-                            server.joinLobby(clientID, lobbyID, playerInfo);
-
-                        }
-
-                    }
-
-                } else if (isAlphanumeric(action)) {
-
-                    System.out.println("  creating lobby " + action + "...");
-                    server.createNewLobby(clientID, action);
+                    System.out.println("  requesting lobbies...");
 
                 } else {
 
-                    System.out.println("  invalid input. trying again...");
-                    updateLobbyList(lobbies, players, lobbyToPlayers);
+                    if (isInteger(action)) {
+
+                        int smallInt = Integer.parseInt(action);
+                        if (smallIntToLobbyID.containsKey(smallInt)) {
+                            int lobbyID = smallIntToLobbyID.get(smallInt);
+
+                            if (myLobbies.contains(lobbyID)) {
+
+                                System.out.println("  starting game " + lobbyID + "...");
+                                server.startGame(lobbyID);
+
+                                return; // do not request lobbies
+
+                            } else {
+
+                                System.out.println("  joining lobby " + lobbyID + "...");
+                                server.joinLobby(clientID, lobbyID, playerInfo);
+
+                            }
+
+                        }
+
+                    } else if (isAlphanumeric(action)) {
+
+                        System.out.println("  creating lobby " + action + "...");
+                        server.createNewLobby(clientID, action);
+
+                    } else {
+
+                        System.out.println("  invalid input. trying again...");
+                        updateLobbyList(lobbies, players, lobbyToPlayers);
+
+                    }
 
                 }
 
-            }
+                server.requestLobbies(clientID);
 
-            server.requestLobbies(clientID);
+            }}).start();
 
         }
 
