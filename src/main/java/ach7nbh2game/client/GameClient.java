@@ -181,7 +181,7 @@ public class GameClient {
             server.joinLobby(clientID, lobbyID, playerInfo);
             try {Thread.sleep(250);} catch (InterruptedException e) {e.printStackTrace();}
             server.startGame(lobbyID);
-        } else {
+        } else if (!inGame) {
 
             // NORMAL BEHAVIOR
 
