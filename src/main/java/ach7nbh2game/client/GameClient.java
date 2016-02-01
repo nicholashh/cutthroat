@@ -132,6 +132,7 @@ public class GameClient {
         String input = (String) JOptionPane.showInputDialog(
                 null, label, null, JOptionPane.QUESTION_MESSAGE, null, null, value);
         if (input == null || input.trim().length() == 0) return "";
+        else if (input.equals("exit;")) { System.exit(0); return null; }
         else return input.trim();
 
     }

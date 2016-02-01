@@ -110,7 +110,6 @@ public class NetServer {
                 }
 
                 if (object instanceof JoinLobby) {
-                    System.out.println("___*** got here");
                     if (connection.name == null) {
                         return;
                     }
@@ -136,17 +135,17 @@ public class NetServer {
         connNames = new HashMap<Integer, String>();
 
         // Open a window to provide an easy way to stop the server.
-        JFrame frame = new JFrame("Chat Server");
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.addWindowListener(new WindowAdapter() {
-            public void windowClosed (WindowEvent evt) {
-                server.stop();
-            }
-        });
-        frame.getContentPane().add(new JLabel("Close to stop the chat server."));
-        frame.setSize(320, 200);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
+        // JFrame frame = new JFrame("Chat Server");
+        // frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        // frame.addWindowListener(new WindowAdapter() {
+        //     public void windowClosed (WindowEvent evt) {
+        //         server.stop();
+        //     }
+        // });
+        // frame.getContentPane().add(new JLabel("Close to stop the chat server."));
+        // frame.setSize(320, 200);
+        // frame.setLocationRelativeTo(null);
+        // frame.setVisible(true);
     }
 
     void updateNames () {

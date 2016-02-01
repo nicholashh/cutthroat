@@ -21,6 +21,7 @@ public class GameServer {
     public GameServer (boolean localGame) throws IOException {
 
         System.out.println("making GameServer");
+        System.out.println(localGame);
 
         if (!localGame) {
 

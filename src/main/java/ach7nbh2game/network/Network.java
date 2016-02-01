@@ -11,7 +11,8 @@ import java.util.*;
 
 // Holds things common to the client and the server, ostensibly all objects that will be sent between the two.
 public class Network {
-    static public final int port = 54555;
+    // static public final int port = 54555;
+    static public final int port = 18101;
 
     // Register objects to be sent over the network.
     static public void register (EndPoint endPoint) {
