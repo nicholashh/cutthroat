@@ -33,6 +33,11 @@ public class GameClient {
     private final int keyLeft = BlackenKeys.KEY_LEFT;
     private final int keyRight = BlackenKeys.KEY_RIGHT;
 
+    private final int gunUp = 'w';
+    private final int gunDown = 's';
+    private final int gunLeft = 'a';
+    private final int gunRight = 'd';
+
     public GameClient (String nameIn, boolean localGame, IClientToServer serverIn) throws IOException {
 
         System.out.println("GameClient");
@@ -326,6 +331,10 @@ public class GameClient {
                     case keyDown:  server.move(clientID, Constants.Directions.DOWN);  break;
                     case keyLeft:  server.move(clientID, Constants.Directions.LEFT);  break;
                     case keyRight: server.move(clientID, Constants.Directions.RIGHT); break;
+                    case gunUp:    server.move(clientID, Constants.Directions.GUN_UP);    break;
+                    case gunDown:  server.move(clientID, Constants.Directions.GUN_DOWN);  break;
+                    case gunLeft:  server.move(clientID, Constants.Directions.GUN_LEFT);  break;
+                    case gunRight: server.move(clientID, Constants.Directions.GUN_RIGHT); break;
                 }
 
             }

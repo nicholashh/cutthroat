@@ -10,6 +10,7 @@ public class Constants {
     public static final int mapHeight = 21;
     public static final int mapWidth = 61;
 
-    public enum Directions {UP, LEFT, DOWN, RIGHT}
+    // TODO this is awful, make this better after the demo :P
+    public enum Directions {UP, LEFT, DOWN, RIGHT, GUN_UP, GUN_LEFT, GUN_DOWN, GUN_RIGHT}
 
 }

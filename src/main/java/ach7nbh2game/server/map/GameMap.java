@@ -5,10 +5,7 @@ import ach7nbh2game.main.Constants;
 import ach7nbh2game.main.Constants.Directions;
 import ach7nbh2game.server.Game;
 import ach7nbh2game.server.GameState;
-import ach7nbh2game.server.map.components.Ground;
-import ach7nbh2game.server.map.components.IMapComponent;
-import ach7nbh2game.server.map.components.Player;
-import ach7nbh2game.server.map.components.Wall;
+import ach7nbh2game.server.map.components.*;
 import com.googlecode.blacken.grid.Grid;
 
 import java.util.*;
@@ -42,6 +39,7 @@ public class GameMap {
         rand = new Random();
 
         initMap();
+        moveBullets(); // TODO make more general
 
     }
 
@@ -257,6 +255,110 @@ public class GameMap {
 
     }
 
+    private Set<Bullet> bullets = new HashSet<Bullet>();
+
+    private void moveBullets () {
+
+        (new Thread() { public void run() {
+
+            while (true) {
+
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                // TODO need to think about how to deal with java.util.ConcurrentModificationException
+                Set<Bullet> bulletsCopy = new HashSet<Bullet>(bullets);
+                for (Bullet bullet : bulletsCopy) {
+
+                    System.out.println("found one bullet");
+
+                    // TODO don't repeat this logic
+                    int curX = bullet.getX();
+                    int curY = bullet.getY();
+                    int newX = curX;
+                    int newY = curY;
+                    switch (bullet.getDirection()) {
+                        case GUN_UP:
+                            newX = curX;
+                            newY = curY - 1;
+                            break;
+                        case GUN_DOWN:
+                            newX = curX;
+                            newY = curY + 1;
+                            break;
+                        case GUN_LEFT:
+                            newX = curX - 1;
+                            newY = curY;
+                            break;
+                        case GUN_RIGHT:
+                            newX = curX + 1;
+                            newY = curY;
+                            break;
+                    }
+
+                    System.out.println("cur: x = " + curX + ", y = " + curY);
+                    System.out.println("new: x = " + newX + ", y = " + newY);
+
+                    if (newX >= 0 && newY >= 0 && newX < width && newY < height) {
+
+                        IMapComponent thing = grid.get(newY, newX);
+
+                        if (thing instanceof Ground) {
+
+                            System.out.println("thing instanceof Ground");
+
+                            bullet.setY(newY);
+                            bullet.setX(newX);
+                            grid.set(newY, newX, bullet);
+                            grid.set(curY, curX, new Ground());
+
+                        } else if (thing instanceof Player) {
+
+                            System.out.println("thing instanceof Player");
+
+                            String bulletPlayerName = players.get(bullet.getOwner().getID()).getPlayerInfo().getUsername();
+                            String otherPlayerName = players.get(((Player) thing).getID()).getPlayerInfo().getUsername();
+
+                            int curScore = gameState.getScores().get(bulletPlayerName);
+                            gameState.updateScore(bulletPlayerName, curScore + 1);
+                            curScore = gameState.getScores().get(otherPlayerName);
+                            gameState.updateScore(otherPlayerName, curScore - 1);
+
+                            restartGame();
+
+                        } else if (thing instanceof Wall) {
+
+                            System.out.println("thing instanceof Wall");
+
+                            bullets.remove(bullet);
+                            grid.set(curY, curX, new Ground());
+
+                        }
+
+                    } else {
+
+                        System.out.println("went off the screen");
+
+                        bullets.remove(bullet);
+                        grid.set(curY, curX, new Ground());
+
+                    }
+
+                }
+
+                if (bullets.size() > 0) {
+                    game.broadcastState();
+                }
+
+            }
+
+        }}).start();
+
+    }
+
     public void move (int playerID, Directions direction) {
 
         if (players.containsKey(playerID)) {
@@ -265,21 +367,30 @@ public class GameMap {
             int curX = player.getX();
             int curY = player.getY();
 
+            boolean isGun = false;
             int newX = curX;
             int newY = curY;
             switch (direction) {
+                case GUN_UP:
+                    isGun = true;
                 case UP:
                     newX = curX;
                     newY = curY - 1;
                     break;
+                case GUN_DOWN:
+                    isGun = true;
                 case DOWN:
                     newX = curX;
                     newY = curY + 1;
                     break;
+                case GUN_LEFT:
+                    isGun = true;
                 case LEFT:
                     newX = curX - 1;
                     newY = curY;
                     break;
+                case GUN_RIGHT:
+                    isGun = true;
                 case RIGHT:
                     newX = curX + 1;
                     newY = curY;
@@ -291,28 +402,42 @@ public class GameMap {
 
                 if (thing instanceof Ground) {
 
-                    player.setY(newY);
-                    player.setX(newX);
-                    grid.set(newY, newX, player);
-                    grid.set(curY, curX, new Ground());
+                    if (isGun) {
+
+                        Bullet newBullet = new Bullet(newY, newX, direction, player);
+                        grid.set(newY, newX, newBullet);
+                        bullets.add(newBullet);
+
+                    } else {
+
+                        player.setY(newY);
+                        player.setX(newX);
+                        grid.set(newY, newX, player);
+                        grid.set(curY, curX, new Ground());
+
+                    }
 
                 } else if (thing instanceof Player) {
                     // TODO don't use instanceof
 
-                    String myPlayerName = players.get(playerID).getPlayerInfo().getUsername();
-                    String otherPlayerName = players.get(((Player)thing).getID()).getPlayerInfo().getUsername();
+                    if (!isGun) {
 
-                    String whoItIs = gameState.getWhoItIs();
-                    if (myPlayerName.equals(whoItIs) ||
-                            otherPlayerName.equals(whoItIs)) {
+                        String myPlayerName = players.get(playerID).getPlayerInfo().getUsername();
+                        String otherPlayerName = players.get(((Player) thing).getID()).getPlayerInfo().getUsername();
 
-                        int curScore = gameState.getScores().get(whoItIs);
-                        gameState.updateScore(whoItIs, curScore + 1);
-                        // TODO this should use a teamID instead of a string
+                        String whoItIs = gameState.getWhoItIs();
+                        if (myPlayerName.equals(whoItIs) ||
+                                otherPlayerName.equals(whoItIs)) {
 
-                        restartGame();
+                            int curScore = gameState.getScores().get(whoItIs);
+                            gameState.updateScore(whoItIs, curScore + 1);
+                            // TODO this should use a teamID instead of a string
 
-                    }
+                            restartGame();
+
+                        }
+
+                    } // TODO if is gun (should be fixed automatically with dispatchers)
 
                 }
 
@@ -336,6 +461,7 @@ public class GameMap {
         }
 
         players.clear();
+        bullets.clear();
 
         for (Integer playerID : allPlayers.keySet()) {
             addNewPlayer(playerID, allPlayers.get(playerID));

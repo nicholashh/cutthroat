@@ -4,7 +4,7 @@ public class Ground extends AMapComponent {
 
     public int getMapChar () {
 
-        return 46;
+        return ' ';
 
     }
 
