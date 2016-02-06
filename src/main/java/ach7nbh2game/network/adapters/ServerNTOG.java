@@ -4,6 +4,8 @@ import ach7nbh2game.client.PlayerInfo;
 import ach7nbh2game.main.Constants.Directions;
 import ach7nbh2game.server.GameServer;
 
+import java.io.IOException;
+
 public class ServerNTOG implements IClientToServer {
 
     private GameServer server;
@@ -30,6 +32,15 @@ public class ServerNTOG implements IClientToServer {
 
     public void move (int clientID, Directions direction) {
         server.move(clientID, direction);
+    }
+
+    public boolean isConnected () {
+        // no-op; this is only needed on the client's side
+        return true;
+    }
+
+    public void connectTo (String host, PlayerInfo info) throws IOException {
+        // no-op; this is only needed on the client's side
     }
 
 }

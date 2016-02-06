@@ -3,6 +3,8 @@ package ach7nbh2game.network.adapters;
 import ach7nbh2game.client.PlayerInfo;
 import ach7nbh2game.main.Constants.Directions;
 
+import java.io.IOException;
+
 public interface IClientToServer {
 
     /**
@@ -41,5 +43,9 @@ public interface IClientToServer {
      * this should be highly easily extensible
      */
     void move (int clientID, Directions direction);
+
+    boolean isConnected();
+
+    void connectTo(String host, PlayerInfo info) throws IOException;
 
 }

@@ -1,9 +1,6 @@
 package ach7nbh2game.main;
 
 import ach7nbh2game.client.GameClient;
-import ach7nbh2game.network.adapters.IClientToServer;
-import ach7nbh2game.network.adapters.LocalSTOC;
-import ach7nbh2game.network.adapters.ServerNTOG;
 import ach7nbh2game.server.GameServer;
 
 public class Main {
@@ -12,68 +9,40 @@ public class Main {
 
         try {
 
-            if (false) {
+            int numServers = 0;
+            int numClients = 0;
 
-                // TODO this should be more robust
+            int length = args.length;
 
-                GameServer gameServer = new GameServer(true);
-
-                IClientToServer adapter = new ServerNTOG(gameServer);
-                GameClient clientA = new GameClient("Client A", true, adapter);
-                GameClient clientB = new GameClient("Client B", true, adapter);
-
-                clientA.setClientID(0);
-                clientB.setClientID(1);
-
-                LocalSTOC serverAdapter = new LocalSTOC();
-                serverAdapter.addClient(clientA.getClientID(), clientA);
-                serverAdapter.addClient(clientB.getClientID(), clientB);
-                gameServer.installAdapter(serverAdapter);
-
-                clientA.runTest();
-                clientB.runTest();
-
+            if (length == 0) {
+                numServers = 0;
+                numClients = 1;
+            } else if (length > 1) {
+                printUsage();
+                System.exit(-1);
             } else {
 
-                int numServers = 0;
-                int numClients = 0;
+                System.out.println("running Main with arguments " + args[0]);
 
-                int length = args.length;
-
-                System.out.print(length + " args\n");
-                System.out.print("args = ");
-                for (String arg : args) {
-                    System.out.print(" " + arg);
-                }
-                System.out.print("\n");
-
-                if (length == 0) {
-                    numServers = 0;
-                    numClients = 1;
-                } else if (length > 1) {
-                    printUsage();
-                    System.exit(-1);
-                } else {
-                    for (char c : args[0].toCharArray()) {
-                        if (c == 's') {
-                            numServers = 1; // TODO ports?
-                        } else if (c == 'c') {
-                            numClients = 1; // TODO window focus?
-                        } else if (c != '-') {
-                            printUsage();
-                            System.exit(-1);
-                        }
+                for (char c : args[0].toCharArray()) {
+                    if (c == 's') {
+                        numServers = 1; // TODO ports?
+                    } else if (c == 'c') {
+                        numClients = 1; // TODO window focus?
+                    } else if (c != '-') {
+                        printUsage();
+                        System.exit(-1);
                     }
                 }
+            }
 
-                for (int i = 0; i < numServers; i++) {
-                    new GameServer(false);
-                }
+            for (int i = 0; i < numServers; i++) {
+                new GameServer(false);
+            }
 
-                for (int i = 0; i < numClients; i++) {
-                    new GameClient("Game Client", false, null);
-                }
-
+            for (int i = 0; i < numClients; i++) {
+                GameClient newClient = new GameClient();
+                newClient.start();
             }
 
         } catch (Exception e) {

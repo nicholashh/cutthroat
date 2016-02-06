@@ -20,8 +20,7 @@ public class GameServer {
 
     public GameServer (boolean localGame) throws IOException {
 
-        System.out.println("making GameServer");
-        System.out.println(localGame);
+        System.out.println("making new GameServer...");
 
         if (!localGame) {
 
@@ -38,16 +37,6 @@ public class GameServer {
         games = new HashMap<Integer, Game>();
         playerToGame = new HashMap<Integer, Integer>();
         rand = new Random();
-
-    }
-
-    public void installAdapter (IServerToClient adapter) {
-
-        System.out.println("in GameServer, installAdapter()");
-
-        network = adapter;
-
-        // TODO need to add safety for what if installAdapter() is never called?
 
     }
 

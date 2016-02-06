@@ -12,15 +12,35 @@ import java.io.IOException;
 
 public class NetClient {
 
-    Client client;
-    String name;
-    String host;
-    IServerToClient adapter;
+    private Client client;
+    private String name;
+    private String host;
+    private IServerToClient adapter;
+    private boolean isConnected = false;
 
-    public NetClient (String hostn, final PlayerInfo info) throws IOException {
+    public NetClient (IServerToClient adapterIn) {
+
+        System.out.println("making new NetClient...");
+
+        adapter = adapterIn;
+
+    }
+
+    public void start () {
+
+        System.out.println("starting the NetClient!");
+
+    }
+
+    public boolean isConnected() {
+        return isConnected;
+    }
+
+    public void connectTo (String hostIn, final PlayerInfo info) throws IOException {
+
         client = new Client(16384, 16384);
         client.start();
-        host = hostn;
+        host = hostIn;
         name = info.getUsername();
 
         // For consistency, the classes to be sent over the network are
@@ -61,40 +81,14 @@ public class NetClient {
             public void disconnected (Connection connection) {
                 //TODO
             }
+
         });
-
-        // Request the host from the user.
-        // String input = (String)JOptionPane.showInputDialog(null, "Host:", "Connect to chat server", JOptionPane
-        //         .QUESTION_MESSAGE,
-        //         null, null, "localhost");
-        // if (input == null || input.trim().length() == 0) System.exit(1);
-        // final String host = input.trim();
-
-        // Request the user's name.
-        // input = (String)JOptionPane.showInputDialog(null, "Name:", "Connect to chat server", JOptionPane
-        //         .QUESTION_MESSAGE, null,
-        //         null, "Test");
-        // if (input == null || input.trim().length() == 0) System.exit(1);
-        // name = input.trim();
-
-        // We'll do the connect on a new thread so the ChatFrame can show a progress bar.
-        // Connecting to localhost is usually so fast you won't see the progress bar.
-        // new Thread("Connect") {
-        //     public void run () {
-
-                //try {
-                //    client.connect(5000, host, Network.port);
-                //    // Server communication after connection can go here, or in Listener#connected().
-                //} catch (IOException ex) {
-                //    ex.printStackTrace();
-                //    System.exit(1);
-                //}
-
-        //     }
-        // }.start();
 
         // just let this throw the exception if the connection fails
         client.connect(5000, host, Network.port);
+
+        // will only happen if no exception is thrown
+        isConnected = true;
 
     }
 
@@ -132,5 +126,4 @@ public class NetClient {
         mvMsg.direction = direction;
         client.sendTCP(mvMsg);
     }
-
 }
