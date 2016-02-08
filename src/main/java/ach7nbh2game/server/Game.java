@@ -8,10 +8,10 @@ import java.util.Map;
 
 public class Game extends APlayerContainer {
 
-    private GameServer server;
+    private ServerModel server;
     private GameMap map;
 
-    public Game (GameServer serverIn, Map<Integer, PlayerInfo> playerIDsIn, int height, int width) {
+    public Game (ServerModel serverIn, Map<Integer, PlayerInfo> playerIDsIn, int height, int width) {
 
         server = serverIn;
         playerInfo = playerIDsIn;

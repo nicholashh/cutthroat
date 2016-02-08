@@ -2,18 +2,14 @@ package ach7nbh2game.network;
 
 // TODO: These were in the example, just to open a window with "the server is running"
 // idk how you want to handle the server's text GUI
-import ach7nbh2game.main.Constants.*;
+import ach7nbh2game.main.Constants.Directions;
+import ach7nbh2game.network.Network.*;
 import ach7nbh2game.network.adapters.IClientToServer;
 import ach7nbh2game.server.GameState;
-import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import ach7nbh2game.network.Network.*;
-import com.esotericsoftware.minlog.Log;
+import com.esotericsoftware.kryonet.Server;
 
-import javax.swing.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,11 +17,23 @@ import java.util.Map;
 import java.util.Set;
 
 public class NetServer {
+
     Server server;
     IClientToServer adapter;
     HashMap<Integer, String> connNames;
 
-    public NetServer() throws IOException {
+    public NetServer (IClientToServer adapterIn) {
+
+        System.out.println("making new NetServer...");
+
+        adapter = adapterIn;
+
+    }
+
+    public void start () throws IOException {
+
+        System.out.println("starting the NetServer!");
+
         server = new Server() {
             protected Connection newConnection () {
                 // By providing our own connection implementation, we can store per
@@ -163,10 +171,6 @@ public class NetServer {
         // server.sendToAllTCP(updateNames);
     }
 
-    public void installAdapter(IClientToServer newadapter) {
-        adapter = newadapter;
-    }
-
     public void enterGame(int clientID) {
         EnterGame start = new EnterGame();
         start.clientID = clientID;
@@ -195,8 +199,4 @@ public class NetServer {
         public String name;
     }
 
-    public static void main (String[] args) throws IOException {
-        Log.set(Log.LEVEL_DEBUG);
-        new NetServer();
-    }
 }

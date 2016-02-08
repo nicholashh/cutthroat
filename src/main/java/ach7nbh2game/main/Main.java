@@ -37,7 +37,8 @@ public class Main {
             }
 
             for (int i = 0; i < numServers; i++) {
-                new GameServer(false);
+                GameServer newServer = new GameServer();
+                newServer.start();
             }
 
             for (int i = 0; i < numClients; i++) {

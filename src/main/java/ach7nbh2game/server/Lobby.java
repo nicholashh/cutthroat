@@ -8,14 +8,14 @@ import java.util.HashMap;
 public class Lobby extends APlayerContainer {
 
     // TODO state design pattern for lobbies -> games
-    private GameServer server;
+    private ServerModel server;
 
     private String name;
 
     private int gameMapHeight;
     private int gameMapWidth;
 
-    public Lobby (GameServer serverIn, String nameIn) {
+    public Lobby (ServerModel serverIn, String nameIn) {
 
         server = serverIn;
 
