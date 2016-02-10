@@ -21,6 +21,7 @@ public abstract class Client extends AMapComponent {
     public abstract void sendGameState (GameState state);
 
     public Client (ClientID idIn, PlayerInfo infoIn) {
+        super("Client(" + infoIn.getUsername() + ")");
         id = idIn;
         info = infoIn;
     }
@@ -109,20 +110,11 @@ public abstract class Client extends AMapComponent {
 
         if (thing instanceof Ground) {
 
-            //if (isGun) {
-            //
-            //    Bullet newBullet = new Bullet(newY, newX, direction, player);
-            //    grid.set(newY, newX, newBullet);
-            //    bullets.add(newBullet);
-            //
-            //} else {
+            Logger.Singleton.log(this, 0,
+                    "moving from (" + x + "," + y + ") " +
+                            "to (" + newX + "," + newY + ")");
 
-                setY(newY);
-                setX(newX);
-                map.set(newY, newX, this);
-                map.set(y, x, new Ground());
-
-            //}
+            map.swap(this, thing);
 
         //} else if (thing instanceof Player) {
         //    // TODO don't use instanceof

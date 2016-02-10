@@ -13,15 +13,10 @@ import java.util.Random;
 
 public class GameMap {
 
-    private int height;
-    private int width;
+    private int height, width;
+    private Grid<IMapComponent> grid;
 
-    private Grid<IMapComponent> grid = new Grid<IMapComponent>(new Ground(), height, width);
     private Random rand = new Random();
-
-    //private int levelID;
-    //
-    //private Thread timer;
 
     public GameMap (int heightIn, int widthIn) {
 
@@ -31,33 +26,68 @@ public class GameMap {
         grid = new Grid<IMapComponent>(new Ground(), height, width);
 
         initMap();
-        //moveBullets(); // TODO make more general
 
     }
 
     public IMapComponent get (int y, int x) {
+
+        //Logger.Singleton.log(this, 0, "get:");
+        //Logger.Singleton.log(this, 1, "x = " + x);
+        //Logger.Singleton.log(this, 1, "y = " + y);
+
         if (x >= 0 && y >= 0 && x < width && y < height) {
             return grid.get(y, x);
         } else {
-            // TODO should this be better?
+            // TODO this should be more graceful
             return null;
         }
+
     }
 
     public void set (int y, int x, IMapComponent thing) {
+
+        //Logger.Singleton.log(this, 0, "set:");
+        //Logger.Singleton.log(this, 1, "x = " + x);
+        //Logger.Singleton.log(this, 1, "y = " + y);
+        //Logger.Singleton.log(this, 1, "thing = " + thing);
+
         if (x >= 0 && y >= 0 && x < width && y < height) {
             grid.set(y, x, thing);
+            thing.setY(y);
+            thing.setX(x);
         } else {
-            // TODO should this be better?
+            // TODO this should be more graceful
         }
+
+    }
+
+    public void swap (IMapComponent thing1, IMapComponent thing2) {
+
+        Logger.Singleton.log(this, 0, "swap:");
+        Logger.Singleton.log(this, 1, "thing1 = " + thing1);
+        Logger.Singleton.log(this, 1, "thing2 = " + thing2);
+
+        int thing1y = thing1.getY();
+        int thing1x = thing1.getX();
+        int thing2y = thing2.getY();
+        int thing2x = thing2.getX();
+
+        set(thing1y, thing1x, thing2);
+        set(thing2y, thing2x, thing1);
+
     }
 
     private void initMap () {
 
         Logger.Singleton.log(this, 0, "initMap:");
 
-        // TODO should we remove this clear?
         grid.clear();
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                Ground newGround = new Ground();
+                newGround.placeOnMap(this, x, y);
+            }
+        }
 
         generateTerrain();
 
@@ -101,7 +131,7 @@ public class GameMap {
 
                     for (int y = yMid - thingHalfHeight; y < yMid + thingHalfHeight; y++) {
                         for (int x = xMid - thingHalfWidth; x < xMid + thingHalfWidth; x++) {
-                            if (!(grid.get(y, x) instanceof Ground)) {
+                            if (!(get(y, x) instanceof Ground)) {
                                 overlapping = true;
                             }
                         }
@@ -111,16 +141,17 @@ public class GameMap {
 
                         for (int y = yMid - thingHalfHeight; y < yMid + thingHalfHeight; y++) {
                             for (int x = xMid - thingHalfWidth; x < xMid + thingHalfWidth; x++) {
-                                grid.set(y, x, new Wall());
+                                Wall newWall = new Wall();
+                                newWall.placeOnMap(this, x, y);
                             }
                         }
 
-                        System.out.println("  factor = " + factor + ", which one = " + j + ", SUCCESS");
+                        Logger.Singleton.log(this, 1, "factor = " + factor + ", which one = " + j + ", SUCCESS");
                         break;
 
                     } else if (attempts > maxNumAttempts) {
 
-                        System.out.println("  factor = " + factor + ", which one = " + j + ", overlapping");
+                        Logger.Singleton.log(this, 1, "factor = " + factor + ", which one = " + j + ", overlapping");
                         break;
 
                     } else {
@@ -230,7 +261,7 @@ public class GameMap {
         for (int j = yLow; j < yHigh; j++) {
             ArrayList<Integer> newRow = new ArrayList<Integer>();
             for (int i = xLow; i < xHigh; i++) {
-                newRow.add(grid.get(j, i).getMapChar());
+                newRow.add(get(j, i).getMapChar());
             }
             mapView.add(newRow);
         }
@@ -239,13 +270,18 @@ public class GameMap {
     }
 
     public Coordinate getRandomLocationWithA (Class aThingLikeThis) {
+
+        Logger.Singleton.log(this, 0, "getRandomLocationWithA:");
+        Logger.Singleton.log(this, 1, "aThingLikeThis = " + aThingLikeThis.getSimpleName());
+
         while (true) {
             int y = rand.nextInt(height);
             int x = rand.nextInt(width);
-            if (grid.get(y, x).getClass() == aThingLikeThis) {
+            if (get(y, x).getClass() == aThingLikeThis) {
                 return new Coordinate(y, x);
             }
         }
+
     }
 
     // TODO awful, remove asap

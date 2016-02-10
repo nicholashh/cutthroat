@@ -123,7 +123,7 @@ public class ClientModel {
 
                     if (action.equals("")) {
 
-                        System.out.println("  requesting lobbies...");
+                        Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: requesting lobbies...");
 
                     } else {
 
@@ -135,14 +135,16 @@ public class ClientModel {
 
                                 if (myLobbies.contains(lobbyID)) {
 
-                                    System.out.println("  starting game " + lobbyID + "...");
+                                    Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: starting game " + lobbyID + "...");
+
                                     server.startGame(lobbyID);
 
                                     return; // do not request lobbies
 
                                 } else {
 
-                                    System.out.println("  joining lobby " + lobbyID + "...");
+                                    Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: joining lobby " + lobbyID + "...");
+
                                     server.joinLobby(playerInfo.getID(), lobbyID, playerInfo);
 
                                 }
@@ -151,12 +153,14 @@ public class ClientModel {
 
                         } else if (Utility.isAlphanumeric(action)) {
 
-                            System.out.println("  creating lobby " + action + "...");
+                            Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: creating lobby " + action + "...");
+
                             server.createNewLobby(playerInfo.getID(), action);
 
                         } else {
 
-                            System.out.println("  invalid input. trying again...");
+                            Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: invalid input. trying again...");
+
                             updateLobbyList(lobbies, players, lobbyToPlayers);
 
                         }

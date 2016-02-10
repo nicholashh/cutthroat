@@ -1,9 +1,10 @@
 package ach7nbh2game.server;
 
 import ach7nbh2game.main.Constants;
+import ach7nbh2game.server.map.AMapModifier;
 import ach7nbh2game.server.map.GameMap;
 import ach7nbh2game.server.map.components.Client;
-import ach7nbh2game.server.map.components.Wall;
+import ach7nbh2game.server.map.components.Ground;
 import ach7nbh2game.util.ClientID;
 import ach7nbh2game.util.Coordinate;
 import ach7nbh2game.util.GameID;
@@ -13,18 +14,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-// TODO: move map to AGameModifier
-// AGameModifier (has a map) -> AMapComponent
-// Game -> AGameModifier
-public class Game {
+public class Game extends AMapModifier {
 
     private final GameID id;
     private String name;
 
     private boolean gameHasStarted = false;
-
-    // TODO
-    private GameMap map;
 
     private Map<ClientID, Client> players = new HashMap<ClientID, Client>();
 
@@ -75,12 +70,14 @@ public class Game {
 
         gameHasStarted = true;
 
-        map = new GameMap(Constants.mapHeight, Constants.mapWidth);
+        GameMap map = new GameMap(Constants.mapHeight, Constants.mapWidth);
 
         for (Client client : players.values()) {
-            Coordinate coord = map.getRandomLocationWithA(Wall.class);
+            Coordinate coord = map.getRandomLocationWithA(Ground.class);
             client.placeOnMap(map, coord.x, coord.y);
         }
+
+        setMap(map);
 
         for (Client client : players.values()) {
             client.enterGame();
