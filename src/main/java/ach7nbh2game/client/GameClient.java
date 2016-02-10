@@ -6,7 +6,7 @@ import ach7nbh2game.main.Constants;
 import ach7nbh2game.network.NetClient;
 import ach7nbh2game.network.adapters.IClientToServer;
 import ach7nbh2game.network.adapters.IServerToClient;
-import ach7nbh2game.server.GameState;
+import ach7nbh2game.network.packets.GameState;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,8 +54,8 @@ public class GameClient {
                 network.joinLobby(lobbyID, info);
             }
 
-            public void startGame(int lobbyID) {
-                network.startGame(lobbyID);
+            public void startGame(int clientID) {
+                network.startGame(clientID);
             }
 
             public void move(int clientID, Constants.Directions direction) {

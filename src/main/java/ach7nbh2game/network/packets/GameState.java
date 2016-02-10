@@ -1,4 +1,4 @@
-package ach7nbh2game.server;
+package ach7nbh2game.network.packets;
 
 import java.util.ArrayList;
 import java.util.HashMap;

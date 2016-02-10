@@ -1,4 +1,4 @@
-package ach7nbh2game.main;
+package ach7nbh2game.util;
 
 public class Utility {
 

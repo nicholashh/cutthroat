@@ -1,8 +1,13 @@
 package ach7nbh2game.server;
 
 import ach7nbh2game.client.PlayerInfo;
-import ach7nbh2game.main.Constants;
 import ach7nbh2game.network.adapters.IServerToClient;
+import ach7nbh2game.network.packets.ClientAction;
+import ach7nbh2game.network.packets.GameState;
+import ach7nbh2game.server.map.components.Client;
+import ach7nbh2game.util.ClientID;
+import ach7nbh2game.util.GameID;
+import ach7nbh2game.util.Logger;
 
 import java.util.*;
 
@@ -10,23 +15,15 @@ public class ServerModel {
 
     private IServerToClient network;
 
-    private Map<Integer, String> players;
-    private Map<Integer, Lobby> lobbies;
-    private Map<Integer, Game> games;
-    private Map<Integer, Integer> playerToGame;
-    private Random rand;
+    private Map<ClientID, Client> clients = new HashMap<ClientID, Client>();
+    private Map<GameID, Game> games = new HashMap<GameID, Game>();
+    private Random rand = new Random();
 
     public ServerModel (IServerToClient networkIn) {
 
         System.out.println("making new ServerModel...");
 
         network = networkIn;
-
-        players = new HashMap<Integer, String>();
-        lobbies = new HashMap<Integer, Lobby>();
-        games = new HashMap<Integer, Game>();
-        playerToGame = new HashMap<Integer, Integer>();
-        rand = new Random();
 
     }
 
@@ -36,116 +33,136 @@ public class ServerModel {
 
     }
 
-    public void createNewLobby (int clientID, String name) {
+    public void createNewGameLobby (String name) {
 
-        System.out.println("in GameServer, createNewLobby()");
-        System.out.println("  clientID = " + clientID);
-        System.out.println("  name = " + name);
+        Logger.Singleton.log(this, 0, "createNewGameLobby:");
+        Logger.Singleton.log(this, 1, "name = " + name);
 
-        int newLobbyID = rand.nextInt();
-        Lobby newLobby = new Lobby(this, name);
-        lobbies.put(newLobbyID, newLobby);
+        GameID id = new GameID(rand.nextInt());
+        Game newLobby = new Game(id, name);
+        games.put(id, newLobby);
 
     }
 
-    public void joinLobby (int clientID, int lobbyID, PlayerInfo clientInfo) {
+    public void joinLobby (final ClientID clientID, GameID gameID, PlayerInfo clientInfo) {
 
-        System.out.println("in GameServer, joinLobby()");
-        System.out.println("  clientID = " + clientID);
-        System.out.println("  lobbyID = " + lobbyID);
+        Logger.Singleton.log(this, 0, "joinLobby:");
+        Logger.Singleton.log(this, 1, "clientID = " + clientID);
+        Logger.Singleton.log(this, 1, "gameID = " + gameID);
+        Logger.Singleton.log(this, 1, "clientInfo = " + clientInfo);
 
-        if (lobbies.containsKey(lobbyID)) {
-            lobbies.get(lobbyID).join(clientID, clientInfo);
-            players.put(clientID, clientInfo.getUsername());
+        // if this is a valid GameID
+        if (games.containsKey(gameID)) {
+            // if this is the first time this client has connected
+            if (!clients.containsKey(clientID)) {
+                // create a new client object for them
+                clients.put(clientID, new Client(clientID, clientInfo) {
+                    // use this object's closure over the network object
+                    // to send new game state information to the client
+                    @Override public void enterGame() {
+                        Logger.Singleton.log(this, 0, "enterGame:");
+                        network.enterGame(clientID.value);
+                    }
+                    @Override public void announceLobbies() {
+                        Logger.Singleton.log(this, 0, "announceLobbies:");
+                        requestLobbies(clientID);
+                    }
+                    @Override public void sendGameState(GameState state) {
+                        Logger.Singleton.log(this, 0, "sendGameState:");
+                        Logger.Singleton.log(this, 1, "state = " + state);
+                        network.updateGameState(clientID.value, state);
+                    }
+                });
+            }
+            // add this client to the requested game
+            clients.get(clientID).setGame(games.get(gameID));
         } else {
-            // TODO
+            // TODO: game does not exist
+            System.out.println("    this game does not exist");
         }
 
     }
 
-    private Map<Integer, String> getLobbyToName () {
+    public void requestLobbies (ClientID id) {
+
+        Logger.Singleton.log(this, 0, "requestLobbies:");
+        Logger.Singleton.log(this, 1, "id = " + id);
+
+        network.announceLobbies(id.value, makeGameToNameMap(),
+                makePlayerToNameMap(), makeGameToPlayersMap());
+
+    }
+
+    private Map<Integer, String> makeGameToNameMap () {
 
         Map<Integer, String> toReturn = new HashMap<Integer, String>();
 
-        for (Map.Entry<Integer, Lobby> entry : lobbies.entrySet()) {
-            toReturn.put(entry.getKey(), entry.getValue().getName());
+        for (Game game : games.values()) {
+            toReturn.put(game.getID().value, game.getName());
         }
 
         return toReturn;
 
     }
 
-    private Map<Integer, Set<Integer>> getLobbyToPlayers () {
+    private Map<Integer, String> makePlayerToNameMap () {
+
+        Map<Integer, String> toReturn = new HashMap<Integer, String>();
+
+        for (Client client : clients.values()) {
+            toReturn.put(client.getID().value, client.getName());
+        }
+
+        return toReturn;
+
+    }
+
+    private Map<Integer, Set<Integer>> makeGameToPlayersMap () {
 
         Map<Integer, Set<Integer>> toReturn = new HashMap<Integer, Set<Integer>>();
 
-        for (Map.Entry<Integer, Lobby> entry : lobbies.entrySet()) {
-            Set<Integer> toAdd = new HashSet<Integer>(entry.getValue().getPlayers());
-            toReturn.put(entry.getKey(), toAdd);
+        for (Game game : games.values()) {
+
+            Set<Integer> toAdd = new HashSet<Integer>();
+            for (Client client : game.getPlayers()) {
+                toAdd.add(client.getID().value);
+            }
+
+            toReturn.put(game.getID().value, toAdd);
+
         }
 
         return toReturn;
 
     }
 
-    public void requestLobbies (int clientID) {
+    public void startGame (ClientID id) {
 
-        System.out.println("in GameServer, requestLobbies()");
-        System.out.println("  clientID = " + clientID);
+        Logger.Singleton.log(this, 0, "startGame:");
+        Logger.Singleton.log(this, 1, "id = " + id);
 
-        network.announceLobbies(clientID, getLobbyToName(), players, getLobbyToPlayers());
-
-    }
-
-    public void startGame (int lobbyID) {
-
-        System.out.println("in GameServer, startGame()");
-        System.out.println("  lobbyID = " + lobbyID);
-
-        if (lobbies.containsKey(lobbyID)) {
-
-            Lobby lobby = lobbies.get(lobbyID);
-            Game newGame = lobby.startGame();
-            lobbies.remove(lobbyID);
-            games.put(lobbyID, newGame);
-
-            for (int playerID : newGame.getPlayerInfo().keySet()) {
-                network.enterGame(playerID);
-                playerToGame.put(playerID, lobbyID);
-            }
-
-            sendGameState(newGame);
-
+        // if this client has already connected
+        if (clients.containsKey(id)) {
+            // start that client's game
+            clients.get(id).getGame().start();
         } else {
-            // TODO
+            // TODO: this client has never connected before
         }
 
     }
 
-    public void move (int clientID, Constants.Directions direction) {
+    public void respondToClientAction (ClientID id, ClientAction action) {
 
-        System.out.println("in GameServer, move()");
-        System.out.println("  clientID = " + clientID);
-        System.out.println("  direction = " + direction);
+        Logger.Singleton.log(this, 0, "respondToClientAction:");
+        Logger.Singleton.log(this, 1, "id = " + id);
+        Logger.Singleton.log(this, 1, "action = " + action);
 
-        if (playerToGame.containsKey(clientID)) {
-
-            Game game = games.get(playerToGame.get(clientID));
-
-            game.move(clientID, direction);
-
-            sendGameState(game);
-
+        // if this client has already connected
+        if (clients.containsKey(id)) {
+            // start that client's game
+            clients.get(id).perform(action);
         } else {
-            // TODO
-        }
-
-    }
-
-    protected void sendGameState (Game game) {
-
-        for (int playerID : game.getPlayerInfo().keySet()) {
-            network.updateGameState(playerID, game.getGameState(playerID));
+            // TODO: this client has never connected before
         }
 
     }

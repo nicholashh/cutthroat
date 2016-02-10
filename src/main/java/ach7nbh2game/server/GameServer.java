@@ -5,6 +5,10 @@ import ach7nbh2game.main.Constants;
 import ach7nbh2game.network.NetServer;
 import ach7nbh2game.network.adapters.IClientToServer;
 import ach7nbh2game.network.adapters.IServerToClient;
+import ach7nbh2game.network.packets.ClientAction;
+import ach7nbh2game.network.packets.GameState;
+import ach7nbh2game.util.ClientID;
+import ach7nbh2game.util.GameID;
 
 import java.io.IOException;
 import java.util.Map;
@@ -22,23 +26,23 @@ public class GameServer {
         network = new NetServer(new IClientToServer () {
 
             public void createNewLobby(int clientID, String name) {
-                model.createNewLobby(clientID, name);
+                model.createNewGameLobby(name);
             }
 
             public void requestLobbies(int clientID) {
-                model.requestLobbies(clientID);
+                model.requestLobbies(new ClientID(clientID));
             }
 
             public void joinLobby(int clientID, int lobbyID, PlayerInfo info) {
-                model.joinLobby(clientID, lobbyID, info);
+                model.joinLobby(new ClientID(clientID), new GameID(lobbyID), info);
             }
 
-            public void startGame(int lobbyID) {
-                model.startGame(lobbyID);
+            public void startGame(int clientID) {
+                model.startGame(new ClientID(clientID));
             }
 
             public void move(int clientID, Constants.Directions direction) {
-                model.move(clientID, direction);
+                model.respondToClientAction(new ClientID(clientID), new ClientAction(direction));
             }
 
             public boolean isConnected() {

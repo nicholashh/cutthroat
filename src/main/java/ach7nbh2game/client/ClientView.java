@@ -2,7 +2,8 @@ package ach7nbh2game.client;
 
 import ach7nbh2game.client.adapters.IViewToModel;
 import ach7nbh2game.main.Constants;
-import ach7nbh2game.server.GameState;
+import ach7nbh2game.network.packets.GameState;
+import ach7nbh2game.util.Logger;
 import com.googlecode.blacken.colors.ColorNames;
 import com.googlecode.blacken.colors.ColorPalette;
 import com.googlecode.blacken.swing.SwingTerminal;
@@ -48,7 +49,7 @@ public class ClientView {
 
     private void setUpTerminal () {
 
-        System.out.println("setUpTerminal()");
+        Logger.Singleton.log(this, 0, "setUpTerminal:");
 
         TerminalInterface newTerminal = new SwingTerminal();
         newTerminal.init("Andrew Nick Game",
@@ -66,6 +67,9 @@ public class ClientView {
     }
 
     public void showMap(ArrayList<ArrayList<Integer>> map) {
+
+        Logger.Singleton.log(this, 0, "showMap:");
+        Logger.Singleton.log(this, 1, "map = " + map);
 
         showSomething(map,
                 0, Constants.clientMapHeight, 0,
@@ -95,6 +99,9 @@ public class ClientView {
     }
 
     public void showScores(GameState gameState) {
+
+        Logger.Singleton.log(this, 0, "showScores:");
+        Logger.Singleton.log(this, 1, "gameState = " + gameState);
 
         Map<String, Integer> scores = gameState.getScores();
 
@@ -137,6 +144,10 @@ public class ClientView {
     }
 
     private void showMessage (ArrayList<ArrayList<Integer>> message, boolean shouldClear) {
+
+        Logger.Singleton.log(this, 0, "showMessage:");
+        Logger.Singleton.log(this, 1, "message = " + message);
+        Logger.Singleton.log(this, 1, "shouldClear = " + shouldClear);
 
         if (shouldClear) {
             clearMessageArea();
@@ -182,7 +193,7 @@ public class ClientView {
 
     private void beginAcceptingCharacterInput() {
 
-        System.out.println("beginAcceptingCharacterInput()");
+        Logger.Singleton.log(this, 0, "beginAcceptingCharacterInput:");
 
         (new Thread() { public void run () {
 

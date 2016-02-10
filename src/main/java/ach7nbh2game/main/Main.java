@@ -2,6 +2,7 @@ package ach7nbh2game.main;
 
 import ach7nbh2game.client.GameClient;
 import ach7nbh2game.server.GameServer;
+import com.esotericsoftware.minlog.Log;
 
 public class Main {
 
@@ -37,11 +38,13 @@ public class Main {
             }
 
             for (int i = 0; i < numServers; i++) {
+                Log.set(Log.LEVEL_DEBUG);
                 GameServer newServer = new GameServer();
                 newServer.start();
             }
 
             for (int i = 0; i < numClients; i++) {
+                Log.set(Log.LEVEL_DEBUG);
                 GameClient newClient = new GameClient();
                 newClient.start();
             }

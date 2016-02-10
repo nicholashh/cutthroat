@@ -38,7 +38,7 @@ public class NetClient {
 
     public void connectTo (String hostIn, final PlayerInfo info) throws IOException {
 
-        client = new Client(16384, 16384);
+        client = new Client(1048676, 1048676);
         client.start();
         host = hostIn;
         name = info.getUsername();

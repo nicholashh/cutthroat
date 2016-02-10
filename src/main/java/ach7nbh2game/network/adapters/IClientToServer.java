@@ -35,7 +35,7 @@ public interface IClientToServer {
      * turn a lobby into a game
      * again, how to identify lobby? your choice
      */
-    void startGame (int lobbyID);
+    void startGame (int clientID);
 
     /**
      * move up, down, left, right, pick up things, etc

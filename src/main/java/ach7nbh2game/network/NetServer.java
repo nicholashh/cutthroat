@@ -5,7 +5,7 @@ package ach7nbh2game.network;
 import ach7nbh2game.main.Constants.Directions;
 import ach7nbh2game.network.Network.*;
 import ach7nbh2game.network.adapters.IClientToServer;
-import ach7nbh2game.server.GameState;
+import ach7nbh2game.network.packets.GameState;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
@@ -34,7 +34,7 @@ public class NetServer {
 
         System.out.println("starting the NetServer!");
 
-        server = new Server() {
+        server = new Server(1048676, 1048676) {
             protected Connection newConnection () {
                 // By providing our own connection implementation, we can store per
                 // connection state without a connection ID to state look up.
@@ -80,8 +80,10 @@ public class NetServer {
                     if (connection.name == null) {
                         return;
                     }
-                    StartGame start = (StartGame) object;
-                    adapter.startGame(start.lobbyID);
+                    //StartGame start = (StartGame) object;
+                    // TODO I changed this so that we just drop the lobbyID
+                    // but obviously this should be made more efficient
+                    adapter.startGame(connection.getID());
                     return;
                 }
 

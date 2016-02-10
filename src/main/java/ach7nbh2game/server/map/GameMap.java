@@ -1,62 +1,69 @@
 package ach7nbh2game.server.map;
 
-import ach7nbh2game.client.PlayerInfo;
 import ach7nbh2game.main.Constants;
-import ach7nbh2game.main.Constants.Directions;
-import ach7nbh2game.server.Game;
-import ach7nbh2game.server.GameState;
-import ach7nbh2game.server.map.components.*;
+import ach7nbh2game.server.map.components.Ground;
+import ach7nbh2game.server.map.components.IMapComponent;
+import ach7nbh2game.server.map.components.Wall;
+import ach7nbh2game.util.Coordinate;
+import ach7nbh2game.util.Logger;
 import com.googlecode.blacken.grid.Grid;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class GameMap {
 
-    private Game game;
-
-    private Grid<IMapComponent> grid;
     private int height;
     private int width;
 
-    private Map<Integer, Player> players;
-    private GameState gameState;
+    private Grid<IMapComponent> grid = new Grid<IMapComponent>(new Ground(), height, width);
+    private Random rand = new Random();
 
-    private Random rand;
+    //private int levelID;
+    //
+    //private Thread timer;
 
-    private int levelID;
+    public GameMap (int heightIn, int widthIn) {
 
-    private Thread timer;
-
-    public GameMap (Game gameIn, int heightIn, int widthIn) {
-
-        game = gameIn;
         height = heightIn;
         width = widthIn;
 
         grid = new Grid<IMapComponent>(new Ground(), height, width);
-        players = new HashMap<Integer, Player>();
-        gameState = new GameState();
-        rand = new Random();
 
         initMap();
-        moveBullets(); // TODO make more general
+        //moveBullets(); // TODO make more general
 
     }
 
-    public GameState getGameState () {
-        return gameState;
+    public IMapComponent get (int y, int x) {
+        if (x >= 0 && y >= 0 && x < width && y < height) {
+            return grid.get(y, x);
+        } else {
+            // TODO should this be better?
+            return null;
+        }
+    }
+
+    public void set (int y, int x, IMapComponent thing) {
+        if (x >= 0 && y >= 0 && x < width && y < height) {
+            grid.set(y, x, thing);
+        } else {
+            // TODO should this be better?
+        }
     }
 
     private void initMap () {
 
+        Logger.Singleton.log(this, 0, "initMap:");
+
+        // TODO should we remove this clear?
         grid.clear();
+
         generateTerrain();
 
     }
 
     private void generateTerrain () {
-
-        System.out.println("in Map, generateTerrain()");
 
         ArrayList<Double> factors = new ArrayList<Double>();
         factors.add(0.4);
@@ -130,37 +137,11 @@ public class GameMap {
 
     }
 
-    public void addNewPlayer (int playerID, PlayerInfo info) {
+    public ArrayList<ArrayList<Integer>> getPerspectiveFrom (int x, int y) {
 
-        while (true) {
-
-            int y = rand.nextInt(height);
-            int x = rand.nextInt(width);
-
-            if (grid.get(y, x) instanceof Ground) {
-
-                Player newPlayer = new Player(playerID, info, y, x);
-                players.put(playerID, newPlayer);
-                grid.set(y, x, newPlayer);
-
-                String username = newPlayer.getPlayerInfo().getUsername();
-                if (!gameState.getScores().containsKey(username)) {
-                    gameState.updateScore(username, 0);
-                }
-
-                break;
-
-            }
-
-        }
-
-    }
-
-    public ArrayList<ArrayList<Integer>> getMapView (int playerID) {
-
-        Player player = players.get(playerID);
-        int x = player.getX();
-        int y = player.getY();
+        Logger.Singleton.log(this, 0, "getPerspectiveFrom:");
+        Logger.Singleton.log(this, 1, "x = " + x);
+        Logger.Singleton.log(this, 1, "y = " + y);
 
         //System.out.println("in Map, getMapView()");
         //System.out.println("  height = " + height);
@@ -231,17 +212,19 @@ public class GameMap {
 
         }
 
-        return getMapView(xLow, yLow, xHigh, yHigh);
+        return getPerspective(xLow, yLow, xHigh, yHigh);
 
     }
 
-    private ArrayList<ArrayList<Integer>> getMapView (int xLow, int yLow, int xHigh, int yHigh) {
+    private ArrayList<ArrayList<Integer>> getPerspective (int xLow, int yLow, int xHigh, int yHigh) {
 
         //System.out.println("  final values");
         //System.out.println("    xLow = " + xLow);
         //System.out.println("    xHigh = " + xHigh);
         //System.out.println("    yLow = " + yLow);
         //System.out.println("    yHigh = " + yHigh);
+
+        // TODO: add safety here
 
         ArrayList<ArrayList<Integer>> mapView = new ArrayList<ArrayList<Integer>>();
         for (int j = yLow; j < yHigh; j++) {
@@ -255,290 +238,217 @@ public class GameMap {
 
     }
 
-    private Set<Bullet> bullets = new HashSet<Bullet>();
-
-    private void moveBullets () {
-
-        (new Thread() { public void run() {
-
-            while (true) {
-
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                // TODO need to think about how to deal with java.util.ConcurrentModificationException
-                Set<Bullet> bulletsCopy = new HashSet<Bullet>(bullets);
-                for (Bullet bullet : bulletsCopy) {
-
-                    System.out.println("found one bullet");
-
-                    // TODO don't repeat this logic
-                    int curX = bullet.getX();
-                    int curY = bullet.getY();
-                    int newX = curX;
-                    int newY = curY;
-                    switch (bullet.getDirection()) {
-                        case GUN_UP:
-                            newX = curX;
-                            newY = curY - 1;
-                            break;
-                        case GUN_DOWN:
-                            newX = curX;
-                            newY = curY + 1;
-                            break;
-                        case GUN_LEFT:
-                            newX = curX - 1;
-                            newY = curY;
-                            break;
-                        case GUN_RIGHT:
-                            newX = curX + 1;
-                            newY = curY;
-                            break;
-                    }
-
-                    System.out.println("cur: x = " + curX + ", y = " + curY);
-                    System.out.println("new: x = " + newX + ", y = " + newY);
-
-                    if (newX >= 0 && newY >= 0 && newX < width && newY < height) {
-
-                        IMapComponent thing = grid.get(newY, newX);
-
-                        if (thing instanceof Ground) {
-
-                            System.out.println("thing instanceof Ground");
-
-                            bullet.setY(newY);
-                            bullet.setX(newX);
-                            grid.set(newY, newX, bullet);
-                            grid.set(curY, curX, new Ground());
-
-                        } else if (thing instanceof Player) {
-
-                            System.out.println("thing instanceof Player");
-
-                            String bulletPlayerName = players.get(bullet.getOwner().getID()).getPlayerInfo().getUsername();
-                            String otherPlayerName = players.get(((Player) thing).getID()).getPlayerInfo().getUsername();
-
-                            int curScore = gameState.getScores().get(bulletPlayerName);
-                            gameState.updateScore(bulletPlayerName, curScore + 1);
-                            curScore = gameState.getScores().get(otherPlayerName);
-                            gameState.updateScore(otherPlayerName, curScore - 1);
-
-                            restartGame();
-
-                        } else if (thing instanceof Wall) {
-
-                            System.out.println("thing instanceof Wall");
-
-                            bullets.remove(bullet);
-                            grid.set(curY, curX, new Ground());
-
-                        }
-
-                    } else {
-
-                        System.out.println("went off the screen");
-
-                        bullets.remove(bullet);
-                        grid.set(curY, curX, new Ground());
-
-                    }
-
-                }
-
-                if (bullets.size() > 0) {
-                    game.broadcastState();
-                }
-
+    public Coordinate getRandomLocationWithA (Class aThingLikeThis) {
+        while (true) {
+            int y = rand.nextInt(height);
+            int x = rand.nextInt(width);
+            if (grid.get(y, x).getClass() == aThingLikeThis) {
+                return new Coordinate(y, x);
             }
-
-        }}).start();
-
-    }
-
-    public void move (int playerID, Directions direction) {
-
-        if (players.containsKey(playerID)) {
-
-            Player player = players.get(playerID);
-            int curX = player.getX();
-            int curY = player.getY();
-
-            boolean isGun = false;
-            int newX = curX;
-            int newY = curY;
-            switch (direction) {
-                case GUN_UP:
-                    isGun = true;
-                case UP:
-                    newX = curX;
-                    newY = curY - 1;
-                    break;
-                case GUN_DOWN:
-                    isGun = true;
-                case DOWN:
-                    newX = curX;
-                    newY = curY + 1;
-                    break;
-                case GUN_LEFT:
-                    isGun = true;
-                case LEFT:
-                    newX = curX - 1;
-                    newY = curY;
-                    break;
-                case GUN_RIGHT:
-                    isGun = true;
-                case RIGHT:
-                    newX = curX + 1;
-                    newY = curY;
-                    break;
-            }
-
-            if (newX >= 0 && newY >= 0 && newX < width && newY < height) {
-                IMapComponent thing = grid.get(newY, newX);
-
-                if (thing instanceof Ground) {
-
-                    if (isGun) {
-
-                        Bullet newBullet = new Bullet(newY, newX, direction, player);
-                        grid.set(newY, newX, newBullet);
-                        bullets.add(newBullet);
-
-                    } else {
-
-                        player.setY(newY);
-                        player.setX(newX);
-                        grid.set(newY, newX, player);
-                        grid.set(curY, curX, new Ground());
-
-                    }
-
-                } else if (thing instanceof Player) {
-                    // TODO don't use instanceof
-
-                    if (!isGun) {
-
-                        String myPlayerName = players.get(playerID).getPlayerInfo().getUsername();
-                        String otherPlayerName = players.get(((Player) thing).getID()).getPlayerInfo().getUsername();
-
-                        String whoItIs = gameState.getWhoItIs();
-                        if (myPlayerName.equals(whoItIs) ||
-                                otherPlayerName.equals(whoItIs)) {
-
-                            int curScore = gameState.getScores().get(whoItIs);
-                            gameState.updateScore(whoItIs, curScore + 1);
-                            // TODO this should use a teamID instead of a string
-
-                            restartGame();
-
-                        }
-
-                    } // TODO if is gun (should be fixed automatically with dispatchers)
-
-                }
-
-            }
-
         }
-
     }
 
-    private void restartGame () {
+    // TODO awful, remove asap
+    //private Set<Bullet> bullets = new HashSet<Bullet>();
 
-        System.out.println("in Map, restartGame()");
+    // TODO awful, remove asap
+    //private void moveBullets () {
+    //
+    //    (new Thread() { public void run() {
+    //
+    //        while (true) {
+    //
+    //            try {
+    //                Thread.sleep(100);
+    //            } catch (InterruptedException e) {
+    //                e.printStackTrace();
+    //            }
+    //
+    //            // TODO need to think about how to deal with java.util.ConcurrentModificationException
+    //            Set<Bullet> bulletsCopy = new HashSet<Bullet>(bullets);
+    //            for (Bullet bullet : bulletsCopy) {
+    //
+    //                System.out.println("found one bullet");
+    //
+    //                // TODO don't repeat this logic
+    //                int curX = bullet.getX();
+    //                int curY = bullet.getY();
+    //                int newX = curX;
+    //                int newY = curY;
+    //                switch (bullet.getDirection()) {
+    //                    case GUN_UP:
+    //                        newX = curX;
+    //                        newY = curY - 1;
+    //                        break;
+    //                    case GUN_DOWN:
+    //                        newX = curX;
+    //                        newY = curY + 1;
+    //                        break;
+    //                    case GUN_LEFT:
+    //                        newX = curX - 1;
+    //                        newY = curY;
+    //                        break;
+    //                    case GUN_RIGHT:
+    //                        newX = curX + 1;
+    //                        newY = curY;
+    //                        break;
+    //                }
+    //
+    //                System.out.println("cur: x = " + curX + ", y = " + curY);
+    //                System.out.println("new: x = " + newX + ", y = " + newY);
+    //
+    //                if (newX >= 0 && newY >= 0 && newX < width && newY < height) {
+    //
+    //                    IMapComponent thing = grid.get(newY, newX);
+    //
+    //                    if (thing instanceof Ground) {
+    //
+    //                        System.out.println("thing instanceof Ground");
+    //
+    //                        bullet.setY(newY);
+    //                        bullet.setX(newX);
+    //                        grid.set(newY, newX, bullet);
+    //                        grid.set(curY, curX, new Ground());
+    //
+    //                    } else if (thing instanceof Player) {
+    //
+    //                        System.out.println("thing instanceof Player");
+    //
+    //                        String bulletPlayerName = players.get(bullet.getOwner().getID()).getPlayerInfo().getUsername();
+    //                        String otherPlayerName = players.get(((Player) thing).getID()).getPlayerInfo().getUsername();
+    //
+    //                        int curScore = gameState.getScores().get(bulletPlayerName);
+    //                        gameState.updateScore(bulletPlayerName, curScore + 1);
+    //                        curScore = gameState.getScores().get(otherPlayerName);
+    //                        gameState.updateScore(otherPlayerName, curScore - 1);
+    //
+    //                        restartGame();
+    //
+    //                    } else if (thing instanceof Wall) {
+    //
+    //                        System.out.println("thing instanceof Wall");
+    //
+    //                        bullets.remove(bullet);
+    //                        grid.set(curY, curX, new Ground());
+    //
+    //                    }
+    //
+    //                } else {
+    //
+    //                    System.out.println("went off the screen");
+    //
+    //                    bullets.remove(bullet);
+    //                    grid.set(curY, curX, new Ground());
+    //
+    //                }
+    //
+    //            }
+    //
+    //            if (bullets.size() > 0) {
+    //                game.broadcastState();
+    //            }
+    //
+    //        }
+    //
+    //    }}).start();
+    //
+    //}
 
-        timer.interrupt();
+    // TODO awful, remove asap
+    //private void restartGame () {
+    //
+    //    System.out.println("in Map, restartGame()");
+    //
+    //    //timer.interrupt();
+    //
+    //    initMap();
+    //
+    //    Map<Integer, PlayerInfo> allPlayers = new HashMap<Integer, PlayerInfo>();
+    //    for (Integer playerID : players.keySet()) {
+    //        allPlayers.put(playerID, players.get(playerID).getPlayerInfo());
+    //    }
+    //
+    //    //players.clear();
+    //    //bullets.clear();
+    //
+    //    for (Integer playerID : allPlayers.keySet()) {
+    //        addNewPlayer(playerID, allPlayers.get(playerID));
+    //    }
+    //
+    //    startLevel();
+    //
+    //}
 
-        initMap();
-
-        Map<Integer, PlayerInfo> allPlayers = new HashMap<Integer, PlayerInfo>();
-        for (Integer playerID : players.keySet()) {
-            allPlayers.put(playerID, players.get(playerID).getPlayerInfo());
-        }
-
-        players.clear();
-        bullets.clear();
-
-        for (Integer playerID : allPlayers.keySet()) {
-            addNewPlayer(playerID, allPlayers.get(playerID));
-        }
-
-        startLevel();
-
-    }
-
-    public void startLevel () {
-
-        levelID = rand.nextInt();
-
-        Object[] values = players.values().toArray();
-        Player randPlayer = (Player) values[rand.nextInt(values.length)];
-        gameState.setWhoItIs(randPlayer.getPlayerInfo().getUsername());
-        // for (Player player : players.values()) {
-        //     if (i == index) {
-        //         gameState.setWhoItIs(player.getPlayerInfo().getUsername());
-        //         break;
-        //     } else {
-        //         i++;
-        //     }
-        // }
-
-        timer = new Thread(new Runnable() {
-            public void run() {
-                try {
-                    while (!Thread.currentThread().isInterrupted()) {
-
-                        final int thisLevelID = levelID;
-                        for (int i = 30; i >= 0; i--) {
-                            if (thisLevelID == levelID) {
-                                gameState.setTimeRemaining(i);
-                                game.broadcastState();
-                            }
-                            Thread.sleep(1000);
-                        }
-
-                        String whoItIs = gameState.getWhoItIs();
-                        for (Player player : players.values()) {
-                            String playerName = player.getPlayerInfo().getUsername();
-                            if (!playerName.equals(whoItIs)) {
-                                int curScore = gameState.getScores().get(playerName);
-                                gameState.updateScore(playerName, curScore + 1);
-                            }
-                        }
-
-                        restartGame();
-
-                    }
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-        });
-        timer.start();
-
-        // (new Thread () { public void run () {
-
-        //     final int thisLevelID = levelID;
-        //     for (int i = 30; i >= 0; i--) {
-
-        //         if (thisLevelID == levelID) {
-        //             gameState.setTimeRemaining(i);
-        //             game.broadcastState();
-        //         }
-
-        //         try {
-        //             this.sleep(1000);
-        //         } catch (Exception e) {
-        //         }
-
-        //     }
-
-        // }}).start();
-
-    }
+    // TODO awful, remove asap
+    //public void startLevel () {
+    //
+    //    //levelID = rand.nextInt();
+    //
+    //    Object[] values = players.values().toArray();
+    //    Player randPlayer = (Player) values[rand.nextInt(values.length)];
+    //    gameState.setWhoItIs(randPlayer.getPlayerInfo().getUsername());
+    //
+    //    // for (Player player : players.values()) {
+    //    //     if (i == index) {
+    //    //         gameState.setWhoItIs(player.getPlayerInfo().getUsername());
+    //    //         break;
+    //    //     } else {
+    //    //         i++;
+    //    //     }
+    //    // }
+    //
+    //    //timer = new Thread(new Runnable() {
+    //    //    public void run() {
+    //    //        try {
+    //    //            while (!Thread.currentThread().isInterrupted()) {
+    //    //
+    //    //                final int thisLevelID = levelID;
+    //    //                for (int i = 30; i >= 0; i--) {
+    //    //                    if (thisLevelID == levelID) {
+    //    //                        gameState.setTimeRemaining(i);
+    //    //                        game.broadcastState();
+    //    //                    }
+    //    //                    Thread.sleep(1000);
+    //    //                }
+    //    //
+    //    //                String whoItIs = gameState.getWhoItIs();
+    //    //                for (Player player : players.values()) {
+    //    //                    String playerName = player.getPlayerInfo().getUsername();
+    //    //                    if (!playerName.equals(whoItIs)) {
+    //    //                        int curScore = gameState.getScores().get(playerName);
+    //    //                        gameState.updateScore(playerName, curScore + 1);
+    //    //                    }
+    //    //                }
+    //    //
+    //    //                restartGame();
+    //    //
+    //    //            }
+    //    //        } catch (InterruptedException e) {
+    //    //            Thread.currentThread().interrupt();
+    //    //        }
+    //    //    }
+    //    //});
+    //    //timer.start();
+    //
+    //    // (new Thread () { public void run () {
+    //
+    //    //     final int thisLevelID = levelID;
+    //    //     for (int i = 30; i >= 0; i--) {
+    //
+    //    //         if (thisLevelID == levelID) {
+    //    //             gameState.setTimeRemaining(i);
+    //    //             game.broadcastState();
+    //    //         }
+    //
+    //    //         try {
+    //    //             this.sleep(1000);
+    //    //         } catch (Exception e) {
+    //    //         }
+    //
+    //    //     }
+    //
+    //    // }}).start();
+    //
+    //}
 
 }

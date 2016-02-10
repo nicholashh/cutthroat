@@ -1,6 +1,6 @@
 package ach7nbh2game.client;
 
-import ach7nbh2game.main.Utility;
+import ach7nbh2game.util.Utility;
 
 import javax.swing.*;
 

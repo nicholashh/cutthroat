@@ -2,7 +2,7 @@ package ach7nbh2game.network;
 
 import ach7nbh2game.client.PlayerInfo;
 import ach7nbh2game.main.Constants.Directions;
-import ach7nbh2game.server.GameState;
+import ach7nbh2game.network.packets.GameState;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
 

@@ -2,9 +2,10 @@ package ach7nbh2game.client;
 
 import ach7nbh2game.client.adapters.IModelToView;
 import ach7nbh2game.main.Constants;
-import ach7nbh2game.main.Utility;
+import ach7nbh2game.util.Logger;
+import ach7nbh2game.util.Utility;
 import ach7nbh2game.network.adapters.IClientToServer;
-import ach7nbh2game.server.GameState;
+import ach7nbh2game.network.packets.GameState;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -53,6 +54,9 @@ public class ClientModel {
 
     public void updateState (GameState state) {
 
+        Logger.Singleton.log(this, 0, "updateState:");
+        Logger.Singleton.log(this, 1, "state = " + state);
+
         view.showMap(state.getFrame());
         view.showScores(state);
 
@@ -62,6 +66,11 @@ public class ClientModel {
             final Map<Integer, String> lobbies,
             final Map<Integer, String> players,
             final Map<Integer, Set<Integer>> lobbyToPlayers) {
+
+        Logger.Singleton.log(this, 0, "updateLobbyList:");
+        Logger.Singleton.log(this, 1, "lobbies = " + lobbies);
+        Logger.Singleton.log(this, 1, "players = " + players);
+        Logger.Singleton.log(this, 1, "lobbyToPlayers = " + lobbyToPlayers);
 
         if (!inGame) {
 
@@ -165,7 +174,7 @@ public class ClientModel {
 
     public void enterGame () {
 
-        System.out.println("enterGame()");
+        Logger.Singleton.log(this, 0, "enterGame:");
 
         if (!inGame) {
             inGame = true;
@@ -176,7 +185,14 @@ public class ClientModel {
     }
 
     public void move(Constants.Directions direction) {
-        server.move(playerInfo.getID(), direction);
+
+        Logger.Singleton.log(this, 0, "move:");
+        Logger.Singleton.log(this, 1, "direction = " + direction);
+
+        if (inGame) {
+            server.move(playerInfo.getID(), direction);
+        }
+
     }
 
 }

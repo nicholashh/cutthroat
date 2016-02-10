@@ -1,6 +1,6 @@
 package ach7nbh2game.network.adapters;
 
-import ach7nbh2game.server.GameState;
+import ach7nbh2game.network.packets.GameState;
 
 import java.util.Map;
 import java.util.Set;
