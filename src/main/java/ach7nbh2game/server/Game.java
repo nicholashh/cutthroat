@@ -5,14 +5,13 @@ import ach7nbh2game.server.map.AMapModifier;
 import ach7nbh2game.server.map.GameMap;
 import ach7nbh2game.server.map.components.Client;
 import ach7nbh2game.server.map.components.Ground;
-import ach7nbh2game.util.ClientID;
-import ach7nbh2game.util.Coordinate;
-import ach7nbh2game.util.GameID;
-import ach7nbh2game.util.Logger;
+import ach7nbh2game.util.*;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class Game extends AMapModifier {
 
@@ -21,11 +20,20 @@ public class Game extends AMapModifier {
 
     private boolean gameHasStarted = false;
 
+    private int tick = 0;
+    private Thread timerThread = null;
+    private ConcurrentMap<CallbackRegistration,Object> callbackRegistrations =
+            new ConcurrentHashMap<CallbackRegistration,Object>();
+
     private Map<ClientID, Client> players = new HashMap<ClientID, Client>();
 
     public Game (GameID idIn, String nameIn) {
+
         id = idIn;
         name = nameIn;
+
+        startGameTimer();
+
     }
 
     public GameID getID () {
@@ -106,24 +114,66 @@ public class Game extends AMapModifier {
 
     }
 
-    // TODO: game timer ticking
+    // SERVER CLOCK CODE (tick... tick... tick...)
 
-    //private int tick;
-    //private void incTick () {
-    //
-    //    tick++;
-    //
-    //    // or a for through registrations
-    //    if (tick % 5) {
-    //        ...
-    //    }
-    //
-    //}
-    //async {
-    //    while (true) {
-    //        Thread.sleep();
-    //        incTick();
-    //    }
-    //}
+    public void requestCallback (CallbackRequest request) {
+
+        Logger.Singleton.log(this, 0, "requestCallback:");
+        Logger.Singleton.log(this, 1, "request = " + request);
+
+        callbackRegistrations.put(new CallbackRegistration(tick, request), new Object());
+
+    }
+
+    private void incTick () {
+
+        Logger.Singleton.log(this, 0, "tick! " + tick + "->" + (tick + 1));
+
+        tick += 1;
+
+        for (CallbackRegistration registration : callbackRegistrations.keySet()) {
+            if ((tick - registration.startTime) % registration.frequency == 0) {
+                if (registration.run()) {
+                    callbackRegistrations.remove(registration);
+                }
+            }
+        }
+
+    }
+
+    private void startGameTimer () {
+
+        Logger.Singleton.log(this, 0, "startGameTimer");
+
+        if (timerThread == null) {
+
+            Logger.Singleton.log(this, 1, "making thread...");
+
+            timerThread = new Thread () { public void run () {
+
+                try {
+
+                    while (true) {
+
+                        Thread.sleep(100);
+                        incTick();
+
+                    }
+
+                } catch (Exception e) {
+                    // TODO
+                }
+
+            }};
+
+            Logger.Singleton.log(this, 1, "starting thread...");
+
+            timerThread.start();
+
+        } else {
+            // TODO
+        }
+
+    }
 
 }

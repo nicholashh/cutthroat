@@ -151,7 +151,7 @@ public class ServerModel {
 
     }
 
-    public void respondToClientAction (ClientID id, ClientAction action) {
+    public void respondToClientAction (ClientID id, final ClientAction action) {
 
         Logger.Singleton.log(this, 0, "respondToClientAction:");
         Logger.Singleton.log(this, 1, "id = " + id);
@@ -159,8 +159,13 @@ public class ServerModel {
 
         // if this client has already connected
         if (clients.containsKey(id)) {
-            // start that client's game
-            clients.get(id).perform(action);
+            final Client client = clients.get(id);
+
+            // wait till the server is ready
+            client.getGame().requestCallback(
+                    new CallbackRequest(
+                            () -> client.perform(action) ));
+
         } else {
             // TODO: this client has never connected before
         }
