@@ -1,8 +1,5 @@
 package ach7nbh2game.network;
 
-// TODO: These were in the example, just to open a window with "the server is running"
-// idk how you want to handle the server's text GUI
-import ach7nbh2game.main.Constants.Direction;
 import ach7nbh2game.network.Network.*;
 import ach7nbh2game.network.adapters.IClientToServer;
 import ach7nbh2game.network.packets.ClientAction;
@@ -12,7 +9,6 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -68,12 +64,6 @@ public class NetServer {
                     }
                     // Store the name on the connection.
                     connection.name = name;
-                    // Send a "connected" message to everyone except the new client.
-                    // TextMessage nameMsg = new TextMessage();
-                    // nameMsg.msg = name + " connected.";
-                    // server.sendToAllExceptTCP(connection.getID(), nameMsg);
-                    // Send everyone a new list of connection names.
-                    // updateNames();
                     return;
                 }
 
@@ -130,48 +120,13 @@ public class NetServer {
                 }
             }
 
-            public void disconnected (Connection c) {
-                GameConnection connection = (GameConnection)c;
-                if (connection.name != null) {
-                    // Announce to everyone that someone (with a registered name) has left.
-                    // TextMessage tmsg = new TextMessage();
-                    // tmsg.msg = connection.name + " disconnected.";
-                    // server.sendToAllTCP(tmsg);
-                    // updateNames();
-                }
-            }
+            public void disconnected (Connection c) {}
+
         });
         server.bind(Network.port);
         server.start();
-        connNames = new HashMap<Integer, String>();
+        connNames = new HashMap<>();
 
-        // Open a window to provide an easy way to stop the server.
-        // JFrame frame = new JFrame("Chat Server");
-        // frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        // frame.addWindowListener(new WindowAdapter() {
-        //     public void windowClosed (WindowEvent evt) {
-        //         server.stop();
-        //     }
-        // });
-        // frame.getContentPane().add(new JLabel("Close to stop the chat server."));
-        // frame.setSize(320, 200);
-        // frame.setLocationRelativeTo(null);
-        // frame.setVisible(true);
-    }
-
-    void updateNames () {
-        // Collect the names for each connection.
-        Connection[] connections = server.getConnections();
-        ArrayList names = new ArrayList(connections.length);
-        for (int i = connections.length - 1; i >= 0; i--) {
-            GameConnection connection = (GameConnection)connections[i];
-            names.add(connection.name);
-        }
-
-        // Send the names to everyone.
-        // UpdateNames updateNames = new UpdateNames();
-        // updateNames.names = (String[])names.toArray(new String[names.size()]);
-        // server.sendToAllTCP(updateNames);
     }
 
     public void enterGame(int clientID) {

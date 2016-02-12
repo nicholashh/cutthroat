@@ -4,6 +4,8 @@ import ach7nbh2game.main.Constants.Direction;
 import ach7nbh2game.server.CallbackRequest;
 import ach7nbh2game.server.map.GameMap;
 
+import java.util.Random;
+
 public class Bullet extends AMapComponent {
 
     private Direction direction;
@@ -12,6 +14,8 @@ public class Bullet extends AMapComponent {
     private CallbackRequest callbackRequest;
 
     private int mapChar = 46;
+
+    private Random rand = new Random();
 
     public Bullet (Direction directionIn, Client ownerIn) {
         super("Bullet");
@@ -38,19 +42,20 @@ public class Bullet extends AMapComponent {
             // TODO
 
             // just for now...
-            mapChar = 167;
+            mapChar = 42;
+            boolean which = rand.nextBoolean();
             switch (direction) {
                 case UP:
-                    direction = Direction.LEFT;
+                    direction = which ? Direction.LEFT : Direction.RIGHT;
                     break;
                 case LEFT:
-                    direction = Direction.DOWN;
+                    direction = which ? Direction.DOWN : Direction.UP;
                     break;
                 case DOWN:
-                    direction = Direction.RIGHT;
+                    direction = which ? Direction.RIGHT : Direction.LEFT;
                     break;
                 case RIGHT:
-                    direction = Direction.UP;
+                    direction = which ? Direction.UP : Direction.DOWN;
                     break;
             }
 
@@ -58,6 +63,14 @@ public class Bullet extends AMapComponent {
 
             removeFromMap();
             callbackRequest.cancel();
+
+            if (thing instanceof Bullet) {
+
+                Bullet other = (Bullet)thing;
+                other.removeFromMap();
+                other.callbackRequest.cancel();
+
+            }
 
         }
 
