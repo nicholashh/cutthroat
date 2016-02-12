@@ -2,9 +2,10 @@ package ach7nbh2game.network;
 
 // TODO: These were in the example, just to open a window with "the server is running"
 // idk how you want to handle the server's text GUI
-import ach7nbh2game.main.Constants.Directions;
+import ach7nbh2game.main.Constants.Direction;
 import ach7nbh2game.network.Network.*;
 import ach7nbh2game.network.adapters.IClientToServer;
+import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.network.packets.GameState;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -87,18 +88,18 @@ public class NetServer {
                     return;
                 }
 
-                if (object instanceof MoveMessage) {
+                if (object instanceof ActionMessage) {
                     // Ignore the object if a client tries to chat before registering a name.
                     if (connection.name == null) {
                         return;
                     }
-                    MoveMessage mvMsg = (MoveMessage) object;
+                    ActionMessage actMsg = (ActionMessage) object;
                     // Ignore the object if the chat message is invalid.
-                    Directions message = mvMsg.direction;
-                    if (message == null) {
+                    ClientAction action = actMsg.action;
+                    if (action == null) {
                         return;
                     }
-                    adapter.move(connection.getID(), message);
+                    adapter.action(connection.getID(), action);
                     return;
                 }
 

@@ -1,7 +1,8 @@
 package ach7nbh2game.network;
 
 import ach7nbh2game.client.PlayerInfo;
-import ach7nbh2game.main.Constants.Directions;
+import ach7nbh2game.main.Constants.*;
+import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.network.packets.GameState;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
@@ -18,20 +19,22 @@ public class Network {
     static public void register (EndPoint endPoint) {
         Kryo kryo = endPoint.getKryo();
         kryo.register(String[].class, 3381);
-        kryo.register(Directions.class, 3382);
+        kryo.register(ClientAction.class, 3382);
         kryo.register(GameState.class, 3383);
         kryo.register(Map.class, 3384);
         kryo.register(HashMap.class, 3385);
         kryo.register(ArrayList.class, 3386);
         kryo.register(PlayerInfo.class, 3387);
         kryo.register(HashSet.class, 3388);
+        kryo.register(Direction.class, 3389);
+        kryo.register(Action.class, 3390);
 
         kryo.register(RegisterMessage.class, 3370);
         kryo.register(TextMessage.class, 3371);
         kryo.register(StartGame.class, 3372);
         kryo.register(EnterGame.class, 3373);
         kryo.register(UpdateNames.class, 3374);
-        kryo.register(MoveMessage.class, 3375);
+        kryo.register(ActionMessage.class, 3375);
         kryo.register(DiffMessage.class, 3376);
         kryo.register(CreateLobby.class, 3377);
         kryo.register(ReqLobbies.class, 13378);
@@ -59,8 +62,8 @@ public class Network {
         public String[] names;
     }
 
-    static public class MoveMessage {
-        public Directions direction;
+    static public class ActionMessage {
+        public ClientAction action;
     }
 
     static public class DiffMessage {

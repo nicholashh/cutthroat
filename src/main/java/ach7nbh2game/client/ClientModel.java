@@ -1,7 +1,8 @@
 package ach7nbh2game.client;
 
 import ach7nbh2game.client.adapters.IModelToView;
-import ach7nbh2game.main.Constants;
+import ach7nbh2game.main.Constants.*;
+import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.util.Logger;
 import ach7nbh2game.util.Utility;
 import ach7nbh2game.network.adapters.IClientToServer;
@@ -188,7 +189,7 @@ public class ClientModel {
 
     }
 
-    public void move(Constants.Directions direction) {
+    public void move(Direction direction) {
 
         Logger.Singleton.log(this, 0, "move:");
         Logger.Singleton.log(this, 1, "direction = " + direction);
@@ -197,6 +198,12 @@ public class ClientModel {
             server.move(playerInfo.getID(), direction);
         }
 
+    }
+
+    public void action(ClientAction actionIn) {
+        if (inGame) {
+            server.action(playerInfo.getID(), actionIn);
+        }
     }
 
 }

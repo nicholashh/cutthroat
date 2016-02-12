@@ -1,9 +1,10 @@
 package ach7nbh2game.network;
 
 import ach7nbh2game.client.PlayerInfo;
-import ach7nbh2game.main.Constants.Directions;
+import ach7nbh2game.main.Constants.Direction;
 import ach7nbh2game.network.Network.*;
 import ach7nbh2game.network.adapters.IServerToClient;
+import ach7nbh2game.network.packets.ClientAction;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -121,9 +122,16 @@ public class NetClient {
         client.sendTCP(start);
     }
 
-    public void move(Directions direction) {
-        MoveMessage mvMsg = new MoveMessage();
-        mvMsg.direction = direction;
-        client.sendTCP(mvMsg);
+    // public void move(Direction direction) {
+    //     ActionMessage mvMsg = new ActionMessage();
+    //     mvMsg.direction = direction;
+    //     client.sendTCP(mvMsg);
+    // }
+
+    public void action(ClientAction actionIn) {
+        ActionMessage actMsg = new ActionMessage();
+        actMsg.action = actionIn;
+        client.sendTCP(actMsg);
+        System.out.println("___*** got here");
     }
 }

@@ -11,6 +11,8 @@ public class Constants {
     public static final int mapWidth = 61;
 
     // TODO this is awful, make this better after the demo :P
-    public enum Directions {UP, LEFT, DOWN, RIGHT, GUN_UP, GUN_LEFT, GUN_DOWN, GUN_RIGHT}
+    public enum Direction {UP, LEFT, DOWN, RIGHT}
+
+    public enum Action {MOVE, SHOOT}
 
 }

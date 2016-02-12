@@ -2,11 +2,13 @@ package ach7nbh2game.client;
 
 import ach7nbh2game.client.adapters.IModelToView;
 import ach7nbh2game.client.adapters.IViewToModel;
-import ach7nbh2game.main.Constants;
+import ach7nbh2game.main.Constants.*;
 import ach7nbh2game.network.NetClient;
 import ach7nbh2game.network.adapters.IClientToServer;
 import ach7nbh2game.network.adapters.IServerToClient;
+import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.network.packets.GameState;
+import com.esotericsoftware.minlog.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,13 +17,15 @@ import java.util.Set;
 
 public class GameClient {
 
-    NetClient network;
-    ClientModel model;
-    ClientView view;
+    private NetClient network;
+    private ClientModel model;
+    private ClientView view;
 
     public GameClient () {
 
         System.out.println("making new GameClient...");
+
+        Log.set(Log.LEVEL_DEBUG);
 
         network = new NetClient(new IServerToClient () {
 
@@ -58,8 +62,12 @@ public class GameClient {
                 network.startGame(clientID);
             }
 
-            public void move(int clientID, Constants.Directions direction) {
-                network.move(direction);
+            public void move(int clientID, Direction direction) {
+                // network.move(direction);
+            }
+
+            public void action(int clientID, ClientAction actionIn) {
+                network.action(actionIn);
             }
 
             public boolean isConnected() {
@@ -96,8 +104,12 @@ public class GameClient {
 
         view = new ClientView(new IViewToModel () {
 
-            public void move(Constants.Directions direction) {
+            public void move(Direction direction) {
                 model.move(direction);
+            }
+
+            public void action(ClientAction actionIn) {
+                model.action(actionIn);
             }
 
         });

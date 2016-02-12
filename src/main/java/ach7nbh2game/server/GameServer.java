@@ -1,7 +1,7 @@
 package ach7nbh2game.server;
 
 import ach7nbh2game.client.PlayerInfo;
-import ach7nbh2game.main.Constants;
+import ach7nbh2game.main.Constants.*;
 import ach7nbh2game.network.NetServer;
 import ach7nbh2game.network.adapters.IClientToServer;
 import ach7nbh2game.network.adapters.IServerToClient;
@@ -9,6 +9,7 @@ import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.network.packets.GameState;
 import ach7nbh2game.util.ClientID;
 import ach7nbh2game.util.GameID;
+import com.esotericsoftware.minlog.Log;
 
 import java.io.IOException;
 import java.util.Map;
@@ -22,6 +23,8 @@ public class GameServer {
     public GameServer () throws IOException {
 
         System.out.println("making new GameServer...");
+
+        Log.set(Log.LEVEL_DEBUG);
 
         network = new NetServer(new IClientToServer () {
 
@@ -41,8 +44,12 @@ public class GameServer {
                 model.startGame(new ClientID(clientID));
             }
 
-            public void move(int clientID, Constants.Directions direction) {
-                model.respondToClientAction(new ClientID(clientID), new ClientAction(direction));
+            public void move(int clientID, Direction direction) {
+                // model.respondToClientAction(new ClientID(clientID), new ClientAction(direction));
+            }
+
+            public void action(int clientID, ClientAction actionIn) {
+                model.respondToClientAction(new ClientID(clientID), actionIn);
             }
 
             public boolean isConnected() {

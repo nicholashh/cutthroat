@@ -2,6 +2,8 @@ package ach7nbh2game.client;
 
 import ach7nbh2game.client.adapters.IViewToModel;
 import ach7nbh2game.main.Constants;
+import ach7nbh2game.main.Constants.*;
+import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.network.packets.GameState;
 import ach7nbh2game.util.Logger;
 import com.googlecode.blacken.colors.ColorNames;
@@ -19,14 +21,14 @@ public class ClientView {
 
     private CursesLikeAPI terminal;
 
-    private final int keyUp = BlackenKeys.KEY_UP;
-    private final int keyDown = BlackenKeys.KEY_DOWN;
-    private final int keyLeft = BlackenKeys.KEY_LEFT;
-    private final int keyRight = BlackenKeys.KEY_RIGHT;
+    private final int moveUp = BlackenKeys.KEY_UP;
+    private final int moveLeft = BlackenKeys.KEY_LEFT;
+    private final int moveDown = BlackenKeys.KEY_DOWN;
+    private final int moveRight = BlackenKeys.KEY_RIGHT;
 
     private final int gunUp = 'w';
-    private final int gunDown = 's';
     private final int gunLeft = 'a';
+    private final int gunDown = 's';
     private final int gunRight = 'd';
 
     public ClientView (IViewToModel modelIn) {
@@ -34,7 +36,6 @@ public class ClientView {
         System.out.println("making new ClientView...");
 
         model = modelIn;
-
     }
 
     public void start () {
@@ -44,7 +45,6 @@ public class ClientView {
         setUpTerminal();
         showWelcomeMessage();
         beginAcceptingCharacterInput();
-
     }
 
     private void setUpTerminal () {
@@ -63,7 +63,6 @@ public class ClientView {
         terminal.setPalette(palette);
 
         terminal.move(-1, -1);
-
     }
 
     public void showMap(ArrayList<ArrayList<Integer>> map) {
@@ -76,7 +75,6 @@ public class ClientView {
                 0, Constants.clientMapWidth, 0);
 
         terminal.refresh();
-
     }
 
     private ArrayList<Integer> stringToInts (String string) {
@@ -84,7 +82,6 @@ public class ClientView {
         ArrayList<Integer> ints = new ArrayList<Integer>();
         for (char c : string.toCharArray()) ints.add((int)c);
         return ints;
-
     }
 
     private void showWelcomeMessage () {
@@ -95,7 +92,6 @@ public class ClientView {
         message.add(stringToInts(" to Cutthroat!"));
 
         showMessage(message, true);
-
     }
 
     public void showScores(GameState gameState) {
@@ -124,7 +120,6 @@ public class ClientView {
         showMessage(message, true);
 
         terminal.refresh();
-
     }
 
     private void clearMessageArea () {
@@ -140,7 +135,6 @@ public class ClientView {
         }
 
         showMessage(message, false);
-
     }
 
     private void showMessage (ArrayList<ArrayList<Integer>> message, boolean shouldClear) {
@@ -156,7 +150,6 @@ public class ClientView {
         showSomething(message,
                 0, Constants.clientMapHeight, 0,
                 0, Constants.clientSidebarWidth, Constants.clientMapWidth);
-
     }
 
     private void showSomething (ArrayList<ArrayList<Integer>> thing,
@@ -169,12 +162,10 @@ public class ClientView {
                     if (x < row.size()) {
 
                         setTerminal(x + xOffset, y + yOffset, row.get(x));
-
                     }
                 }
             }
         }
-
     }
 
     private void setTerminal (int x, int y, int character) {
@@ -188,7 +179,6 @@ public class ClientView {
             // TODO this is not ideal, but it almost never happens, sooooo...
             System.err.println("error in setTerminal(): " + e.toString());
         }
-
     }
 
     private void beginAcceptingCharacterInput() {
@@ -197,28 +187,57 @@ public class ClientView {
 
         (new Thread() { public void run () {
 
+            ClientAction action = new ClientAction();
+
             while (true) {
 
                 int input = terminal.getch(); // BLOCKING
 
                 switch (input) {
 
-                    case keyUp:    model.move(Constants.Directions.UP);    break;
-                    case keyDown:  model.move(Constants.Directions.DOWN);  break;
-                    case keyLeft:  model.move(Constants.Directions.LEFT);  break;
-                    case keyRight: model.move(Constants.Directions.RIGHT); break;
+                    case moveUp:
+                        action.setAction(Action.MOVE);
+                        action.setDirection(Direction.UP);
+                        model.action(action);
+                        break;
+                    case moveLeft:
+                        action.setAction(Action.MOVE);
+                        action.setDirection(Direction.LEFT);
+                        model.action(action);
+                        break;
+                    case moveDown:
+                        action.setAction(Action.MOVE);
+                        action.setDirection(Direction.DOWN);
+                        model.action(action);
+                        break;
+                    case moveRight:
+                        action.setAction(Action.MOVE);
+                        action.setDirection(Direction.RIGHT);
+                        model.action(action);
+                        break;
 
-                    case gunUp:    model.move(Constants.Directions.GUN_UP);    break;
-                    case gunDown:  model.move(Constants.Directions.GUN_DOWN);  break;
-                    case gunLeft:  model.move(Constants.Directions.GUN_LEFT);  break;
-                    case gunRight: model.move(Constants.Directions.GUN_RIGHT); break;
-
+                    case gunUp:
+                        action.setAction(Action.SHOOT);
+                        action.setDirection(Direction.UP);
+                        model.action(action);
+                        break;
+                    case gunLeft:
+                        action.setAction(Action.SHOOT);
+                        action.setDirection(Direction.LEFT);
+                        model.action(action);
+                        break;
+                    case gunDown:
+                        action.setAction(Action.SHOOT);
+                        action.setDirection(Direction.DOWN);
+                        model.action(action);
+                        break;
+                    case gunRight:
+                        action.setAction(Action.SHOOT);
+                        action.setDirection(Direction.RIGHT);
+                        model.action(action);
+                        break;
                 }
-
             }
-
         }}).start();
-
     }
-
 }

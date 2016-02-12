@@ -1,6 +1,7 @@
 package ach7nbh2game.server.map.components;
 
 import ach7nbh2game.client.PlayerInfo;
+import ach7nbh2game.main.Constants.*;
 import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.network.packets.GameState;
 import ach7nbh2game.server.Game;
@@ -77,28 +78,20 @@ public abstract class Client extends AMapComponent {
         int y = getY();
         int newX = x;
         int newY = y;
-        boolean isGun = false;
+
         switch (action.direction) {
-            case GUN_UP:
-                isGun = true;
             case UP:
                 newX = x;
                 newY = y - 1;
                 break;
-            case GUN_DOWN:
-                isGun = true;
             case DOWN:
                 newX = x;
                 newY = y + 1;
                 break;
-            case GUN_LEFT:
-                isGun = true;
             case LEFT:
                 newX = x - 1;
                 newY = y;
                 break;
-            case GUN_RIGHT:
-                isGun = true;
             case RIGHT:
                 newX = x + 1;
                 newY = y;
