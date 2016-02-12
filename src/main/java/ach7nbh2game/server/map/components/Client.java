@@ -7,14 +7,13 @@ import ach7nbh2game.network.packets.GameState;
 import ach7nbh2game.server.Game;
 import ach7nbh2game.server.map.GameMap;
 import ach7nbh2game.util.ClientID;
+import ach7nbh2game.util.Coordinate;
 import ach7nbh2game.util.Logger;
 
 public abstract class Client extends AMapComponent {
 
     private final ClientID id;
     private final PlayerInfo info;
-
-    private Game game;
 
     // client objects know how to communicate with the clients they represent
     public abstract void enterGame ();
@@ -35,27 +34,20 @@ public abstract class Client extends AMapComponent {
         return id;
     }
 
-    public Game getGame () {
-        return game;
-    }
-
-    public boolean gameIsNull () {
-        return game == null;
-    }
-
-    public void setGame (Game gameIn) {
+    @Override
+    public void setGame (Game game) {
 
         Logger.Singleton.log(this, 0, "setGame:");
-        Logger.Singleton.log(this, 1, "gameIn = " + gameIn);
+        Logger.Singleton.log(this, 1, "game = " + game);
 
         if (mapIsNull()) {
             // if this client is already in a game
             if (!gameIsNull()) {
                 // remove this client from that game
-                game.removePlayer(this);
+                getGame().removePlayer(this);
             }
             // record which game this client is now in
-            game = gameIn;
+            super.setGame(game);
             // alert that game that this client wants to join
             game.addPlayer(this);
         } else {
@@ -72,64 +64,45 @@ public abstract class Client extends AMapComponent {
         boolean somethingMoved = true;
         boolean somethingChanged = true;
 
-        // BEGIN ISOLATED {
-
         int x = getX();
         int y = getY();
-        int newX = x;
-        int newY = y;
 
-        switch (action.direction) {
-            case UP:
-                newX = x;
-                newY = y - 1;
-                break;
-            case DOWN:
-                newX = x;
-                newY = y + 1;
-                break;
-            case LEFT:
-                newX = x - 1;
-                newY = y;
-                break;
-            case RIGHT:
-                newX = x + 1;
-                newY = y;
-                break;
-        }
+        Direction direction = action.direction;
+        Coordinate nextLocation = nextLocation(direction);
+        int newX = nextLocation.x;
+        int newY = nextLocation.y;
 
         GameMap map = getMap();
         IMapComponent thing = map.get(newY, newX);
 
         if (thing instanceof Ground) {
 
-            Logger.Singleton.log(this, 0,
-                    "moving from (" + x + "," + y + ") " +
-                            "to (" + newX + "," + newY + ")");
+            switch (action.action) {
 
-            map.swap(this, thing);
+                case MOVE: {
 
-        //} else if (thing instanceof Player) {
-        //    // TODO don't use instanceof
-        //
-        //    if (!isGun) {
-        //
-        //        String myPlayerName = players.get(playerID).getPlayerInfo().getUsername();
-        //        String otherPlayerName = players.get(((Player) thing).getID()).getPlayerInfo().getUsername();
-        //
-        //        String whoItIs = gameState.getWhoItIs();
-        //        if (myPlayerName.equals(whoItIs) ||
-        //                otherPlayerName.equals(whoItIs)) {
-        //
-        //            int curScore = gameState.getScores().get(whoItIs);
-        //            gameState.updateScore(whoItIs, curScore + 1);
-        //            // TODO this should use a teamID instead of a string
-        //
-        //            restartGame();
-        //
-        //        }
-        //
-        //    } // TODO if is gun (should be fixed automatically with dispatchers)
+                    Logger.Singleton.log(this, 0,
+                            "moving from (" + x + "," + y + ") " +
+                                    "to (" + newX + "," + newY + ")");
+
+                    map.swap(this, thing);
+
+                    break;
+
+                }
+
+                case SHOOT: {
+
+                    Bullet newBullet = new Bullet(direction,this);
+                    newBullet.placeOnMap(map, newX, newY);
+                    newBullet.setGame(getGame());
+                    newBullet.start();
+
+                    break;
+
+                }
+
+            }
 
         } else {
             somethingMoved = false;
@@ -137,12 +110,10 @@ public abstract class Client extends AMapComponent {
         }
 
         if (somethingMoved) {
-            game.updateAllPlayers();
+            getGame().updateAllPlayers();
         } else if (somethingChanged) {
             sendGameState();
         }
-
-        // } END ISOLATED
 
     }
 

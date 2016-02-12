@@ -1,9 +1,11 @@
 package ach7nbh2game.server.map.components;
 
-import ach7nbh2game.server.map.AMapModifier;
+import ach7nbh2game.main.Constants.*;
+import ach7nbh2game.server.map.AGameActor;
 import ach7nbh2game.server.map.GameMap;
+import ach7nbh2game.util.Coordinate;
 
-public abstract class AMapComponent extends AMapModifier implements IMapComponent {
+public abstract class AMapComponent extends AGameActor implements IMapComponent {
 
     private int x;
     private int y;
@@ -32,11 +34,6 @@ public abstract class AMapComponent extends AMapModifier implements IMapComponen
 
     public void placeOnMap (GameMap map, int xIn, int yIn) {
 
-        //Logger.Singleton.log(this, 0, "placeOnMap:");
-        //Logger.Singleton.log(this, 1, "map = " + map);
-        //Logger.Singleton.log(this, 1, "xIn = " + xIn);
-        //Logger.Singleton.log(this, 1, "yIn = " + yIn);
-
         // TODO: temporarily allowing this for tag-restarting capabilities
         //if (mapIsNull()) {
 
@@ -46,6 +43,31 @@ public abstract class AMapComponent extends AMapModifier implements IMapComponen
         //} else {
             // TODO: not allowed
         //}
+
+    }
+
+    public void removeFromMap () {
+
+        Ground newGround = new Ground();
+        newGround.placeOnMap(getMap(), x, y);
+
+    }
+
+    public Coordinate nextLocation (Direction direction) {
+
+        switch (direction) {
+            case UP:
+                return new Coordinate(y - 1, x);
+            case DOWN:
+                return new Coordinate(y + 1, x);
+            case LEFT:
+                return new Coordinate(y, x - 1);
+            case RIGHT:
+                return new Coordinate(y, x + 1);
+        }
+
+        // TODO
+        return null;
 
     }
 

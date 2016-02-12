@@ -46,7 +46,7 @@ public class Main {
 
             for (int i = 0; i < numClients; i++) {
                 //Log.set(Log.LEVEL_DEBUG);
-                Logger.Singleton.loggingClient = true;
+                //Logger.Singleton.loggingClient = true;
                 GameClient newClient = new GameClient();
                 newClient.start();
             }

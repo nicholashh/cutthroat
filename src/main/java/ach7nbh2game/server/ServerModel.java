@@ -164,6 +164,7 @@ public class ServerModel {
             // wait till the server is ready
             client.getGame().requestCallback(
                     new CallbackRequest(
+                            // have the client perform that action
                             () -> client.perform(action) ));
 
         } else {

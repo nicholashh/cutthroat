@@ -29,6 +29,10 @@ public class GameMap {
 
     }
 
+    public IMapComponent get (Coordinate coordinate) {
+        return get(coordinate.y, coordinate.x);
+    }
+
     public IMapComponent get (int y, int x) {
 
         //Logger.Singleton.log(this, 0, "get:");

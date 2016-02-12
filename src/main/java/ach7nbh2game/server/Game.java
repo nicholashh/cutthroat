@@ -1,7 +1,7 @@
 package ach7nbh2game.server;
 
 import ach7nbh2game.main.Constants;
-import ach7nbh2game.server.map.AMapModifier;
+import ach7nbh2game.server.map.AGameActor;
 import ach7nbh2game.server.map.GameMap;
 import ach7nbh2game.server.map.components.Client;
 import ach7nbh2game.server.map.components.Ground;
@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public class Game extends AMapModifier {
+public class Game extends AGameActor {
 
     private final GameID id;
     private String name;
@@ -22,10 +22,10 @@ public class Game extends AMapModifier {
 
     private int tick = 0;
     private Thread timerThread = null;
-    private ConcurrentMap<CallbackRegistration,Object> callbackRegistrations =
-            new ConcurrentHashMap<CallbackRegistration,Object>();
+    private ConcurrentMap<CallbackRegistration,Object>
+            callbackRegistrations = new ConcurrentHashMap<>();
 
-    private Map<ClientID, Client> players = new HashMap<ClientID, Client>();
+    private Map<ClientID,Client> players = new HashMap<>();
 
     public Game (GameID idIn, String nameIn) {
 

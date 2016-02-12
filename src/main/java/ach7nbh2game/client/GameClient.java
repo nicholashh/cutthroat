@@ -2,13 +2,12 @@ package ach7nbh2game.client;
 
 import ach7nbh2game.client.adapters.IModelToView;
 import ach7nbh2game.client.adapters.IViewToModel;
-import ach7nbh2game.main.Constants.*;
+import ach7nbh2game.main.Constants.Direction;
 import ach7nbh2game.network.NetClient;
 import ach7nbh2game.network.adapters.IClientToServer;
 import ach7nbh2game.network.adapters.IServerToClient;
 import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.network.packets.GameState;
-import com.esotericsoftware.minlog.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,8 +23,6 @@ public class GameClient {
     public GameClient () {
 
         System.out.println("making new GameClient...");
-
-        Log.set(Log.LEVEL_DEBUG);
 
         network = new NetClient(new IServerToClient () {
 
