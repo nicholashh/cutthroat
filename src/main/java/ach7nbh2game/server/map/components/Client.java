@@ -4,11 +4,14 @@ import ach7nbh2game.client.PlayerInfo;
 import ach7nbh2game.main.Constants.*;
 import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.network.packets.GameState;
+import ach7nbh2game.server.Callback;
 import ach7nbh2game.server.Game;
 import ach7nbh2game.server.map.GameMap;
 import ach7nbh2game.util.ClientID;
 import ach7nbh2game.util.Coordinate;
 import ach7nbh2game.util.Logger;
+
+import ach7nbh2game.util.Utility;
 
 public abstract class Client extends AMapComponent {
 
@@ -34,10 +37,23 @@ public abstract class Client extends AMapComponent {
         return id;
     }
 
+    // essentially a setter for the callback
+    public void queueAction (Callback newCallback) {
+
+        // cancel the old callback
+        if (!callbackIsNull()) {
+            getCallback().cancel();
+        }
+
+        // register the new callback
+        setCallback(getGame().requestCallback(newCallback));
+
+    }
+
     @Override
     public void setGame (Game game) {
 
-        Logger.Singleton.log(this, 0, "setGame:");
+        Logger.Singleton.log(this, 0, "setGame()");
         Logger.Singleton.log(this, 1, "game = " + game);
 
         if (mapIsNull()) {
@@ -58,14 +74,8 @@ public abstract class Client extends AMapComponent {
 
     public void perform (ClientAction action) {
 
-        Logger.Singleton.log(this, 0, "perform:");
-        Logger.Singleton.log(this, 1, "action = " + action);
-
-        boolean somethingMoved = true;
-        boolean somethingChanged = true;
-
-        int x = getX();
-        int y = getY();
+        Logger.Singleton.log(this, 0, "perform(action = " + action + ")");
+        Logger.Singleton.log(this, 1, "before: " + getMap().getPerspectiveFrom(getX(), getY(), 3, 3));
 
         Direction direction = action.direction;
         Coordinate nextLocation = nextLocation(direction);
@@ -81,9 +91,7 @@ public abstract class Client extends AMapComponent {
 
                 case MOVE: {
 
-                    Logger.Singleton.log(this, 0,
-                            "moving from (" + x + "," + y + ") " +
-                                    "to (" + newX + "," + newY + ")");
+                    Logger.Singleton.log(this, 1, "moving " + direction);
 
                     map.swap(this, thing);
 
@@ -92,6 +100,8 @@ public abstract class Client extends AMapComponent {
                 }
 
                 case SHOOT: {
+
+                    Logger.Singleton.log(this, 0, "firing bullet " + direction);
 
                     Bullet newBullet = new Bullet(direction,this);
                     newBullet.placeOnMap(map, newX, newY);
@@ -104,27 +114,19 @@ public abstract class Client extends AMapComponent {
 
             }
 
-        } else {
-            somethingMoved = false;
-            somethingChanged = false;
-        }
-
-        if (somethingMoved) {
-            getGame().updateAllPlayers();
-        } else if (somethingChanged) {
-            sendGameState();
         }
 
     }
 
     public void sendGameState () {
 
-        Logger.Singleton.log(this, 0, "sendGameState:");
+        //Logger.Singleton.log(this, 0, "sendGameState:");
 
         if (!mapIsNull()) {
             GameState gameState = new GameState();
             // TODO put in constructor instead of setter?
-            gameState.setFrame(getMap().getPerspectiveFrom(getX(), getY()));
+            gameState.setFrame(Utility.componentToInteger(
+                    getMap().getPerspectiveFrom(getX(),getY())));
             sendGameState(gameState);
         } else {
             // TODO: not allowed

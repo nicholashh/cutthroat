@@ -60,16 +60,16 @@ public class ServerModel {
                     // use this object's closure over the network object
                     // to send new game state information to the client
                     @Override public void enterGame() {
-                        Logger.Singleton.log(this, 0, "enterGame:");
+                        //Logger.Singleton.log(this, 0, "enterGame:");
                         network.enterGame(clientID.value);
                     }
                     @Override public void announceLobbies() {
-                        Logger.Singleton.log(this, 0, "announceLobbies:");
+                        //Logger.Singleton.log(this, 0, "announceLobbies:");
                         requestLobbies(clientID);
                     }
                     @Override public void sendGameState(GameState state) {
-                        Logger.Singleton.log(this, 0, "sendGameState:");
-                        Logger.Singleton.log(this, 1, "state = " + state);
+                        //Logger.Singleton.log(this, 0, "sendGameState:");
+                        //Logger.Singleton.log(this, 1, "state = " + state);
                         network.updateGameState(clientID.value, state);
                     }
                 });
@@ -153,19 +153,16 @@ public class ServerModel {
 
     public void respondToClientAction (ClientID id, final ClientAction action) {
 
-        Logger.Singleton.log(this, 0, "respondToClientAction:");
-        Logger.Singleton.log(this, 1, "id = " + id);
-        Logger.Singleton.log(this, 1, "action = " + action);
+        //Logger.Singleton.log(this, 0, "respondToClientAction:");
+        //Logger.Singleton.log(this, 1, "id = " + id);
+        //Logger.Singleton.log(this, 1, "action = " + action);
 
         // if this client has already connected
         if (clients.containsKey(id)) {
             final Client client = clients.get(id);
 
-            // wait till the server is ready
-            client.getGame().requestCallback(
-                    new CallbackRequest(
-                            // have the client perform that action
-                            () -> client.perform(action) ));
+            // wait till the server is ready, then have the client perform that action
+            client.queueAction( new Callback(1, 1, () -> client.perform(action) ) );
 
         } else {
             // TODO: this client has never connected before

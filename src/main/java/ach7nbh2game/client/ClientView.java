@@ -65,7 +65,7 @@ public class ClientView {
         terminal.move(-1, -1);
     }
 
-    public void showMap(ArrayList<ArrayList<Integer>> map) {
+    public void showMap (ArrayList<ArrayList<Integer>> map) {
 
         Logger.Singleton.log(this, 0, "showMap:");
         Logger.Singleton.log(this, 1, "map = " + map);
@@ -74,19 +74,25 @@ public class ClientView {
                 0, Constants.clientMapHeight, 0,
                 0, Constants.clientMapWidth, 0);
 
-        terminal.refresh();
+        try {
+            terminal.refresh();
+        } catch (IndexOutOfBoundsException e) {
+            // TODO why is this breaking?
+            System.err.println("error in showMap(): " + e.toString());
+        }
+
     }
 
     private ArrayList<Integer> stringToInts (String string) {
 
-        ArrayList<Integer> ints = new ArrayList<Integer>();
+        ArrayList<Integer> ints = new ArrayList<>();
         for (char c : string.toCharArray()) ints.add((int)c);
         return ints;
     }
 
     private void showWelcomeMessage () {
 
-        ArrayList<ArrayList<Integer>> message = new ArrayList<ArrayList<Integer>>();
+        ArrayList<ArrayList<Integer>> message = new ArrayList<>();
         message.add(stringToInts(" "));
         message.add(stringToInts(" Welcome"));
         message.add(stringToInts(" to Cutthroat!"));
@@ -94,14 +100,14 @@ public class ClientView {
         showMessage(message, true);
     }
 
-    public void showScores(GameState gameState) {
+    public void showScores (GameState gameState) {
 
         Logger.Singleton.log(this, 0, "showScores:");
         Logger.Singleton.log(this, 1, "gameState = " + gameState);
 
         Map<String, Integer> scores = gameState.getScores();
 
-        ArrayList<ArrayList<Integer>> message = new ArrayList<ArrayList<Integer>>();
+        ArrayList<ArrayList<Integer>> message = new ArrayList<>();
         message.add(stringToInts(" "));
         message.add(stringToInts(" Scores:"));
         message.add(stringToInts(" "));
@@ -119,17 +125,23 @@ public class ClientView {
 
         showMessage(message, true);
 
-        terminal.refresh();
+        try {
+            terminal.refresh();
+        } catch (IndexOutOfBoundsException e) {
+            // TODO why is this breaking?
+            System.err.println("error in showScores(): " + e.toString());
+        }
+
     }
 
     private void clearMessageArea () {
 
-        ArrayList<Integer> row = new ArrayList<Integer>();
+        ArrayList<Integer> row = new ArrayList<>();
         for (int i = 0; i < Constants.clientSidebarWidth; i++) {
             row.add((int)' ');
         }
 
-        ArrayList<ArrayList<Integer>> message = new ArrayList<ArrayList<Integer>>();
+        ArrayList<ArrayList<Integer>> message = new ArrayList<>();
         for (int i = 0; i < Constants.clientMapHeight; i++) {
             message.add(row);
         }

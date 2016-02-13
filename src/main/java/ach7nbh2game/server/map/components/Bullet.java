@@ -1,8 +1,9 @@
 package ach7nbh2game.server.map.components;
 
 import ach7nbh2game.main.Constants.Direction;
-import ach7nbh2game.server.CallbackRequest;
+import ach7nbh2game.server.Callback;
 import ach7nbh2game.server.map.GameMap;
+import ach7nbh2game.util.Logger;
 
 import java.util.Random;
 
@@ -10,8 +11,6 @@ public class Bullet extends AMapComponent {
 
     private Direction direction;
     private Client owner;
-
-    private CallbackRequest callbackRequest;
 
     private int mapChar = 46;
 
@@ -24,16 +23,21 @@ public class Bullet extends AMapComponent {
     }
 
     public void start () {
-        callbackRequest = new CallbackRequest(1, -1, () -> move());
-        getGame().requestCallback(callbackRequest);
+        setCallback(getGame().requestCallback(new Callback(2, -1, () -> move())));
     }
 
     private void move () {
+        move(4);
+    }
+
+    private void move (int numTries) {
 
         GameMap map = getMap();
         IMapComponent thing = map.get(nextLocation(direction));
 
         if (thing instanceof Ground) {
+
+            Logger.Singleton.log(this, 0, "moving " + direction);
 
             map.swap(this, thing);
 
@@ -59,22 +63,28 @@ public class Bullet extends AMapComponent {
                     break;
             }
 
+            if (numTries > 0) {
+                move(numTries - 1);
+            }
+
         } else if (thing instanceof Wall || thing instanceof Bullet || thing == null) {
 
+            Logger.Singleton.log(this, 0, "killing self");
+
             removeFromMap();
-            callbackRequest.cancel();
+            getCallback().cancel();
 
             if (thing instanceof Bullet) {
 
+                Logger.Singleton.log(this, 1, "killing other bullet, too");
+
                 Bullet other = (Bullet)thing;
+                other.getCallback().cancel();
                 other.removeFromMap();
-                other.callbackRequest.cancel();
 
             }
 
         }
-
-        getGame().updateAllPlayers();
 
     }
 

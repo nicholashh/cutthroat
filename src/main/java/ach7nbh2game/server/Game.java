@@ -5,13 +5,16 @@ import ach7nbh2game.server.map.AGameActor;
 import ach7nbh2game.server.map.GameMap;
 import ach7nbh2game.server.map.components.Client;
 import ach7nbh2game.server.map.components.Ground;
-import ach7nbh2game.util.*;
+import ach7nbh2game.util.ClientID;
+import ach7nbh2game.util.Coordinate;
+import ach7nbh2game.util.GameID;
+import ach7nbh2game.util.Logger;
 
 import java.util.Collection;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class Game extends AGameActor {
 
@@ -22,8 +25,7 @@ public class Game extends AGameActor {
 
     private int tick = 0;
     private Thread timerThread = null;
-    private ConcurrentMap<CallbackRegistration,Object>
-            callbackRegistrations = new ConcurrentHashMap<>();
+    private Deque<CallbackRegistration> callbackRegistrations = new ConcurrentLinkedDeque<>();
 
     private Map<ClientID,Client> players = new HashMap<>();
 
@@ -31,8 +33,6 @@ public class Game extends AGameActor {
 
         id = idIn;
         name = nameIn;
-
-        startGameTimer();
 
     }
 
@@ -75,6 +75,9 @@ public class Game extends AGameActor {
     public void start() {
 
         Logger.Singleton.log(this, 0, "start:");
+        Logger.Singleton.log(this, 1, "serverTicksPerSecond = " + Constants.serverTicksPerSecond);
+        Logger.Singleton.log(this, 1, "clientUpdatesPerSecond = " + Constants.clientUpdatesPerSecond);
+        Logger.Singleton.log(this, 1, "clientUpdatesFrequency = " + Constants.clientUpdatesFrequency);
 
         gameHasStarted = true;
 
@@ -91,14 +94,14 @@ public class Game extends AGameActor {
             client.enterGame();
         }
 
-        updateAllPlayers();
+        startGameTimer();
 
     }
 
-    public void updateAllPlayers () {
+    private void updateAllPlayers () {
 
-        Logger.Singleton.log(this, 0, "updateAllPlayers:");
-        Logger.Singleton.log(this, 1, "gameHasStarted = " + gameHasStarted);
+        //Logger.Singleton.log(this, 0, "updateAllPlayers:");
+        //Logger.Singleton.log(this, 1, "gameHasStarted = " + gameHasStarted);
 
         if (gameHasStarted) {
             // send the state of the game
@@ -116,27 +119,42 @@ public class Game extends AGameActor {
 
     // SERVER CLOCK CODE (tick... tick... tick...)
 
-    public void requestCallback (CallbackRequest request) {
+    public CallbackRegistration requestCallback (Callback request) {
 
-        Logger.Singleton.log(this, 0, "requestCallback:");
-        Logger.Singleton.log(this, 1, "request = " + request);
+        //Logger.Singleton.log(this, 0, "requestCallback:");
+        //Logger.Singleton.log(this, 1, "request = " + request);
 
-        callbackRegistrations.put(new CallbackRegistration(tick, request), new Object());
+        CallbackRegistration registration = new CallbackRegistration(tick, request);
+        callbackRegistrations.add(registration);
+        return registration;
 
     }
 
     private void incTick () {
 
-        Logger.Singleton.log(this, 0, "tick! " + tick + "->" + (tick + 1));
-
         tick += 1;
 
-        for (CallbackRegistration registration : callbackRegistrations.keySet()) {
+        boolean first = true;
+        for (CallbackRegistration registration : callbackRegistrations) {
             if ((tick - registration.startTime) % registration.frequency == 0) {
-                if (registration.run()) {
-                    callbackRegistrations.remove(registration);
+
+                if (first) {
+                    Logger.Singleton.log(this, 0, "tick! " + (tick - 1) + "->" + tick);
+                    Logger.Singleton.log(this, 1, "callbackRegistrations = " + callbackRegistrations);
+                    first = false;
                 }
+
+                if (registration.run()) {
+                    Logger.Singleton.log(this, 0, "removing " + registration);
+                    callbackRegistrations.remove(registration);
+                    Logger.Singleton.log(this, 1, "callbackRegistrations = " + callbackRegistrations);
+                }
+
             }
+        }
+
+        if (tick % Constants.clientUpdatesFrequency == 0) {
+            updateAllPlayers();
         }
 
     }
@@ -155,7 +173,7 @@ public class Game extends AGameActor {
 
                     while (true) {
 
-                        Thread.sleep(100);
+                        Thread.sleep(1000 / Constants.serverTicksPerSecond);
                         incTick();
 
                     }

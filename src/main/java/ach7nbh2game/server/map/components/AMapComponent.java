@@ -1,6 +1,7 @@
 package ach7nbh2game.server.map.components;
 
-import ach7nbh2game.main.Constants.*;
+import ach7nbh2game.main.Constants.Direction;
+import ach7nbh2game.server.CallbackRegistration;
 import ach7nbh2game.server.map.AGameActor;
 import ach7nbh2game.server.map.GameMap;
 import ach7nbh2game.util.Coordinate;
@@ -9,6 +10,7 @@ public abstract class AMapComponent extends AGameActor implements IMapComponent 
 
     private int x;
     private int y;
+    private CallbackRegistration callback;
 
     private final String componentName;
 
@@ -30,6 +32,18 @@ public abstract class AMapComponent extends AGameActor implements IMapComponent 
 
     public void setY (int yIn) {
         y = yIn;
+    }
+
+    public CallbackRegistration getCallback () {
+        return callback;
+    }
+
+    public void setCallback (CallbackRegistration callbackIn) {
+        callback = callbackIn;
+    }
+
+    public boolean callbackIsNull () {
+        return callback == null;
     }
 
     public void placeOnMap (GameMap map, int xIn, int yIn) {
