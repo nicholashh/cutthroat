@@ -2,27 +2,26 @@ package ach7nbh2game.server;
 
 import java.util.Objects;
 
-public class CallbackRegistration {
+public class CallbackRegistration extends Callback {
 
     public final int startTime;
-    public final int frequency;
 
-    private final CallbackRequest request;
+    private final Callback callback;
 
-    public CallbackRegistration (int startTimeIn, CallbackRequest requestIn) {
+    public CallbackRegistration (int startTimeIn, Callback callbackIn) {
+        super(callbackIn);
         startTime = startTimeIn;
-        request = requestIn;
-        frequency = request.frequency;
+        callback = callbackIn;
     }
 
-    // returns if this registration is no longer needed
-    public boolean run () {
-        return request.run();
+    @Override
+    public String toString () {
+        return "CallbackRegistration(" + startTime + "," + callback.toString() + ")";
     }
 
     @Override
     public int hashCode () {
-        return Objects.hash(startTime, frequency, request);
+        return Objects.hash(startTime, callback);
     }
 
     @Override
@@ -41,10 +40,7 @@ public class CallbackRegistration {
             if (this.startTime != otherCallback.startTime) {
                 return false;
 
-            } else if (this.frequency != otherCallback.frequency) {
-                return false;
-
-            } else if (this.request != otherCallback.request) {
+            } else if (!this.callback.equals(otherCallback.callback)) {
                 return false;
 
             } else {
