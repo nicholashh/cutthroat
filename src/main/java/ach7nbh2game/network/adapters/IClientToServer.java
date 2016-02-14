@@ -30,7 +30,7 @@ public interface IClientToServer {
      * also, do we want to have private lobbies?
      * we should make this easily extensible to that later
      */
-     void joinLobby (int clientID, int lobbyID, PlayerInfo info);
+     void joinLobby (int clientID, int lobbyID);
 
     /**
      * turn a lobby into a game
@@ -49,6 +49,6 @@ public interface IClientToServer {
 
     boolean isConnected();
 
-    void connectTo(String host, PlayerInfo info) throws IOException;
+    void connectTo(int clientID, String host, PlayerInfo info) throws IOException;
 
 }
