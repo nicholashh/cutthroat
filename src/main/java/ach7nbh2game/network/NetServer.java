@@ -64,6 +64,13 @@ public class NetServer {
                     }
                     // Store the name on the connection.
                     connection.name = name;
+                    RegisterMessage msg = (RegisterMessage) object;
+                    try {
+                        adapter.connectTo(connection.getID(), "", msg.pinfo);
+                    } catch (IOException e) {
+                        System.out.println("Error in NetServer: adapter.connectTo()");
+                        e.printStackTrace();
+                    }
                     return;
                 }
 
@@ -115,7 +122,7 @@ public class NetServer {
                         return;
                     }
                     JoinLobby msg = (JoinLobby) object;
-                    adapter.joinLobby(connection.getID(), msg.lobbyID, msg.info);
+                    adapter.joinLobby(connection.getID(), msg.lobbyID);
                     return;
                 }
             }

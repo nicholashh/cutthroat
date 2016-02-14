@@ -13,6 +13,8 @@ import ach7nbh2game.util.Logger;
 
 import ach7nbh2game.util.Utility;
 
+import java.net.Inet4Address;
+
 public abstract class Client extends AMapComponent {
 
     private final ClientID id;

@@ -36,7 +36,7 @@ public class NetClient {
         return isConnected;
     }
 
-    public void connectTo (String hostIn, final PlayerInfo info) throws IOException {
+    public void connectTo (int clientID, String hostIn, final PlayerInfo info) throws IOException {
 
         client = new Client(1048676, 1048676);
         client.start();
@@ -51,6 +51,7 @@ public class NetClient {
             public void connected (Connection connection) {
                 RegisterMessage regName = new RegisterMessage();
                 regName.name = name;
+                regName.pinfo = info;
                 client.sendTCP(regName);
                 info.setID(connection.getID());
             }
@@ -111,7 +112,6 @@ public class NetClient {
     public void joinLobby(int lobbyID, PlayerInfo info) {
         JoinLobby join = new JoinLobby();
         join.lobbyID = lobbyID;
-        join.info = info;
         client.sendTCP(join);
     }
 

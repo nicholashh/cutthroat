@@ -44,6 +44,7 @@ public class Network {
 
     static public class RegisterMessage {
         public String name;
+        public PlayerInfo pinfo;
     }
 
     static public class TextMessage {
@@ -86,6 +87,5 @@ public class Network {
 
     static public class JoinLobby {
         public int lobbyID;
-        public PlayerInfo info;
     }
 }
