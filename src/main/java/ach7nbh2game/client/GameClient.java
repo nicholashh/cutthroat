@@ -8,6 +8,7 @@ import ach7nbh2game.network.adapters.IClientToServer;
 import ach7nbh2game.network.adapters.IServerToClient;
 import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.network.packets.GameState;
+import ach7nbh2game.network.packets.PlayerInfo;
 
 import java.io.IOException;
 import java.util.ArrayList;

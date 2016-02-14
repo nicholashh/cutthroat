@@ -1,4 +1,4 @@
-package ach7nbh2game.client;
+package ach7nbh2game.network.packets;
 
 public class PlayerInfo {
 

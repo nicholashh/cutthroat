@@ -1,6 +1,6 @@
 package ach7nbh2game.server;
 
-import ach7nbh2game.client.PlayerInfo;
+import ach7nbh2game.network.packets.PlayerInfo;
 import ach7nbh2game.main.Constants.Direction;
 import ach7nbh2game.network.NetServer;
 import ach7nbh2game.network.adapters.IClientToServer;

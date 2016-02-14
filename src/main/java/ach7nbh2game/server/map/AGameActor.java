@@ -2,7 +2,7 @@ package ach7nbh2game.server.map;
 
 import ach7nbh2game.server.Game;
 
-public abstract class AGameActor implements IMapModifier {
+public abstract class AGameActor implements IGameActor {
 
     private GameMap map;
     private Game game;
