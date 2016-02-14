@@ -71,8 +71,20 @@ public class ServerModel {
         Logger.Singleton.log(this, 1, "name = " + name);
 
         GameID id = new GameID(rand.nextInt());
-        Game newLobby = new Game(id, name);
+
+        Game newLobby = new Game(id, name) {
+            // use this object's closure over the network object
+            // to send updated lobby information to every client
+            @Override public void announceLobbies () { announceAllLobbies(); }
+        };
+
         games.put(id, newLobby);
+
+        newLobby.announceLobbies();
+
+    }
+
+    private void announceAllLobbies () {
 
         for (Client client : clients.values()) {
             client.announceLobbies();

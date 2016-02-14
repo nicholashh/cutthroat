@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-public class Game extends AGameActor {
+public abstract class Game extends AGameActor {
 
     private final GameID id;
     private String name;
@@ -28,6 +28,8 @@ public class Game extends AGameActor {
     private Deque<CallbackRegistration> callbackRegistrations = new ConcurrentLinkedDeque<>();
 
     private Map<ClientID,Client> players = new HashMap<>();
+
+    public abstract void announceLobbies () ;
 
     public Game (GameID idIn, String nameIn) {
 
@@ -109,10 +111,8 @@ public class Game extends AGameActor {
                 client.sendGameState();
             }
         } else {
-            // send the state of the lobby
-            for (Client client : players.values()) {
-                client.announceLobbies();
-            }
+            // update everyone on the state of the lobby
+            announceLobbies();
         }
 
     }
