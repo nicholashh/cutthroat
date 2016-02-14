@@ -210,43 +210,43 @@ public class ClientView {
                     case moveUp:
                         action.setAction(Action.MOVE);
                         action.setDirection(Direction.UP);
-                        model.action(action);
+                        model.performAction(action);
                         break;
                     case moveLeft:
                         action.setAction(Action.MOVE);
                         action.setDirection(Direction.LEFT);
-                        model.action(action);
+                        model.performAction(action);
                         break;
                     case moveDown:
                         action.setAction(Action.MOVE);
                         action.setDirection(Direction.DOWN);
-                        model.action(action);
+                        model.performAction(action);
                         break;
                     case moveRight:
                         action.setAction(Action.MOVE);
                         action.setDirection(Direction.RIGHT);
-                        model.action(action);
+                        model.performAction(action);
                         break;
 
                     case gunUp:
                         action.setAction(Action.SHOOT);
                         action.setDirection(Direction.UP);
-                        model.action(action);
+                        model.performAction(action);
                         break;
                     case gunLeft:
                         action.setAction(Action.SHOOT);
                         action.setDirection(Direction.LEFT);
-                        model.action(action);
+                        model.performAction(action);
                         break;
                     case gunDown:
                         action.setAction(Action.SHOOT);
                         action.setDirection(Direction.DOWN);
-                        model.action(action);
+                        model.performAction(action);
                         break;
                     case gunRight:
                         action.setAction(Action.SHOOT);
                         action.setDirection(Direction.RIGHT);
-                        model.action(action);
+                        model.performAction(action);
                         break;
                 }
             }

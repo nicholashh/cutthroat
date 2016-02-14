@@ -1,13 +1,12 @@
 package ach7nbh2game.client;
 
 import ach7nbh2game.client.adapters.IModelToView;
-import ach7nbh2game.main.Constants.*;
+import ach7nbh2game.network.adapters.IClientToServer;
 import ach7nbh2game.network.packets.ClientAction;
+import ach7nbh2game.network.packets.GameState;
 import ach7nbh2game.network.packets.PlayerInfo;
 import ach7nbh2game.util.Logger;
 import ach7nbh2game.util.Utility;
-import ach7nbh2game.network.adapters.IClientToServer;
-import ach7nbh2game.network.packets.GameState;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -24,6 +23,8 @@ public class ClientModel {
     private PlayerInfo playerInfo = new PlayerInfo();
 
     private boolean inGame = false; // TODO state design pattern
+
+    private Set<Thread> popupThreads = new HashSet<>();
 
     public ClientModel (IClientToServer serverIn, IModelToView viewIn) {
 
@@ -44,7 +45,7 @@ public class ClientModel {
 
         while (!server.isConnected()) {
             try {
-                server.connectTo(view.askForServerIP(), playerInfo);
+                server.connectTo(0, view.askForServerIP(), playerInfo);
             } catch (IOException e) {
                 // no-op
             }
@@ -118,7 +119,7 @@ public class ClientModel {
 
             final String promptFinal = prompt;
 
-            (new Thread() {
+            Thread newThread = new Thread() {
                 public void run() {
 
                     String action = view.askForThing(promptFinal, "");
@@ -147,7 +148,7 @@ public class ClientModel {
 
                                     Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: joining lobby " + lobbyID + "...");
 
-                                    server.joinLobby(playerInfo.getID(), lobbyID, playerInfo);
+                                    server.joinLobby(playerInfo.getID(), lobbyID);
 
                                 }
 
@@ -172,7 +173,10 @@ public class ClientModel {
                     server.requestLobbies(playerInfo.getID());
 
                 }
-            }).start();
+            };
+
+            popupThreads.add(newThread);
+            newThread.start();
 
         }
 
@@ -183,27 +187,33 @@ public class ClientModel {
         Logger.Singleton.log(this, 0, "enterGame:");
 
         if (!inGame) {
+
             inGame = true;
+
+            for (Thread thread : popupThreads) {
+                thread.interrupt();
+            }
+
         } else {
             // TODO what if in multiple lobbies and a second one starts?
         }
 
     }
 
-    public void move(Direction direction) {
-
-        Logger.Singleton.log(this, 0, "move:");
-        Logger.Singleton.log(this, 1, "direction = " + direction);
-
-        if (inGame) {
-            server.move(playerInfo.getID(), direction);
-        }
-
-    }
+    //public void move(Direction direction) {
+    //
+    //    Logger.Singleton.log(this, 0, "move:");
+    //    Logger.Singleton.log(this, 1, "direction = " + direction);
+    //
+    //    if (inGame) {
+    //        server.move(playerInfo.getID(), direction);
+    //    }
+    //
+    //}
 
     public void action(ClientAction actionIn) {
         if (inGame) {
-            server.action(playerInfo.getID(), actionIn);
+            server.performAction(playerInfo.getID(), actionIn);
         }
     }
 

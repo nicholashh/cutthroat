@@ -96,7 +96,7 @@ public class NetServer {
                     if (action == null) {
                         return;
                     }
-                    adapter.action(connection.getID(), action);
+                    adapter.performAction(connection.getID(), action);
                     return;
                 }
 

@@ -1,16 +1,16 @@
 package ach7nbh2game.server;
 
-import ach7nbh2game.network.packets.PlayerInfo;
-import ach7nbh2game.main.Constants.Direction;
 import ach7nbh2game.network.NetServer;
 import ach7nbh2game.network.adapters.IClientToServer;
 import ach7nbh2game.network.adapters.IServerToClient;
 import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.network.packets.GameState;
+import ach7nbh2game.network.packets.PlayerInfo;
 import ach7nbh2game.util.ClientID;
 import ach7nbh2game.util.GameID;
 
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.util.Map;
 import java.util.Set;
 
@@ -22,6 +22,7 @@ public class GameServer {
     public GameServer () throws IOException {
 
         System.out.println("making new GameServer...");
+        System.out.println("running on " + Inet4Address.getLocalHost().getHostAddress());
 
         network = new NetServer(new IClientToServer () {
 
@@ -33,29 +34,25 @@ public class GameServer {
                 model.requestLobbies(new ClientID(clientID));
             }
 
-            public void joinLobby(int clientID, int lobbyID, PlayerInfo info) {
-                model.joinLobby(new ClientID(clientID), new GameID(lobbyID), info);
+            public void joinLobby(int clientID, int lobbyID) {
+                model.joinLobby(new ClientID(clientID), new GameID(lobbyID));
             }
 
             public void startGame(int clientID) {
                 model.startGame(new ClientID(clientID));
             }
 
-            public void move(int clientID, Direction direction) {
-                // model.respondToClientAction(new ClientID(clientID), new ClientAction(direction));
-            }
-
-            public void action(int clientID, ClientAction actionIn) {
+            public void performAction(int clientID, ClientAction actionIn) {
                 model.respondToClientAction(new ClientID(clientID), actionIn);
             }
 
-            public boolean isConnected() {
-                // this method is only needed client-side
-                return false;
+            public void connectTo (int clientID, String host, PlayerInfo info) throws IOException {
+                model.registerNewClient(new ClientID(clientID), info);
             }
 
-            public void connectTo(String host, PlayerInfo info) throws IOException {
+            public boolean isConnected () {
                 // this method is only needed client-side
+                return true;
             }
 
         });

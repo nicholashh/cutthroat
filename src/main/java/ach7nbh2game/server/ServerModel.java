@@ -33,6 +33,38 @@ public class ServerModel {
 
     }
 
+    public void registerNewClient (ClientID clientID, PlayerInfo info) {
+
+        Logger.Singleton.log(this, 0, "registerNewClient:");
+        Logger.Singleton.log(this, 1, "clientID = " + clientID);
+        Logger.Singleton.log(this, 1, "info = " + info);
+
+        // if this is the first time this client has connected
+        if (!clients.containsKey(clientID)) {
+            // create a new client object for them
+            clients.put(clientID, new Client(clientID, info) {
+                // use this object's closure over the network object
+                // to send new game state information to the client
+                @Override public void enterGame() {
+                    //Logger.Singleton.log(this, 0, "enterGame:");
+                    network.enterGame(clientID.value);
+                }
+                @Override public void announceLobbies() {
+                    //Logger.Singleton.log(this, 0, "announceLobbies:");
+                    requestLobbies(clientID);
+                }
+                @Override public void sendGameState(GameState state) {
+                    //Logger.Singleton.log(this, 0, "sendGameState:");
+                    //Logger.Singleton.log(this, 1, "state = " + state);
+                    network.updateGameState(clientID.value, state);
+                }
+            });
+        } else {
+            // TODO: this client has already connected
+        }
+
+    }
+
     public void createNewGameLobby (String name) {
 
         Logger.Singleton.log(this, 0, "createNewGameLobby:");
@@ -42,43 +74,24 @@ public class ServerModel {
         Game newLobby = new Game(id, name);
         games.put(id, newLobby);
 
+        for (Client client : clients.values()) {
+            client.announceLobbies();
+        }
+
     }
 
-    public void joinLobby (final ClientID clientID, GameID gameID, PlayerInfo clientInfo) {
+    public void joinLobby (final ClientID clientID, GameID gameID) {
 
         Logger.Singleton.log(this, 0, "joinLobby:");
         Logger.Singleton.log(this, 1, "clientID = " + clientID);
         Logger.Singleton.log(this, 1, "gameID = " + gameID);
-        Logger.Singleton.log(this, 1, "clientInfo = " + clientInfo);
 
-        // if this is a valid GameID
-        if (games.containsKey(gameID)) {
-            // if this is the first time this client has connected
-            if (!clients.containsKey(clientID)) {
-                // create a new client object for them
-                clients.put(clientID, new Client(clientID, clientInfo) {
-                    // use this object's closure over the network object
-                    // to send new game state information to the client
-                    @Override public void enterGame() {
-                        //Logger.Singleton.log(this, 0, "enterGame:");
-                        network.enterGame(clientID.value);
-                    }
-                    @Override public void announceLobbies() {
-                        //Logger.Singleton.log(this, 0, "announceLobbies:");
-                        requestLobbies(clientID);
-                    }
-                    @Override public void sendGameState(GameState state) {
-                        //Logger.Singleton.log(this, 0, "sendGameState:");
-                        //Logger.Singleton.log(this, 1, "state = " + state);
-                        network.updateGameState(clientID.value, state);
-                    }
-                });
-            }
+        // if this is a valid ClientID and a valid GameID
+        if (clients.containsKey(clientID) && games.containsKey(gameID)) {
             // add this client to the requested game
             clients.get(clientID).setGame(games.get(gameID));
         } else {
             // TODO: game does not exist
-            System.out.println("    this game does not exist");
         }
 
     }
@@ -162,7 +175,7 @@ public class ServerModel {
             final Client client = clients.get(id);
 
             // wait till the server is ready, then have the client perform that action
-            client.queueAction( new Callback(1, 1, () -> client.perform(action) ) );
+            client.queueAction(new Callback(1, 1, () -> client.perform(action)));
 
         } else {
             // TODO: this client has never connected before

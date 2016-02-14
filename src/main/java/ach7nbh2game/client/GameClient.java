@@ -2,7 +2,6 @@ package ach7nbh2game.client;
 
 import ach7nbh2game.client.adapters.IModelToView;
 import ach7nbh2game.client.adapters.IViewToModel;
-import ach7nbh2game.main.Constants.Direction;
 import ach7nbh2game.network.NetClient;
 import ach7nbh2game.network.adapters.IClientToServer;
 import ach7nbh2game.network.adapters.IServerToClient;
@@ -52,19 +51,15 @@ public class GameClient {
                 network.reqLobbies();
             }
 
-            public void joinLobby(int clientID, int lobbyID, PlayerInfo info) {
-                network.joinLobby(lobbyID, info);
+            public void joinLobby(int clientID, int lobbyID) {
+                network.joinLobby(lobbyID);
             }
 
             public void startGame(int clientID) {
                 network.startGame(clientID);
             }
 
-            public void move(int clientID, Direction direction) {
-                // network.move(direction);
-            }
-
-            public void action(int clientID, ClientAction actionIn) {
+            public void performAction(int clientID, ClientAction actionIn) {
                 network.action(actionIn);
             }
 
@@ -72,7 +67,7 @@ public class GameClient {
                 return network.isConnected();
             }
 
-            public void connectTo(String host, PlayerInfo info) throws IOException {
+            public void connectTo(int clientID, String host, PlayerInfo info) throws IOException {
                 network.connectTo(host, info);
             }
 
@@ -102,11 +97,7 @@ public class GameClient {
 
         view = new ClientView(new IViewToModel () {
 
-            public void move(Direction direction) {
-                model.move(direction);
-            }
-
-            public void action(ClientAction actionIn) {
+            public void performAction(ClientAction actionIn) {
                 model.action(actionIn);
             }
 

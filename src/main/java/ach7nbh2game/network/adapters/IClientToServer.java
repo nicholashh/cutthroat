@@ -1,8 +1,7 @@
 package ach7nbh2game.network.adapters;
 
-import ach7nbh2game.network.packets.PlayerInfo;
-import ach7nbh2game.main.Constants.Direction;
 import ach7nbh2game.network.packets.ClientAction;
+import ach7nbh2game.network.packets.PlayerInfo;
 
 import java.io.IOException;
 
@@ -38,14 +37,7 @@ public interface IClientToServer {
      */
     void startGame (int clientID);
 
-    /**
-     * move up, down, left, right, pick up things, etc
-     * should return the game state (same return type as previous function)
-     * this should be highly easily extensible
-     */
-    void move (int clientID, Direction direction);
-
-    void action (int clientID, ClientAction actionIn);
+    void performAction (int clientID, ClientAction actionIn);
 
     boolean isConnected();
 
