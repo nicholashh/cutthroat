@@ -19,7 +19,6 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 public abstract class Game extends AGameActor {
 
     private final GameID id;
-    private String name;
 
     private boolean gameHasStarted = false;
 
@@ -31,26 +30,18 @@ public abstract class Game extends AGameActor {
 
     public abstract void announceLobbies () ;
 
-    public Game (GameID idIn, String nameIn) {
-
+    public Game (GameID idIn, String name) {
+        super(name);
         id = idIn;
-        name = nameIn;
-
     }
 
     public GameID getID () {
         return id;
     }
 
-    public String getName () {
-        return name;
-    }
-
-    public void setName (String nameIn) {
-        name = nameIn;
-    }
-
     public void addPlayer (Client client) {
+
+        // TODO: can't add player if game has started
 
         Logger.Singleton.log(this, 0, "addPlayer:");
         Logger.Singleton.log(this, 1, "client = " + client);
@@ -61,6 +52,8 @@ public abstract class Game extends AGameActor {
     }
 
     public void removePlayer (Client client) {
+
+        // TODO: special action required if game has started
 
         Logger.Singleton.log(this, 0, "removePlayer:");
         Logger.Singleton.log(this, 1, "client = " + client);
@@ -130,20 +123,31 @@ public abstract class Game extends AGameActor {
 
     }
 
+    private long timeSpentUpdatingState = 0;
+    private long timeSpentSendingStateToPlayers = 0;
+    private long timeSpentSleeping = 0;
+
     private void incTick () {
 
         tick += 1;
+
+        long starTime, endTime;
+        starTime = System.currentTimeMillis();
 
         boolean first = true;
         for (CallbackRegistration registration : callbackRegistrations) {
             if ((tick - registration.startTime) % registration.frequency == 0) {
 
                 if (first) {
+                    first = false;
                     Logger.Singleton.log(this, 0, "tick! " + (tick - 1) + "->" + tick);
                     Logger.Singleton.log(this, 1, "callbackRegistrations = " + callbackRegistrations);
-                    first = false;
+                    Logger.Singleton.log(this, 1, "timeSpentUpdatingState = " + timeSpentUpdatingState);
+                    Logger.Singleton.log(this, 1, "timeSpentSendingStateToPlayers = " + timeSpentSendingStateToPlayers);
+                    Logger.Singleton.log(this, 1, "timeSpentSleeping = " + timeSpentSleeping);
                 }
 
+                // run the callback
                 if (registration.run()) {
                     Logger.Singleton.log(this, 0, "removing " + registration);
                     callbackRegistrations.remove(registration);
@@ -153,9 +157,22 @@ public abstract class Game extends AGameActor {
             }
         }
 
+        endTime = System.currentTimeMillis();
+        long timeSpentUpdatingStateThisTime = endTime - starTime;
+        timeSpentUpdatingState += timeSpentUpdatingStateThisTime;
+        starTime = endTime;
+
         if (tick % Constants.clientUpdatesFrequency == 0) {
             updateAllPlayers();
         }
+
+        endTime = System.currentTimeMillis();
+        long timeSpentSendingStateToPlayersThisTime = endTime - starTime;
+        timeSpentSendingStateToPlayers += timeSpentSendingStateToPlayersThisTime;
+
+        Logger.Singleton.log(this, 0, "ending tick " + tick + "...");
+        Logger.Singleton.log(this, 1, "timeSpentUpdatingStateThisTime = " + timeSpentUpdatingStateThisTime);
+        Logger.Singleton.log(this, 1, "timeSpentSendingStateToPlayersThisTime = " + timeSpentSendingStateToPlayersThisTime);
 
     }
 
@@ -173,8 +190,18 @@ public abstract class Game extends AGameActor {
 
                     while (true) {
 
-                        Thread.sleep(1000 / Constants.serverTicksPerSecond);
+                        long starTime = System.currentTimeMillis();
                         incTick();
+                        long endTime = System.currentTimeMillis();
+
+                        long timeToSleep = 1000 - (endTime - starTime);
+                        timeSpentSleeping += timeToSleep;
+
+                        Logger.Singleton.log(Game.this, 0, "timer thread: sleeping for " + timeToSleep);
+
+                        if (timeToSleep > 0) {
+                            Thread.sleep(timeToSleep / Constants.serverTicksPerSecond);
+                        }
 
                     }
 
@@ -192,6 +219,11 @@ public abstract class Game extends AGameActor {
             // TODO
         }
 
+    }
+
+    @Override
+    public String toString () {
+        return "Game(" + super.toString() + ")";
     }
 
 }

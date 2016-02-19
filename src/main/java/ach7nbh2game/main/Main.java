@@ -23,6 +23,7 @@ public class Main {
                 System.exit(-1);
             } else {
 
+                System.out.println("CUTTHROAT ~ code version: 49");
                 System.out.println("running Main with arguments " + args[0]);
 
                 for (char c : args[0].toCharArray()) {
@@ -40,6 +41,7 @@ public class Main {
             for (int i = 0; i < numServers; i++) {
                 //Log.set(Log.LEVEL_DEBUG);
                 Logger.Singleton.loggingServer = true;
+                Logger.Singleton.loggingNetwork = true;
                 GameServer newServer = new GameServer();
                 newServer.start();
             }

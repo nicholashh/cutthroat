@@ -1,9 +1,11 @@
 package ach7nbh2game.network;
 
+import ach7nbh2game.main.Constants;
 import ach7nbh2game.network.Network.*;
 import ach7nbh2game.network.adapters.IClientToServer;
 import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.network.packets.GameState;
+import ach7nbh2game.util.Logger;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
@@ -31,7 +33,7 @@ public class NetServer {
 
         System.out.println("starting the NetServer!");
 
-        server = new Server(1048676, 1048676) {
+        server = new Server(Constants.bufferSize, Constants.bufferSize) {
             protected Connection newConnection () {
                 // By providing our own connection implementation, we can store per
                 // connection state without a connection ID to state look up.
@@ -140,12 +142,14 @@ public class NetServer {
         EnterGame start = new EnterGame();
         start.clientID = clientID;
         server.sendToTCP(clientID, start);
+        Logger.Singleton.log(this, 0, "sending: EnterGame");
     }
 
     public void updateGameState(int clientID, GameState state) {
         DiffMessage diffMsg = new DiffMessage();
         diffMsg.pkt = state;
         server.sendToTCP(clientID, diffMsg);
+        Logger.Singleton.log(this, 0, "sending: DiffMessage");
     }
 
     public void announceLobbies(int clientID,
@@ -157,11 +161,17 @@ public class NetServer {
         listMsg.players = players;
         listMsg.lobbyToPlayers = lobbyToPlayers;
         server.sendToTCP(clientID, listMsg);
+        Logger.Singleton.log(this, 0, "sending: LobbyList");
     }
 
     // This holds per connection state.
     static class GameConnection extends Connection {
         public String name;
+    }
+
+    @Override
+    public String toString () {
+        return "NetServer";
     }
 
 }

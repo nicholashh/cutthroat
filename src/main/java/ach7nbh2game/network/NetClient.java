@@ -1,9 +1,11 @@
 package ach7nbh2game.network;
 
-import ach7nbh2game.network.packets.PlayerInfo;
+import ach7nbh2game.main.Constants;
 import ach7nbh2game.network.Network.*;
 import ach7nbh2game.network.adapters.IServerToClient;
 import ach7nbh2game.network.packets.ClientAction;
+import ach7nbh2game.network.packets.PlayerInfo;
+import ach7nbh2game.util.Logger;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -38,7 +40,11 @@ public class NetClient {
 
     public void connectTo (String hostIn, final PlayerInfo info) throws IOException {
 
-        client = new Client(1048676, 1048676);
+        if (client != null)
+            client.stop();
+        client = null;
+
+        client = new Client(Constants.bufferSize, Constants.bufferSize);
         client.start();
         host = hostIn;
         name = info.getUsername();
@@ -63,16 +69,19 @@ public class NetClient {
                 }
 
                 if (object instanceof DiffMessage) {
+                    Logger.Singleton.log(NetClient.this, 0, "received: DiffMessage");
                     DiffMessage diffMsg = (DiffMessage) object;
                     adapter.updateGameState(client.getID(), diffMsg.pkt);
                     return;
                 }
 
                 if (object instanceof EnterGame) {
+                    Logger.Singleton.log(NetClient.this, 0, "received: EnterGame");
                     adapter.enterGame(connection.getID());
                 }
 
                 if (object instanceof LobbyList) {
+                    Logger.Singleton.log(NetClient.this, 0, "received: LobbyList");
                     LobbyList msg = (LobbyList) object;
                     adapter.announceLobbies(client.getID(),
                             msg.lobbies, msg.players, msg.lobbyToPlayers);
@@ -125,6 +134,11 @@ public class NetClient {
         ActionMessage actMsg = new ActionMessage();
         actMsg.action = actionIn;
         client.sendTCP(actMsg);
+    }
+
+    @Override
+    public String toString () {
+        return "NetClient";
     }
 
 }

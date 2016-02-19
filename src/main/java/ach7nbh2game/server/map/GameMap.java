@@ -67,9 +67,9 @@ public class GameMap {
 
     public void swap (IMapComponent thing1, IMapComponent thing2) {
 
-        Logger.Singleton.log(this, 0, "swap:");
-        Logger.Singleton.log(this, 1, "thing1 = " + thing1);
-        Logger.Singleton.log(this, 1, "thing2 = " + thing2);
+        //Logger.Singleton.log(this, 0, "swap:");
+        //Logger.Singleton.log(this, 1, "thing1 = " + thing1);
+        //Logger.Singleton.log(this, 1, "thing2 = " + thing2);
 
         int thing1y = thing1.getY();
         int thing1x = thing1.getX();

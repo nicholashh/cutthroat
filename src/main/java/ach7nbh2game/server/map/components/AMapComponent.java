@@ -12,10 +12,8 @@ public abstract class AMapComponent extends AGameActor implements IMapComponent 
     private int y;
     private CallbackRegistration callback;
 
-    private final String componentName;
-
-    public AMapComponent (String componentNameIn) {
-        componentName = componentNameIn;
+    public AMapComponent (String name) {
+        super(name);
     }
 
     public int getX () {
@@ -87,7 +85,7 @@ public abstract class AMapComponent extends AGameActor implements IMapComponent 
 
     @Override
     public String toString () {
-        return componentName + "(" + x + "," + y + ")";
+        return super.toString() + "(" + x + "," + y + ")";
     }
 
 }

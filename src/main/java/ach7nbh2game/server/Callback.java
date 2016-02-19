@@ -1,7 +1,5 @@
 package ach7nbh2game.server;
 
-import ach7nbh2game.util.Logger;
-
 import java.util.Objects;
 
 public class Callback {
@@ -40,7 +38,7 @@ public class Callback {
         }
 
         // return if numTimesLeft just reached 0 (down from 1)
-        Logger.Singleton.log(this, 0, "run: returning: " + (numTimesLeft == 0));
+        //Logger.Singleton.log(this, 0, "run: returning: " + (numTimesLeft == 0));
         return numTimesLeft == 0;
 
     }

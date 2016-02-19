@@ -16,7 +16,7 @@ public class CallbackRegistration extends Callback {
 
     @Override
     public String toString () {
-        return "CallbackRegistration(" + startTime + "," + callback.toString() + ")";
+        return "Registration(" + startTime + "," + callback.toString() + ")";
     }
 
     @Override

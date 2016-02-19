@@ -7,6 +7,12 @@ public abstract class AGameActor implements IGameActor {
     private GameMap map;
     private Game game;
 
+    private final String name;
+
+    public AGameActor (String nameIn) {
+        name = nameIn;
+    }
+
     public GameMap getMap () {
         return map;
     }
@@ -29,6 +35,15 @@ public abstract class AGameActor implements IGameActor {
 
     public boolean gameIsNull () {
         return game == null;
+    }
+
+    public String getName () {
+        return name;
+    }
+
+    @Override
+    public String toString () {
+        return name;
     }
 
 }
