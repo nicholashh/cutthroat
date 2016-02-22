@@ -5,9 +5,9 @@ import ach7nbh2game.server.map.AGameActor;
 import ach7nbh2game.server.map.GameMap;
 import ach7nbh2game.server.map.components.Client;
 import ach7nbh2game.server.map.components.Ground;
-import ach7nbh2game.util.ClientID;
-import ach7nbh2game.util.Coordinate;
-import ach7nbh2game.util.GameID;
+import ach7nbh2game.util.id.ClientID;
+import ach7nbh2game.util.id.Coordinate;
+import ach7nbh2game.util.id.GameID;
 import ach7nbh2game.util.Logger;
 
 import java.util.Collection;

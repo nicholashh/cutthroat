@@ -1,4 +1,4 @@
-package ach7nbh2game.util;
+package ach7nbh2game.util.id;
 
 import java.util.Objects;
 

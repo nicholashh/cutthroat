@@ -4,7 +4,7 @@ import ach7nbh2game.main.Constants;
 import ach7nbh2game.server.map.components.Ground;
 import ach7nbh2game.server.map.components.IMapComponent;
 import ach7nbh2game.server.map.components.Wall;
-import ach7nbh2game.util.Coordinate;
+import ach7nbh2game.util.id.Coordinate;
 import ach7nbh2game.util.Logger;
 import com.googlecode.blacken.grid.Grid;
 

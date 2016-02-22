@@ -6,8 +6,8 @@ import ach7nbh2game.network.adapters.IServerToClient;
 import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.network.packets.GameState;
 import ach7nbh2game.network.packets.PlayerInfo;
-import ach7nbh2game.util.ClientID;
-import ach7nbh2game.util.GameID;
+import ach7nbh2game.util.id.ClientID;
+import ach7nbh2game.util.id.GameID;
 
 import java.io.IOException;
 import java.net.Inet4Address;

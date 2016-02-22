@@ -4,7 +4,7 @@ import ach7nbh2game.main.Constants.Direction;
 import ach7nbh2game.server.CallbackRegistration;
 import ach7nbh2game.server.map.AGameActor;
 import ach7nbh2game.server.map.GameMap;
-import ach7nbh2game.util.Coordinate;
+import ach7nbh2game.util.id.Coordinate;
 
 public abstract class AMapComponent extends AGameActor implements IMapComponent {
 

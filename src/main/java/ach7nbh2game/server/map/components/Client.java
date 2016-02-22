@@ -7,13 +7,11 @@ import ach7nbh2game.network.packets.GameState;
 import ach7nbh2game.server.Callback;
 import ach7nbh2game.server.Game;
 import ach7nbh2game.server.map.GameMap;
-import ach7nbh2game.util.ClientID;
-import ach7nbh2game.util.Coordinate;
+import ach7nbh2game.util.id.ClientID;
+import ach7nbh2game.util.id.Coordinate;
 import ach7nbh2game.util.Logger;
 
 import ach7nbh2game.util.Utility;
-
-import java.net.Inet4Address;
 
 public abstract class Client extends AMapComponent {
 
