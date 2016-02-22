@@ -23,7 +23,7 @@ public class Main {
                 System.exit(-1);
             } else {
 
-                System.out.println("CUTTHROAT ~ code version: 49");
+                System.out.println("CUTTHROAT ~ code version: 50");
                 System.out.println("running Main with arguments " + args[0]);
 
                 for (char c : args[0].toCharArray()) {
@@ -48,7 +48,7 @@ public class Main {
 
             for (int i = 0; i < numClients; i++) {
                 //Log.set(Log.LEVEL_DEBUG);
-                //Logger.Singleton.loggingClient = true;
+                Logger.Singleton.loggingClient = true;
                 GameClient newClient = new GameClient();
                 newClient.start();
             }
