@@ -12,7 +12,7 @@ public class PopupController {
         prompt += "Connect to a game server!\n";
         prompt += "What is the server's IP address?";
 
-        return askForThing(prompt, "glass.clear.rice.edu");
+        return askForThing(prompt, "cutthroat.pwnz.org");
 
     }
 
