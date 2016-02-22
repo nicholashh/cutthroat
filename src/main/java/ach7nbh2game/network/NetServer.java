@@ -77,6 +77,7 @@ public class NetServer {
                 }
 
                 if (object instanceof StartGame) {
+                    Logger.Singleton.log(NetServer.this, 0, "received: StartGame");
                     if (connection.name == null) {
                         return;
                     }
@@ -88,6 +89,7 @@ public class NetServer {
                 }
 
                 if (object instanceof ActionMessage) {
+                    Logger.Singleton.log(NetServer.this, 0, "received: ActionMessage");
                     // Ignore the object if a client tries to chat before registering a name.
                     if (connection.name == null) {
                         return;
@@ -103,6 +105,7 @@ public class NetServer {
                 }
 
                 if (object instanceof CreateLobby) {
+                    Logger.Singleton.log(NetServer.this, 0, "received: CreateLobby");
                     if (connection.name == null) {
                         return;
                     }
@@ -112,6 +115,7 @@ public class NetServer {
                 }
 
                 if (object instanceof ReqLobbies) {
+                    Logger.Singleton.log(NetServer.this, 0, "received: ReqLobbies");
                     if (connection.name == null) {
                         return;
                     }
@@ -120,6 +124,7 @@ public class NetServer {
                 }
 
                 if (object instanceof JoinLobby) {
+                    Logger.Singleton.log(NetServer.this, 0, "received: JoinLobby");
                     if (connection.name == null) {
                         return;
                     }
@@ -139,29 +144,29 @@ public class NetServer {
     }
 
     public void enterGame(int clientID) {
+        Logger.Singleton.log(this, 0, "sending: EnterGame");
         EnterGame start = new EnterGame();
         start.clientID = clientID;
         server.sendToTCP(clientID, start);
-        Logger.Singleton.log(this, 0, "sending: EnterGame");
     }
 
     public void updateGameState(int clientID, GameState state) {
+        Logger.Singleton.log(this, 0, "sending: DiffMessage");
         DiffMessage diffMsg = new DiffMessage();
         diffMsg.pkt = state;
         server.sendToTCP(clientID, diffMsg);
-        Logger.Singleton.log(this, 0, "sending: DiffMessage");
     }
 
     public void announceLobbies(int clientID,
             Map<Integer, String> lobbies,
             Map<Integer, String> players,
             Map<Integer, Set<Integer>> lobbyToPlayers) {
+        Logger.Singleton.log(this, 0, "sending: LobbyList");
         LobbyList listMsg = new LobbyList();
         listMsg.lobbies = lobbies;
         listMsg.players = players;
         listMsg.lobbyToPlayers = lobbyToPlayers;
         server.sendToTCP(clientID, listMsg);
-        Logger.Singleton.log(this, 0, "sending: LobbyList");
     }
 
     // This holds per connection state.

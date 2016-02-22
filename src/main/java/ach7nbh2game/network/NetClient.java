@@ -107,30 +107,35 @@ public class NetClient {
     }
 
     public void createLobby(String name) {
+        Logger.Singleton.log(NetClient.this, 0, "sending: CreateLobby");
         CreateLobby clobby = new CreateLobby();
         clobby.name = name;
         client.sendTCP(clobby);
     }
 
     public void reqLobbies() {
+        Logger.Singleton.log(NetClient.this, 0, "sending: CreateLobby");
         ReqLobbies req = new ReqLobbies();
         req.uname = name;
         client.sendTCP(req);
     }
 
     public void joinLobby(int lobbyID) {
+        Logger.Singleton.log(NetClient.this, 0, "sending: JoinLobby");
         JoinLobby join = new JoinLobby();
         join.lobbyID = lobbyID;
         client.sendTCP(join);
     }
 
     public void startGame(int lobbyID) {
+        Logger.Singleton.log(NetClient.this, 0, "sending: StartGame");
         StartGame start = new StartGame();
         start.lobbyID = lobbyID;
         client.sendTCP(start);
     }
 
     public void action(ClientAction actionIn) {
+        Logger.Singleton.log(NetClient.this, 0, "sending: ActionMessage");
         ActionMessage actMsg = new ActionMessage();
         actMsg.action = actionIn;
         client.sendTCP(actMsg);
