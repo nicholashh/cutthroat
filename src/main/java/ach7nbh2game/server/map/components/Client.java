@@ -14,10 +14,14 @@ import ach7nbh2game.util.Logger;
 
 import ach7nbh2game.util.Utility;
 
+import java.io.IOException;
+import java.util.Random;
+
 public abstract class Client extends AMapComponent {
 
     private final ClientID id;
     private final PlayerInfo info;
+    private Random rand = new Random();
 
     // client objects know how to communicate with the clients they represent
     public abstract void enterGame ();
@@ -50,8 +54,17 @@ public abstract class Client extends AMapComponent {
         info.setHealth(info.getHealth()-healthDiff);
         if (info.getHealth() <= 0) {
             removeFromMap();
-            getCallback().cancel();
             bullet.getOwner().incScore(1);
+            try {Thread.sleep(5000);} catch (InterruptedException e) {}
+
+            int newx = rand.nextInt(Constants.clientMapWidth);
+            int newy = rand.nextInt(Constants.clientMapHeight);
+            IMapComponent newloc = getMap().get(newx, newy);
+            while (newloc instanceof Wall || newloc instanceof Client || newloc instanceof Bullet) {
+                newx = rand.nextInt(Constants.clientMapWidth);
+                newy = rand.nextInt(Constants.clientMapHeight);
+            }
+            getMap().set(newy, newx, this);
         }
     }
 
