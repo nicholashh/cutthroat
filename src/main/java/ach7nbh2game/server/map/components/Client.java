@@ -1,5 +1,6 @@
 package ach7nbh2game.server.map.components;
 
+import ach7nbh2game.main.Constants;
 import ach7nbh2game.network.packets.PlayerInfo;
 import ach7nbh2game.main.Constants.*;
 import ach7nbh2game.network.packets.ClientAction;
@@ -35,6 +36,35 @@ public abstract class Client extends AMapComponent {
 
     public ClientID getID () {
         return id;
+    }
+
+    public int getHealth() {
+        return info.getHealth();
+    }
+
+    public void incHealth(int healthDiff) {
+        info.setHealth(info.getHealth()+healthDiff);
+    }
+
+    public void decHealth(int healthDiff, Bullet bullet) {
+        info.setHealth(info.getHealth()-healthDiff);
+        if (info.getHealth() <= 0) {
+            removeFromMap();
+            getCallback().cancel();
+            bullet.getOwner().incScore(1);
+        }
+    }
+
+    public int getScore() {
+        return info.getScore();
+    }
+
+    public void incScore(int scoreDiff) {
+        info.setScore(info.getScore()+scoreDiff);
+    }
+
+    public void decScore(int scoreDiff) {
+        info.setScore(info.getScore()-scoreDiff);
     }
 
     // essentially a setter for the callback
@@ -103,7 +133,7 @@ public abstract class Client extends AMapComponent {
 
                     Logger.Singleton.log(this, 0, "firing bullet " + direction);
 
-                    Bullet newBullet = new Bullet(direction,this);
+                    Bullet newBullet = new Bullet(direction, this, Constants.bulletTier1);
                     newBullet.placeOnMap(map, newX, newY);
                     newBullet.setGame(getGame());
                     newBullet.start();

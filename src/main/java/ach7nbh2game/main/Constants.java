@@ -14,6 +14,12 @@ public class Constants {
     public enum Action {MOVE, SHOOT}
     public enum Direction {UP, LEFT, DOWN, RIGHT}
 
+    // client stat definitions
+    public static final int clientHealth = 100;
+
+    // bullet tiers
+    public static final int bulletTier1 = 25;
+
     // game time-sensitive settings
     public static final int serverTicksPerSecond = 30;
     public static final int clientUpdatesPerSecond = 30;

@@ -1,6 +1,7 @@
 package ach7nbh2game.client;
 
 import ach7nbh2game.client.adapters.IModelToView;
+import ach7nbh2game.main.Constants;
 import ach7nbh2game.network.adapters.IClientToServer;
 import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.network.packets.GameState;

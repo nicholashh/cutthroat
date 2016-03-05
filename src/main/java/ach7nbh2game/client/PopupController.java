@@ -1,10 +1,19 @@
 package ach7nbh2game.client;
 
+import ach7nbh2game.main.Constants;
 import ach7nbh2game.util.Utility;
+import com.sun.org.apache.bcel.internal.generic.POP;
 
 import javax.swing.*;
+import java.util.ArrayList;
 
 public class PopupController {
+
+    private static ClientView cv;
+
+    public PopupController(ClientView view) {
+        cv = view;
+    }
 
     public static String askForServerIP () {
 
@@ -36,6 +45,8 @@ public class PopupController {
     }
 
     public static String askForThing (String label, String value) {
+
+//        String input = cv.getWindow().fill(Window.Component.CenterPanel, );
 
         String input = (String) JOptionPane.showInputDialog(
                 null, label, null, JOptionPane.QUESTION_MESSAGE, null, null, value);

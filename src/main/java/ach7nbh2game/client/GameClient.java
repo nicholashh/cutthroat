@@ -19,6 +19,7 @@ public class GameClient {
     private NetClient network;
     private ClientModel model;
     private ClientView view;
+    private PopupController popupctl;
 
     public GameClient () {
 
@@ -40,6 +41,16 @@ public class GameClient {
             }
 
         });
+
+        view = new ClientView(new IViewToModel () {
+
+            public void performAction(ClientAction actionIn) {
+                model.action(actionIn);
+            }
+
+        });
+
+        popupctl = new PopupController(view);
 
         model = new ClientModel(new IClientToServer () {
 
@@ -74,7 +85,7 @@ public class GameClient {
         }, new IModelToView () {
 
             public String askForUsername() {
-                return PopupController.askForUsername();
+                return popupctl.askForUsername();
             }
 
             public String askForServerIP() {
@@ -91,14 +102,6 @@ public class GameClient {
 
             public void showScores(GameState state) {
                 view.showScores(state);
-            }
-
-        });
-
-        view = new ClientView(new IViewToModel () {
-
-            public void performAction(ClientAction actionIn) {
-                model.action(actionIn);
             }
 
         });

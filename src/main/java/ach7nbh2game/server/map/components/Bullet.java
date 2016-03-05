@@ -11,15 +11,21 @@ public class Bullet extends AMapComponent {
 
     private Direction direction;
     private Client owner;
+    private int damage;
 
     private int mapChar = 46;
 
     private Random rand = new Random();
 
-    public Bullet (Direction directionIn, Client ownerIn) {
+    public Bullet (Direction directionIn, Client ownerIn, int damageIn) {
         super("Bullet");
         direction = directionIn;
         owner = ownerIn;
+        damage = damageIn;
+    }
+
+    public Client getOwner() {
+        return owner;
     }
 
     public void start () {
@@ -44,28 +50,33 @@ public class Bullet extends AMapComponent {
         } else if (thing instanceof Client) {
 
             // TODO
+            removeFromMap();
+            getCallback().cancel();
+
+            Client player = (Client) thing;
+            player.decHealth(damage, this);
 
             // just for now...
-            mapChar = 42;
-            boolean which = rand.nextBoolean();
-            switch (direction) {
-                case UP:
-                    direction = which ? Direction.LEFT : Direction.RIGHT;
-                    break;
-                case LEFT:
-                    direction = which ? Direction.DOWN : Direction.UP;
-                    break;
-                case DOWN:
-                    direction = which ? Direction.RIGHT : Direction.LEFT;
-                    break;
-                case RIGHT:
-                    direction = which ? Direction.UP : Direction.DOWN;
-                    break;
-            }
+//            mapChar = 42;
+//            boolean which = rand.nextBoolean();
+//            switch (direction) {
+//                case UP:
+//                    direction = which ? Direction.LEFT : Direction.RIGHT;
+//                    break;
+//                case LEFT:
+//                    direction = which ? Direction.DOWN : Direction.UP;
+//                    break;
+//                case DOWN:
+//                    direction = which ? Direction.RIGHT : Direction.LEFT;
+//                    break;
+//                case RIGHT:
+//                    direction = which ? Direction.UP : Direction.DOWN;
+//                    break;
+//            }
 
-            if (numTries > 0) {
-                move(numTries - 1);
-            }
+//            if (numTries > 0) {
+//                move(numTries - 1);
+//            }
 
         } else if (thing instanceof Wall || thing instanceof Bullet || thing == null) {
 

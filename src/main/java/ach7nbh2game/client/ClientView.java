@@ -33,6 +33,10 @@ public class ClientView {
         model = modelIn;
     }
 
+    public Window getWindow() {
+        return window;
+    }
+
     public void start () {
 
         System.out.println("starting the ClientView!");
