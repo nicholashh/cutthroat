@@ -7,6 +7,7 @@ import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.network.packets.GameState;
 import ach7nbh2game.server.Callback;
 import ach7nbh2game.server.Game;
+import ach7nbh2game.server.PlayerState;
 import ach7nbh2game.server.map.GameMap;
 import ach7nbh2game.util.id.ClientID;
 import ach7nbh2game.util.id.Coordinate;
@@ -14,13 +15,14 @@ import ach7nbh2game.util.Logger;
 
 import ach7nbh2game.util.Utility;
 
-import java.io.IOException;
 import java.util.Random;
 
 public abstract class Client extends AMapComponent {
 
     private final ClientID id;
     private final PlayerInfo info;
+    private PlayerState state = new PlayerState();
+
     private Random rand = new Random();
 
     // client objects know how to communicate with the clients they represent
@@ -43,55 +45,55 @@ public abstract class Client extends AMapComponent {
     }
 
     public int getHealth() {
-        return info.getHealth();
+        return state.getHealth();
     }
 
     public void incHealth(int healthDiff) {
-        info.setHealth(info.getHealth()+healthDiff);
+        state.setHealth(state.getHealth()+healthDiff);
     }
 
     public void decHealth(int healthDiff, Bullet bullet) {
-        info.setHealth(info.getHealth()-healthDiff);
-        if (info.getHealth() <= 0) {
+        state.setHealth(state.getHealth()-healthDiff);
+        if (state.getHealth() <= 0) {
             removeFromMap();
             bullet.getOwner().incScore(1);
 
             (new Thread() { public void run() {
                 try {Thread.sleep(5000);} catch (InterruptedException e) {}
 
-                info.setHealth(Constants.clientHealth);
+                state.setHealth(Constants.clientHealth);
                 Coordinate newloc = getMap().getRandomLocationWithA(Ground.class);
                 placeOnMap(getMap(), newloc);
             }}).start();
         }
     }
 
-    public PlayerInfo getInfo() {
-        return  info;
+    public PlayerState getState() {
+        return state;
     }
 
     public int getScore() {
-        return info.getScore();
+        return state.getScore();
     }
 
     public void incScore(int scoreDiff) {
-        info.setScore(info.getScore()+scoreDiff);
+        state.setScore(state.getScore()+scoreDiff);
     }
 
     public void decScore(int scoreDiff) {
-        info.setScore(info.getScore()-scoreDiff);
+        state.setScore(state.getScore()-scoreDiff);
     }
 
     public int getAmmo() {
-        return info.getAmmo();
+        return state.getAmmo();
     }
 
     public void incAmmo(int ammoDiff) {
-        info.setAmmo(info.getAmmo()+ammoDiff);
+        state.setAmmo(state.getAmmo()+ammoDiff);
     }
 
     public void decAmmo(int ammoDiff) {
-        info.setAmmo(info.getAmmo()-ammoDiff);
+        state.setAmmo(state.getAmmo()-ammoDiff);
     }
 
     // essentially a setter for the callback
@@ -160,8 +162,8 @@ public abstract class Client extends AMapComponent {
 
                     Logger.Singleton.log(this, 0, "firing bullet " + direction);
 
-                    if (info.getAmmo() > 0) {
-                        Bullet newBullet = new Bullet(direction, this, info.getBulletDmg());
+                    if (state.getAmmo() > 0) {
+                        Bullet newBullet = new Bullet(direction, this, state.getBulletDmg());
                         newBullet.placeOnMap(map, newX, newY);
                         newBullet.setGame(getGame());
                         newBullet.start();
@@ -180,7 +182,7 @@ public abstract class Client extends AMapComponent {
                     Logger.Singleton.log(this, 0, "digging "+direction);
 
                     Wall wall = (Wall) thing;
-                    wall.decHealth(info.getPickaxeDmg());
+                    wall.decHealth(this, state.getPickaxeDmg());
             }
         }
 

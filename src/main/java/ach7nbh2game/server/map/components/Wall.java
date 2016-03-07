@@ -12,7 +12,7 @@ public class Wall extends AMapComponent {
 
     public int getMapChar () {
 
-        return 35;
+        return "\u2592".codePointAt(0);
 
     }
 
@@ -24,10 +24,12 @@ public class Wall extends AMapComponent {
         health = newhealth;
     }
 
-    public void decHealth(int healthDiff) {
+    public void decHealth(Client client, int healthDiff) {
         health -= healthDiff;
         if (health <= 0) {
             removeFromMap();
+
+            client.getState();
         }
     }
 

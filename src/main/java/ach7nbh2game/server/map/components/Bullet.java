@@ -54,7 +54,7 @@ public class Bullet extends AMapComponent {
             getCallback().cancel();
 
             Client player = (Client) thing;
-            player.decHealth(damage*owner.getInfo().getGunDmg(), this);
+            player.decHealth(damage*owner.getState().getGunDmg(), this);
 
             // just for now...
 //            mapChar = 42;
