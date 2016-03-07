@@ -222,7 +222,8 @@ public class ClientView {
 
                 		if ((input >= 65 && input <= 90) ||      // uppercase letters
                 				(input >= 97 && input <= 122) || // lowercase letters
-                				(input >= 48 && input <= 57))    // numbers
+                				(input >= 48 && input <= 57) ||  // numbers
+								(input == 46))					 // period
                 			userInput += (char)input;
                 		else switch (input) {
                 		case BlackenKeys.KEY_BACKSPACE:
