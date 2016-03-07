@@ -207,12 +207,16 @@ public class Window {
                 case CenterPanel:
                     fill(component, '*'); break;
                 case LeftWindowBorder:
+                    fill(component, ' '); break;
                 case LeftMapBorder:
                 case RightMapBorder:
+                    fill(component, '|'); break;
                 case RightWindowBorder:
                 case TopWindowBorder:
+                    fill(component, ' '); break;
                 case TopMapBorder:
                 case BottomMapBorder:
+                    fill(component, '-'); break;
                 case BottomWindowBorder:
                     fill(component, ' '); break;
             }

@@ -55,17 +55,19 @@ public abstract class Client extends AMapComponent {
         if (info.getHealth() <= 0) {
             removeFromMap();
             bullet.getOwner().incScore(1);
-            try {Thread.sleep(5000);} catch (InterruptedException e) {}
 
-            int newx = rand.nextInt(Constants.clientMapWidth);
-            int newy = rand.nextInt(Constants.clientMapHeight);
-            IMapComponent newloc = getMap().get(newx, newy);
-            while (newloc instanceof Wall || newloc instanceof Client || newloc instanceof Bullet) {
-                newx = rand.nextInt(Constants.clientMapWidth);
-                newy = rand.nextInt(Constants.clientMapHeight);
-            }
-            getMap().set(newy, newx, this);
+            (new Thread() { public void run() {
+                try {Thread.sleep(5000);} catch (InterruptedException e) {}
+
+                info.setHealth(Constants.clientHealth);
+                Coordinate newloc = getMap().getRandomLocationWithA(Ground.class);
+                placeOnMap(getMap(), newloc);
+            }}).start();
         }
+    }
+
+    public PlayerInfo getInfo() {
+        return  info;
     }
 
     public int getScore() {
@@ -78,6 +80,18 @@ public abstract class Client extends AMapComponent {
 
     public void decScore(int scoreDiff) {
         info.setScore(info.getScore()-scoreDiff);
+    }
+
+    public int getAmmo() {
+        return info.getAmmo();
+    }
+
+    public void incAmmo(int ammoDiff) {
+        info.setAmmo(info.getAmmo()+ammoDiff);
+    }
+
+    public void decAmmo(int ammoDiff) {
+        info.setAmmo(info.getAmmo()-ammoDiff);
     }
 
     // essentially a setter for the callback
@@ -146,10 +160,13 @@ public abstract class Client extends AMapComponent {
 
                     Logger.Singleton.log(this, 0, "firing bullet " + direction);
 
-                    Bullet newBullet = new Bullet(direction, this, Constants.bulletTier1);
-                    newBullet.placeOnMap(map, newX, newY);
-                    newBullet.setGame(getGame());
-                    newBullet.start();
+                    if (info.getAmmo() > 0) {
+                        Bullet newBullet = new Bullet(direction, this, info.getBulletDmg());
+                        newBullet.placeOnMap(map, newX, newY);
+                        newBullet.setGame(getGame());
+                        newBullet.start();
+                        decAmmo(1);
+                    }
 
                     break;
 
@@ -157,6 +174,14 @@ public abstract class Client extends AMapComponent {
 
             }
 
+        } else if (thing instanceof Wall) {
+            switch(action.action) {
+                case DIG:
+                    Logger.Singleton.log(this, 0, "digging "+direction);
+
+                    Wall wall = (Wall) thing;
+                    wall.decHealth(info.getPickaxeDmg());
+            }
         }
 
     }

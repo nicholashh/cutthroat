@@ -45,8 +45,30 @@ public class PopupController {
     }
 
     public static String askForThing (String label, String value) {
+        ArrayList<ArrayList<Integer>> toPrint = new ArrayList<>();
+        String[] separate = value.split("\n");
+        for (int i = 0; i < separate.length && i < Constants.clientMapHeight; i++) {
+            char[] line = separate[i].toCharArray();
+            int linelength = separate[i].length();
+            int padding = Constants.clientMapWidth-linelength;
 
-//        String input = cv.getWindow().fill(Window.Component.CenterPanel, );
+            ArrayList<Integer> linearray = new ArrayList<>();
+            for (int j = 0; j < Math.floorDiv(padding, 2); j++) {
+                linearray.add((int) ' ');
+            }
+            for (char c : line) {
+                linearray.add((int) c);
+            }
+            for (int j = 0; j < Math.ceil(padding/2.0); j++) {
+                linearray.add((int) ' ');
+            }
+
+            toPrint.add(linearray);
+        }
+
+        cv.getWindow().fill(Window.Component.CenterPanel, toPrint);
+
+        String input = cv.waitForResponse();
 
         String input = (String) JOptionPane.showInputDialog(
                 null, label, null, JOptionPane.QUESTION_MESSAGE, null, null, value);

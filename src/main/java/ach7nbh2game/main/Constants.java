@@ -11,14 +11,30 @@ public class Constants {
     public static final int mapWidth = 81;
 
     // client action helper definitions
-    public enum Action {MOVE, SHOOT}
+    public enum Action {MOVE, SHOOT, DIG}
     public enum Direction {UP, LEFT, DOWN, RIGHT}
 
     // client stat definitions
     public static final int clientHealth = 100;
+    public static final int initAmmo = 10;
 
     // bullet tiers
-    public static final int bulletTier1 = 25;
+    public static final int bullet1 = 25;
+
+    // gun tiers
+    public static final int gun1 = 1;
+    public static final int gun2 = 2;
+
+    // pickaxe tiers
+    public static final int pickaxe1 = 10;
+    public static final int pickaxe2 = 20;
+    public static final int pickaxe3 = 30;
+
+    // wall tiers
+    public static final int wall1 = 50;
+
+    // use selected tool
+    public enum Tool {GUN, PICKAXE}
 
     // game time-sensitive settings
     public static final int serverTicksPerSecond = 30;

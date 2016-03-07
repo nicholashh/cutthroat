@@ -58,6 +58,11 @@ public abstract class AMapComponent extends AGameActor implements IMapComponent 
 
     }
 
+    public void placeOnMap(GameMap map, Coordinate loc) {
+        map.set(loc.y, loc.x, this);
+        setMap(map);
+    }
+
     public void removeFromMap () {
 
         Ground newGround = new Ground();

@@ -2,6 +2,8 @@ package ach7nbh2game.client;
 
 import ach7nbh2game.client.Window.Component;
 import ach7nbh2game.client.adapters.IViewToModel;
+import ach7nbh2game.main.Constants;
+import ach7nbh2game.main.Constants.Tool;
 import ach7nbh2game.main.Constants.Action;
 import ach7nbh2game.main.Constants.Direction;
 import ach7nbh2game.network.packets.ClientAction;
@@ -21,10 +23,24 @@ public class ClientView {
     private final int moveDown = BlackenKeys.KEY_DOWN;
     private final int moveRight = BlackenKeys.KEY_RIGHT;
 
-    private final int gunUp = 'w';
-    private final int gunLeft = 'a';
-    private final int gunDown = 's';
-    private final int gunRight = 'd';
+    private final int actionUp = 'w';
+    private final int actionLeft = 'a';
+    private final int actionDown = 's';
+    private final int actionRight = 'd';
+
+    private final int selectGun = '1';
+    private final int selectPickaxe = '2';
+
+    // states
+    private enum State {USERN, SERVER, LOBBY, GAME}
+    private String usernPrompt = "\nWelcome to Cutthroat\n\n\nUsername: ";
+    private String usernPromptMod = usernPrompt;
+    private String usernInput = "";
+
+    private State state;
+
+    // tool to use for actions
+    private Tool tool = Tool.GUN;
 
     public ClientView (IViewToModel modelIn) {
 
@@ -33,14 +49,11 @@ public class ClientView {
         model = modelIn;
     }
 
-    public Window getWindow() {
-        return window;
-    }
-
     public void start () {
 
         System.out.println("starting the ClientView!");
 
+        state = State.USERN;
         window.start();
         beginAcceptingCharacterInput();
 
@@ -72,6 +85,31 @@ public class ClientView {
     //    showMessage(message, true);
     //
     //}
+
+    public void showPrompt(String prompt) {
+        ArrayList<ArrayList<Integer>> toPrint = new ArrayList<>();
+        String[] separate = prompt.split("\n");
+        for (int i = 0; i < separate.length && i < Constants.clientMapHeight; i++) {
+            char[] line = separate[i].toCharArray();
+            int linelength = separate[i].length();
+            int padding = Constants.clientMapWidth-linelength;
+
+            ArrayList<Integer> linearray = new ArrayList<>();
+            for (int j = 0; j < Math.floorDiv(padding, 2); j++) {
+                linearray.add((int) ' ');
+            }
+            for (char c : line) {
+                linearray.add((int) c);
+            }
+            for (int j = 0; j < Math.ceil(padding/2.0); j++) {
+                linearray.add((int) ' ');
+            }
+
+            toPrint.add(linearray);
+        }
+
+        window.fill(Window.Component.CenterPanel, toPrint);
+    }
 
     public void showScores (GameState gameState) {
 
@@ -160,66 +198,114 @@ public class ClientView {
 
             ClientAction action = new ClientAction();
 
-            while (true) {
+            if (state == ClientView.State.USERN) {
+                while (true) {
+                    int input = window.waitForUserInput();
 
-                int input = window.waitForUserInput();
+                    switch(input) {
+                        case BlackenKeys.KEY_ALPHANUMERIC:
+                            break;
+                        case BlackenKeys.KEY_BACKSPACE:
+                            break;
+                        case BlackenKeys.KEY_ENTER:
+                            break;
+                    }
+                }
+            } else if (state == ClientView.State.GAME) {
+                while (true) {
 
-                switch (input) {
+                    int input = window.waitForUserInput();
 
-                    // moving
+                    switch (input) {
 
-                    case moveUp:
-                        action.setAction(Action.MOVE);
-                        action.setDirection(Direction.UP);
-                        model.performAction(action);
-                        break;
-                    case moveLeft:
-                        action.setAction(Action.MOVE);
-                        action.setDirection(Direction.LEFT);
-                        model.performAction(action);
-                        break;
-                    case moveDown:
-                        action.setAction(Action.MOVE);
-                        action.setDirection(Direction.DOWN);
-                        model.performAction(action);
-                        break;
-                    case moveRight:
-                        action.setAction(Action.MOVE);
-                        action.setDirection(Direction.RIGHT);
-                        model.performAction(action);
-                        break;
+                        // moving
 
-                    // firing the gun
+                        case moveUp:
+                            action.setAction(Action.MOVE);
+                            action.setDirection(Direction.UP);
+                            model.performAction(action);
+                            break;
+                        case moveLeft:
+                            action.setAction(Action.MOVE);
+                            action.setDirection(Direction.LEFT);
+                            model.performAction(action);
+                            break;
+                        case moveDown:
+                            action.setAction(Action.MOVE);
+                            action.setDirection(Direction.DOWN);
+                            model.performAction(action);
+                            break;
+                        case moveRight:
+                            action.setAction(Action.MOVE);
+                            action.setDirection(Direction.RIGHT);
+                            model.performAction(action);
+                            break;
 
-                    case gunUp:
-                        action.setAction(Action.SHOOT);
-                        action.setDirection(Direction.UP);
-                        model.performAction(action);
-                        break;
-                    case gunLeft:
-                        action.setAction(Action.SHOOT);
-                        action.setDirection(Direction.LEFT);
-                        model.performAction(action);
-                        break;
-                    case gunDown:
-                        action.setAction(Action.SHOOT);
-                        action.setDirection(Direction.DOWN);
-                        model.performAction(action);
-                        break;
-                    case gunRight:
-                        action.setAction(Action.SHOOT);
-                        action.setDirection(Direction.RIGHT);
-                        model.performAction(action);
-                        break;
+                        // using a selected tool
 
-                    // miscellaneous
+                        case actionUp:
+                            switch (tool) {
+                                case GUN:
+                                    action.setAction(Action.SHOOT);
+                                    break;
+                                case PICKAXE:
+                                    action.setAction(Action.DIG);
+                            }
+                            action.setDirection(Direction.UP);
+                            model.performAction(action);
+                            break;
+                        case actionLeft:
+                            switch (tool) {
+                                case GUN:
+                                    action.setAction(Action.SHOOT);
+                                    break;
+                                case PICKAXE:
+                                    action.setAction(Action.DIG);
+                            }
+                            action.setDirection(Direction.LEFT);
+                            model.performAction(action);
+                            break;
+                        case actionDown:
+                            switch (tool) {
+                                case GUN:
+                                    action.setAction(Action.SHOOT);
+                                    break;
+                                case PICKAXE:
+                                    action.setAction(Action.DIG);
+                            }
+                            action.setDirection(Direction.DOWN);
+                            model.performAction(action);
+                            break;
+                        case actionRight:
+                            switch (tool) {
+                                case GUN:
+                                    action.setAction(Action.SHOOT);
+                                    break;
+                                case PICKAXE:
+                                    action.setAction(Action.DIG);
+                            }
+                            action.setDirection(Direction.RIGHT);
+                            model.performAction(action);
+                            break;
 
-                    case BlackenKeys.RESIZE_EVENT:
-                        window.handleResize();
-                        break;
+                        // selecting a tool
+
+                        case selectGun:
+                            tool = Tool.GUN;
+                            break;
+                        case selectPickaxe:
+                            tool = Tool.PICKAXE;
+                            break;
+
+                        // miscellaneous
+
+                        case BlackenKeys.RESIZE_EVENT:
+                            window.handleResize();
+                            break;
+
+                    }
 
                 }
-
             }
 
         }}).start();
