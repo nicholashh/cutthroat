@@ -83,4 +83,13 @@ public class PlayerState {
     public void setAmmo(int newammo) {
         ammo = newammo;
     }
+
+    public void respawn() {
+        health = Constants.clientHealth;
+
+        gunDmg = Constants.gun1;
+        pickaxeDmg = Constants.pickaxe1;
+        bulletDmg = Constants.bullet1;
+        ammo = Constants.initAmmo;
+    }
 }
