@@ -1,7 +1,7 @@
 package ach7nbh2game.server.map.components;
 
 import ach7nbh2game.main.Constants;
-import ach7nbh2game.server.PlayerState;
+import ach7nbh2game.network.packets.PlayerState;
 
 import java.util.Random;
 

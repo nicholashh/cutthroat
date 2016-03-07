@@ -7,13 +7,8 @@ import java.util.Map;
 public class GameState {
 
     private ArrayList<ArrayList<Integer>> frame;
-    private Map<String, Integer> scores;
-    private int timeRemaining;
-    private String whoItIs;
-
-    public GameState () {
-        scores = new HashMap<String, Integer>();
-    }
+    private Map<String,PlayerObservableState> otherPlayerStates = new HashMap<>();
+    private PlayerState playerState;
 
     public void setFrame (ArrayList<ArrayList<Integer>> newFrame) {
         frame = newFrame;
@@ -23,27 +18,20 @@ public class GameState {
         return frame;
     }
 
-    public Map<String, Integer> getScores() {
-        return scores;
+    public void setOtherPlayerState (String player, PlayerObservableState state) {
+        otherPlayerStates.put(player, state);
     }
 
-    public void updateScore (String player, int score) {
-        scores.put(player, score);
+    public Map<String,PlayerObservableState> getOtherPlayerStates () {
+        return otherPlayerStates;
     }
 
-    public String getWhoItIs () {
-        return whoItIs;
+    public void setPlayerState (PlayerState playerState) {
+        this.playerState = playerState;
     }
 
-    public void setWhoItIs (String whoItIsIn) {
-        whoItIs = whoItIsIn;
+    public PlayerState getPlayerState () {
+        return playerState;
     }
 
-    public int getTimeRemaining() {
-        return timeRemaining;
-    }
-
-    public void setTimeRemaining (int timeRemainingIn) {
-        timeRemaining = timeRemainingIn;
-    }
 }

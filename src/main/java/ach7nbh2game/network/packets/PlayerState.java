@@ -1,4 +1,4 @@
-package ach7nbh2game.server;
+package ach7nbh2game.network.packets;
 
 import ach7nbh2game.main.Constants;
 

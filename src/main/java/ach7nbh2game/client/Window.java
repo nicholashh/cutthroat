@@ -305,7 +305,8 @@ public class Window {
         try { if (y < terminal.getHeight() && x < terminal.getWidth()) {
 
             terminal.set(y, x, new String(Character.toChars(character)), 7, 0,
-                    EnumSet.noneOf(TerminalStyle.class), EnumSet.noneOf(CellWalls.class));
+                    EnumSet.noneOf(TerminalStyle.class),
+                    EnumSet.noneOf(CellWalls.class));
 
         } } catch (IndexOutOfBoundsException e) {
             // TODO this is not ideal, but it almost never happens, sooooo...

@@ -1,7 +1,6 @@
 package ach7nbh2game.server.map.components;
 
 import ach7nbh2game.main.Constants;
-import ach7nbh2game.server.PlayerState;
 
 public class CavernWall extends Wall {
 

@@ -59,8 +59,8 @@ public class ClientModel {
 
     public void updateState (GameState state) {
 
-        Logger.Singleton.log(this, 0, "updateState:");
-        Logger.Singleton.log(this, 1, "state = " + state);
+        //Logger.Singleton.log(this, 0, "updateState:");
+        //Logger.Singleton.log(this, 1, "state = " + state);
 
         view.showMap(state.getFrame());
         view.showScores(state);

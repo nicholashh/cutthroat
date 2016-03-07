@@ -75,7 +75,7 @@ public class ClientView {
 	}
 	
 	public String askForServerIP () {
-		return askForThing(serverPrompt, "localhost"); // cutthroat.pwnz.org
+		return askForThing(serverPrompt, ""); // localhost // cutthroat.pwnz.org
 	}
 	
 	private LambdaZeroVoid updatePrompt;

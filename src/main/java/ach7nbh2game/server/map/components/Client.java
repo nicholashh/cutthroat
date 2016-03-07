@@ -7,7 +7,7 @@ import ach7nbh2game.network.packets.GameState;
 import ach7nbh2game.network.packets.PlayerInfo;
 import ach7nbh2game.server.Callback;
 import ach7nbh2game.server.Game;
-import ach7nbh2game.server.PlayerState;
+import ach7nbh2game.network.packets.PlayerState;
 import ach7nbh2game.server.map.GameMap;
 import ach7nbh2game.util.Logger;
 import ach7nbh2game.util.Utility;
