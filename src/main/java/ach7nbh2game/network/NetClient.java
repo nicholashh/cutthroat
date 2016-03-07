@@ -114,7 +114,7 @@ public class NetClient {
     }
 
     public void reqLobbies() {
-        Logger.Singleton.log(NetClient.this, 0, "sending: CreateLobby");
+        Logger.Singleton.log(NetClient.this, 0, "sending: ReqLobbies");
         ReqLobbies req = new ReqLobbies();
         req.uname = name;
         client.sendTCP(req);

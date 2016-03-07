@@ -8,6 +8,7 @@ public interface IModelToView {
     String askForUsername();
     String askForServerIP();
     String askForThing(String label, String value);
+	void updateThing(String newLabel);
     void showMap(ArrayList<ArrayList<Integer>> frame);
     void showScores(GameState state);
 }

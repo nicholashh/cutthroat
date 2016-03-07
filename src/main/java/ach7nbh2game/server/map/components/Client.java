@@ -1,19 +1,18 @@
 package ach7nbh2game.server.map.components;
 
 import ach7nbh2game.main.Constants;
-import ach7nbh2game.network.packets.PlayerInfo;
-import ach7nbh2game.main.Constants.*;
+import ach7nbh2game.main.Constants.Direction;
 import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.network.packets.GameState;
+import ach7nbh2game.network.packets.PlayerInfo;
 import ach7nbh2game.server.Callback;
 import ach7nbh2game.server.Game;
 import ach7nbh2game.server.PlayerState;
 import ach7nbh2game.server.map.GameMap;
+import ach7nbh2game.util.Logger;
+import ach7nbh2game.util.Utility;
 import ach7nbh2game.util.id.ClientID;
 import ach7nbh2game.util.id.Coordinate;
-import ach7nbh2game.util.Logger;
-
-import ach7nbh2game.util.Utility;
 
 import java.util.Random;
 
@@ -110,21 +109,31 @@ public abstract class Client extends AMapComponent {
     }
 
     @Override
-    public void setGame (Game game) {
+    public void setGame (Game newGame) {
 
         Logger.Singleton.log(this, 0, "setGame()");
-        Logger.Singleton.log(this, 1, "game = " + game);
+        Logger.Singleton.log(this, 1, "newGame = " + newGame);
 
         if (mapIsNull()) {
+            boolean needToUpdate = true;
             // if this client is already in a game
             if (!gameIsNull()) {
-                // remove this client from that game
-                getGame().removePlayer(this);
+                final Game curGame = getGame();
+                if (curGame.getID() != newGame.getID()) {
+                    // remove this client from that game
+                    getGame().removePlayer(this);
+                } else {
+                    needToUpdate = false;
+                }
             }
-            // record which game this client is now in
-            super.setGame(game);
-            // alert that game that this client wants to join
-            game.addPlayer(this);
+            if (needToUpdate) {
+                // record which game this client is now in
+                super.setGame(newGame);
+                // alert that game that this client wants to join
+                newGame.addPlayer(this);
+            } else {
+                announceLobbies();
+            }
         } else {
             // TODO: not allowed
         }

@@ -1,8 +1,10 @@
 package ach7nbh2game.client;
 
 import ach7nbh2game.main.Constants;
+import ach7nbh2game.util.Logger;
 import ach7nbh2game.util.lambda.LambdaTwoReturn;
 import ach7nbh2game.util.lambda.LambdaZeroReturn;
+
 import com.googlecode.blacken.colors.ColorNames;
 import com.googlecode.blacken.colors.ColorPalette;
 import com.googlecode.blacken.swing.SwingTerminal;
@@ -78,7 +80,7 @@ public class Window {
     }
 
     // the width of each component
-    private int width (Component component) {
+    public int width (Component component) {
         int width = 0;
         switch (component) {
             case LeftPanel:
@@ -137,7 +139,7 @@ public class Window {
     }
 
     // the height of each component
-    private int height (Component component) {
+    public int height (Component component) {
         int height = 0;
         switch (component) {
             case TopPanel:
@@ -251,6 +253,8 @@ public class Window {
     }
 
     public void fill (Component component, ArrayList<ArrayList<Integer>> thing) {
+    	
+    	// Logger.Singleton.log(this, 0, "fill(...)");
 
         // see if the thing fits exactly into the component
         int rightNumRows = height(component);
@@ -269,11 +273,13 @@ public class Window {
 
         // if so, fill it!
         if (hasRightNumRows && hasRightNumCols) {
+    		// Logger.Singleton.log(this, 0, "fill(...): filling");
             fill(component, (x, y) -> {
                 return thing.get(y).get(x);
             });
         } else {
-            // TODO
+    		// TODO
+    		Logger.Singleton.log(this, 0, "fill(...): dimension mismatch");
         }
 
     }

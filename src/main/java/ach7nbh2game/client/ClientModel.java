@@ -1,7 +1,6 @@
 package ach7nbh2game.client;
 
 import ach7nbh2game.client.adapters.IModelToView;
-import ach7nbh2game.main.Constants;
 import ach7nbh2game.network.adapters.IClientToServer;
 import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.network.packets.GameState;
@@ -25,7 +24,7 @@ public class ClientModel {
 
     private boolean inGame = false; // TODO state design pattern
 
-    private Set<Thread> popupThreads = new HashSet<>();
+    private Set<Thread> infoRequestThreads = new HashSet<>();
 
     public ClientModel (IClientToServer serverIn, IModelToView viewIn) {
 
@@ -40,7 +39,9 @@ public class ClientModel {
 
         System.out.println("starting the ClientModel!");
 
-        String username = view.askForUsername();
+        String username = "";
+        while (username.trim() == "")
+        	username = view.askForUsername();
         playerInfo.setUsername(username);
         playerInfo.setIcon(username.toUpperCase().toCharArray()[0]);
 
@@ -65,6 +66,9 @@ public class ClientModel {
         view.showScores(state);
 
     }
+    
+    private boolean waitingForInput = false;
+    private int myLobby;
 
     public void updateLobbyList (
             final Map<Integer, String> lobbies,
@@ -83,12 +87,12 @@ public class ClientModel {
             String prompt = "";
             prompt += "Lobbies available for you to join:\n";
 
-            final Set<Integer> myLobbies = new HashSet<Integer>();
+            //final Set<Integer> myLobbies = new HashSet<Integer>();
             final Map<Integer, Integer> smallIntToLobbyID = new HashMap<Integer, Integer>();
 
             if (lobbies.isEmpty()) {
 
-                prompt += "    There are no lobbies for you to join.\n";
+                prompt += "There are no lobbies for you to join.\n";
 
             } else {
 
@@ -96,16 +100,16 @@ public class ClientModel {
                 for (int lobbyID : lobbies.keySet()) {
 
                     smallIntToLobbyID.put(i, lobbyID);
-                    prompt += "    " + i + ": " + lobbies.get(lobbyID) + "\n";
+                    prompt += i + ": " + lobbies.get(lobbyID) + "\n";
                     i++;
 
                     for (int playerID : lobbyToPlayers.get(lobbyID)) {
                         if (playerID == playerInfo.getID()) {
-                            myLobbies.add(lobbyID);
-                            prompt += "        me! (" + playerInfo.getUsername() + ")\n";
+                            myLobby = lobbyID;
+                            prompt += "me! (" + playerInfo.getUsername() + ")\n";
                         } else {
                             String username = players.get(playerID);
-                            prompt += "        player: " + username + "\n";
+                            prompt += "player: " + username + "\n";
                         }
                     }
 
@@ -113,71 +117,96 @@ public class ClientModel {
 
             }
 
-            prompt += "To update this list of lobbies, click \"cancel.\"\n";
+            prompt += "\n\n";
+            prompt += "To update this list of lobbies, press enter.\n";
             prompt += "To create a new lobby, enter it's alphanumeric name.\n";
             prompt += "To join an existing lobby, enter it's numeric ID.\n";
             prompt += "To start your game, re-enter your lobby's numeric ID.";
+            prompt += "\n\n---> ";
 
             final String promptFinal = prompt;
 
-            Thread newThread = new Thread() {
-                public void run() {
+            if (waitingForInput) {
+            	
+            	view.updateThing(promptFinal);
+            	
+            } else {
 
-                    String action = view.askForThing(promptFinal, "");
+                waitingForInput = true;
 
-                    if (action.equals("")) {
+                Thread newThread = new Thread() {
+                    public void run() {
 
-                        Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: requesting lobbies...");
+                        String action = view.askForThing(promptFinal, "");
 
-                    } else {
+                        if (action.equals("")) {
 
-                        if (Utility.isInteger(action)) {
+                            Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: requesting lobbies...");
 
-                            int smallInt = Integer.parseInt(action);
-                            if (smallIntToLobbyID.containsKey(smallInt)) {
-                                int lobbyID = smallIntToLobbyID.get(smallInt);
-
-                                if (myLobbies.contains(lobbyID)) {
-
-                                    Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: starting game " + lobbyID + "...");
-
-                                    server.startGame(lobbyID);
-
-                                    return; // do not request lobbies
-
-                                } else {
-
-                                    Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: joining lobby " + lobbyID + "...");
-
-                                    server.joinLobby(playerInfo.getID(), lobbyID);
-
-                                }
-
-                            }
-
-                        } else if (Utility.isAlphanumeric(action)) {
-
-                            Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: creating lobby " + action + "...");
-
-                            server.createNewLobby(playerInfo.getID(), action);
+                            server.requestLobbies(playerInfo.getID());
 
                         } else {
 
-                            Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: invalid input. trying again...");
+                            if (Utility.isInteger(action)) {
 
-                            updateLobbyList(lobbies, players, lobbyToPlayers);
+                                int smallInt = Integer.parseInt(action);
+                                if (smallIntToLobbyID.containsKey(smallInt)) {
+                                    int lobbyID = smallIntToLobbyID.get(smallInt);
+
+                                    if (myLobby == lobbyID) {
+
+                                        Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: starting game " + lobbyID + "...");
+
+                                        server.startGame(lobbyID);
+
+                                    } else {
+
+                                        Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: joining lobby " + lobbyID + "...");
+                                        Logger.Singleton.log(ClientModel.this, 1, "myLobby = " + myLobby);
+
+                                        server.joinLobby(playerInfo.getID(), lobbyID);
+
+                                    }
+
+                                } else {
+
+                                    server.requestLobbies(playerInfo.getID());
+
+                                }
+
+                            } else if (Utility.isAlphanumeric(action)) {
+
+                                Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: creating lobby " + action + "...");
+
+                                server.createNewLobby(playerInfo.getID(), action);
+
+                            } else {
+
+                                Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: invalid input. trying again...");
+
+                                updateLobbyList(lobbies, players, lobbyToPlayers);
+
+                                server.requestLobbies(playerInfo.getID());
+
+                            }
 
                         }
 
+                        waitingForInput = false;
+
                     }
+                };
 
-                    server.requestLobbies(playerInfo.getID());
+                infoRequestThreads.add(newThread);
+                newThread.start();
 
-                }
-            };
+            }
 
-            popupThreads.add(newThread);
-            newThread.start();
+//                }
+//            };
+//
+//            infoRequestThreads.add(newThread);
+//            newThread.start();
 
         }
 
@@ -191,7 +220,7 @@ public class ClientModel {
 
             inGame = true;
 
-            for (Thread thread : popupThreads) {
+            for (Thread thread : infoRequestThreads) {
                 thread.interrupt();
             }
 

@@ -2,12 +2,13 @@ package ach7nbh2game.client;
 
 import ach7nbh2game.client.Window.Component;
 import ach7nbh2game.client.adapters.IViewToModel;
-import ach7nbh2game.main.Constants;
-import ach7nbh2game.main.Constants.Tool;
 import ach7nbh2game.main.Constants.Action;
 import ach7nbh2game.main.Constants.Direction;
+import ach7nbh2game.main.Constants.Tool;
 import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.network.packets.GameState;
+import ach7nbh2game.util.Logger;
+import ach7nbh2game.util.lambda.LambdaZeroVoid;
 import com.googlecode.blacken.terminal.BlackenKeys;
 
 import java.util.ArrayList;
@@ -32,12 +33,14 @@ public class ClientView {
     private final int selectPickaxe = '2';
 
     // states
-    private enum State {USERN, SERVER, LOBBY, GAME}
-    private String usernPrompt = "\nWelcome to Cutthroat\n\n\nUsername: ";
-    private String usernPromptMod = usernPrompt;
-    private String usernInput = "";
+    private enum State {TEXT_INPUT_MODE, IN_GAME_MODE}
+    private final String welcomeMessage = "Welcome to Cutthroat!\n\n\n";
+    private final String usernamePrompt = welcomeMessage + "Username: ";
+    private final String serverPrompt = welcomeMessage + "Server Hostname: ";
+    private boolean userInputDone = false;
+    private String userInput = "";
 
-    private State state = State.USERN;;
+    private State state = null;
 
     // tool to use for actions
     private Tool tool = Tool.GUN;
@@ -60,254 +63,286 @@ public class ClientView {
 
     public void showMap (ArrayList<ArrayList<Integer>> map) {
 
+    	state = State.IN_GAME_MODE;
+    	
         window.fill(Component.CenterPanel, map);
-
-        // re-paint the window
         window.repaint();
 
     }
 
-    //private ArrayList<Integer> stringToInts (String string) {
-    //
-    //    ArrayList<Integer> ints = new ArrayList<>();
-    //    for (char c : string.toCharArray()) ints.add((int)c);
-    //    return ints;
-    //}
+	public String askForUsername () {
+		return askForThing(usernamePrompt, "");
+	}
+	
+	public String askForServerIP () {
+		return askForThing(serverPrompt, "localhost"); // cutthroat.pwnz.org
+	}
+	
+	private LambdaZeroVoid updatePrompt;
+	
+	public String askForThing (String label, String value) {
+		return askForThing(label, value, false);
+	}
 
-    //private void showWelcomeMessage () {
-    //
-    //    ArrayList<ArrayList<Integer>> message = new ArrayList<>();
-    //    message.add(stringToInts(" "));
-    //    message.add(stringToInts(" Welcome"));
-    //    message.add(stringToInts(" to Cutthroat!"));
-    //
-    //    showMessage(message, true);
-    //
-    //}
+	public void updateThing (String newLabel) {
+		askForThing(newLabel, "", true);
+	}
+	
+	public String askForThing (String label, String value, boolean updateOnly) {
 
-    public void showPrompt(String prompt) {
-        ArrayList<ArrayList<Integer>> toPrint = new ArrayList<>();
-        String[] separate = prompt.split("\n");
-        for (int i = 0; i < separate.length && i < Constants.clientMapHeight; i++) {
-            char[] line = separate[i].toCharArray();
-            int linelength = separate[i].length();
-            int padding = Constants.clientMapWidth-linelength;
+		Logger.Singleton.log(this, 0, "askForThing(" +
+				"updateOnly = " + updateOnly + ", " +
+				"value = \"" + value.replace('\n', ' ') + "\", " +
+				"label = \"" + label.replace('\n', ' ') + "\")");
+			
+		if (!updateOnly) {
 
-            ArrayList<Integer> linearray = new ArrayList<>();
-            for (int j = 0; j < Math.floorDiv(padding, 2); j++) {
-                linearray.add((int) ' ');
-            }
-            for (char c : line) {
-                linearray.add((int) c);
-            }
-            for (int j = 0; j < Math.ceil(padding/2.0); j++) {
-                linearray.add((int) ' ');
-            }
+			state = State.TEXT_INPUT_MODE;
+			userInputDone = false;
+			userInput = value;
+			
+		}
 
-            toPrint.add(linearray);
+		updatePrompt = () -> showPrompt(label + userInput);
+		updatePrompt.run();
+		
+		if (!updateOnly) {
+
+			while (true) {
+				if (!userInputDone) {
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				} else {
+					break;
+				}
+			}
+
+			return userInput;
+
+		} else {
+			return null;
+		}
+		
+	}
+	
+	private void showPrompt (final String prompt) {
+		showPrompt(prompt, Component.CenterPanel);
+	}
+
+	private void showPrompt (final String prompt, final Component component) {
+
+		//Logger.Singleton.log(this, 0, "showPrompt(" +
+		//		"component = \"" + component + "\", " +
+		//		"prompt = \"" + prompt.replace('\n', ' ') + "\")");
+
+    	final ArrayList<ArrayList<Integer>> toPrint = new ArrayList<>();
+
+        final String[] separate = prompt.split("\n");
+        
+        final int numTextRows = separate.length;
+        final int numRowsAvailable = window.height(component);
+        final int numRowsPaddingTop = calcHalfDifferenceOrZero(numRowsAvailable, numTextRows);
+        final int numRowsPaddingBottom = numRowsAvailable - (numRowsPaddingTop + numTextRows);
+        
+        final int numColsAvailable = window.width(component);
+        
+        toPrint.addAll(makeBlankRows(numRowsPaddingTop, numColsAvailable));
+        
+        for (int i = 0; i < numTextRows; i++) {
+        	
+        	final char[] line = separate[i].toCharArray();
+        	final int numTextCols = line.length;
+            final int numColsPaddingLeft = calcHalfDifferenceOrZero(numColsAvailable, numTextCols);
+            final int numColsPaddingRight = numColsAvailable - (numColsPaddingLeft + numTextCols); 
+
+            final ArrayList<Integer> toAdd = new ArrayList<>();
+            toAdd.addAll(makeBlankCols(numColsPaddingLeft));
+            for (int j = 0; j < numTextCols; j++) toAdd.add((int)line[j]);
+            toAdd.addAll(makeBlankCols(numColsPaddingRight));
+            toPrint.add(toAdd);
+            
         }
+        
+        toPrint.addAll(makeBlankRows(numRowsPaddingBottom, numColsAvailable));
 
-        window.fill(Window.Component.CenterPanel, toPrint);
+        window.fill(component, toPrint);
+        
+        window.repaint();
+        
     }
+	
+	private int calcHalfDifferenceOrZero (final int biggerNumber, final int smallerNumber) {
+		return Math.max(0, (biggerNumber - smallerNumber) / 2);
+	}
+	
+	private ArrayList<Integer> makeBlankCols (final int numCols) {
+		final ArrayList<Integer> toReturn = new ArrayList<>();
+		for (int i = 0; i < numCols; i++)
+			toReturn.add((int)' ');
+		return toReturn;
+	}
+	
+	private ArrayList<ArrayList<Integer>> makeBlankRows (final int numRows, final int rowLength) {
+		final ArrayList<ArrayList<Integer>> toReturn = new ArrayList<>();
+		for (int i = 0; i < numRows; i++) {
+			final ArrayList<Integer> toAdd = new ArrayList<>();
+			for (int j = 0; j < rowLength; j++)
+				toAdd.add((int)' ');
+			toReturn.add(toAdd);
+		}
+		return toReturn;
+	}
 
     public void showScores (GameState gameState) {
-
-        //Logger.Singleton.log(this, 0, "showScores:");
-        //Logger.Singleton.log(this, 1, "gameState = " + gameState);
-        //
-        //Map<String, Integer> scores = gameState.getScores();
-        //
-        //ArrayList<ArrayList<Integer>> message = new ArrayList<>();
-        //message.add(stringToInts(" "));
-        //message.add(stringToInts(" Scores:"));
-        //message.add(stringToInts(" "));
-        //
-        //for (String player : scores.keySet()) {
-        //    message.add(stringToInts(" " + player + ": " + scores.get(player)));
-        //}
-        //
-        //message.add(stringToInts(" "));
-        //message.add(stringToInts(" Who's \"it\"?"));
-        //message.add(stringToInts(" " + gameState.getWhoItIs()));
-        //
-        //message.add(stringToInts(" "));
-        //message.add(stringToInts(" Time Left: " + gameState.getTimeRemaining()));
-        //
-        //showMessage(message, true);
-        //
-        //try {
-        //    terminal.refresh();
-        //} catch (IndexOutOfBoundsException e) {
-        //    // TODO why is this breaking?
-        //    System.err.println("error in showScores(): " + e.toString());
-        //}
-
+    	// TODO
     }
-
-    //private void clearMessageArea () {
-    //
-    //    ArrayList<Integer> row = new ArrayList<>();
-    //    for (int i = 0; i < Constants.clientSidebarWidth; i++) {
-    //        row.add((int)' ');
-    //    }
-    //
-    //    ArrayList<ArrayList<Integer>> message = new ArrayList<>();
-    //    for (int i = 0; i < Constants.clientMapHeight; i++) {
-    //        message.add(row);
-    //    }
-    //
-    //    showMessage(message, false);
-    //
-    //}
-
-    //private void showMessage (ArrayList<ArrayList<Integer>> message, boolean shouldClear) {
-    //
-    //    Logger.Singleton.log(this, 0, "showMessage:");
-    //    Logger.Singleton.log(this, 1, "message = " + message);
-    //    Logger.Singleton.log(this, 1, "shouldClear = " + shouldClear);
-    //
-    //    if (shouldClear) {
-    //        clearMessageArea();
-    //    }
-    //
-    //    showSomething(message,
-    //            0, Constants.clientMapHeight, 0,
-    //            0, Constants.clientSidebarWidth, Constants.clientMapWidth);
-    //
-    //}
-
-    //private void showSomething (ArrayList<ArrayList<Integer>> thing,
-    //        int yLow, int yHigh, int yOffset, int xLow, int xHigh, int xOffset) {
-    //    for (int y = yLow; y < yHigh; y++) {
-    //        if (y < thing.size()) {
-    //            ArrayList<Integer> row = thing.get(y);
-    //            for (int x = xLow; x < xHigh; x++) {
-    //                if (x < row.size()) {
-    //
-    //                    setTerminal(x + xOffset, y + yOffset, row.get(x));
-    //                }
-    //            }
-    //        }
-    //    }
-    //}
 
     private void beginAcceptingCharacterInput () {
 
         (new Thread () { public void run () {
+        	
+            while (true) {
+            	
+            	int input = window.waitForUserInput();
 
-            ClientAction action = new ClientAction();
+        		// Logger.Singleton.log(this, 0, "read a \'" + input + "\'");
 
-            if (state == ClientView.State.USERN) {
-                while (true) {
-                    int input = window.waitForUserInput();
+        		switch (state) {
 
-                    switch(input) {
-                        case BlackenKeys.KEY_ALPHANUMERIC:
-                            break;
-                        case BlackenKeys.KEY_BACKSPACE:
-                            break;
-                        case BlackenKeys.KEY_ENTER:
-                            break;
-                    }
+        		case TEXT_INPUT_MODE:
+                	
+            		// Logger.Singleton.log(this, 0, "state = " + state);
+
+                	if (!userInputDone) {
+                		
+                		// Logger.Singleton.log(this, 0, "usernInputDone = " + userInputDone);
+
+                		if ((input >= 65 && input <= 90) ||      // uppercase letters
+                				(input >= 97 && input <= 122) || // lowercase letters
+                				(input >= 48 && input <= 57))    // numbers
+                			userInput += (char)input;
+                		else switch (input) {
+                		case BlackenKeys.KEY_BACKSPACE:
+                			// Logger.Singleton.log(this, 0, "BACKSPACE");
+                			int length = userInput.length();
+                			if (length > 0)
+                				userInput = userInput.substring(0, length - 1);
+                			break;
+                		case BlackenKeys.KEY_ENTER:
+                			// Logger.Singleton.log(this, 0, "ENTER");
+                			userInputDone = true;
+                			break;
+                		}
+
+                		updatePrompt.run();
+
+                	}
+                	
+                	break;
+
+        		case IN_GAME_MODE:
+                	
+                	ClientAction action = new ClientAction();
+
+                	switch (input) {
+
+                	// moving
+
+                	case moveUp:
+                		action.setAction(Action.MOVE);
+                		action.setDirection(Direction.UP);
+                		model.performAction(action);
+                		break;
+                	case moveLeft:
+                		action.setAction(Action.MOVE);
+                		action.setDirection(Direction.LEFT);
+                		model.performAction(action);
+                		break;
+                	case moveDown:
+                		action.setAction(Action.MOVE);
+                		action.setDirection(Direction.DOWN);
+                		model.performAction(action);
+                		break;
+                	case moveRight:
+                		action.setAction(Action.MOVE);
+                		action.setDirection(Direction.RIGHT);
+                		model.performAction(action);
+                		break;
+
+                	// using a selected tool
+
+                	case actionUp:
+                		switch (tool) {
+                		case GUN:
+                			action.setAction(Action.SHOOT);
+                			break;
+                		case PICKAXE:
+                			action.setAction(Action.DIG);
+                		}
+                		action.setDirection(Direction.UP);
+                		model.performAction(action);
+                		break;
+                	case actionLeft:
+                		switch (tool) {
+                		case GUN:
+                			action.setAction(Action.SHOOT);
+                			break;
+                		case PICKAXE:
+                			action.setAction(Action.DIG);
+                		}
+                		action.setDirection(Direction.LEFT);
+                		model.performAction(action);
+                		break;
+                	case actionDown:
+                		switch (tool) {
+                		case GUN:
+                			action.setAction(Action.SHOOT);
+                			break;
+                		case PICKAXE:
+                			action.setAction(Action.DIG);
+                		}
+                		action.setDirection(Direction.DOWN);
+                		model.performAction(action);
+                		break;
+                	case actionRight:
+                		switch (tool) {
+                		case GUN:
+                			action.setAction(Action.SHOOT);
+                			break;
+                		case PICKAXE:
+                			action.setAction(Action.DIG);
+                		}
+                		action.setDirection(Direction.RIGHT);
+                		model.performAction(action);
+                		break;
+
+                	// selecting a tool
+
+                	case selectGun:
+                		tool = Tool.GUN;
+                		break;
+                	case selectPickaxe:
+                		tool = Tool.PICKAXE;
+                		break;
+
+                	// miscellaneous
+
+                	case BlackenKeys.RESIZE_EVENT:
+                		window.handleResize();
+                		break;
+
+                	}
+                	
+                	break;
+
                 }
-            } else if (state == ClientView.State.GAME) {
-                while (true) {
 
-                    int input = window.waitForUserInput();
-
-                    switch (input) {
-
-                        // moving
-
-                        case moveUp:
-                            action.setAction(Action.MOVE);
-                            action.setDirection(Direction.UP);
-                            model.performAction(action);
-                            break;
-                        case moveLeft:
-                            action.setAction(Action.MOVE);
-                            action.setDirection(Direction.LEFT);
-                            model.performAction(action);
-                            break;
-                        case moveDown:
-                            action.setAction(Action.MOVE);
-                            action.setDirection(Direction.DOWN);
-                            model.performAction(action);
-                            break;
-                        case moveRight:
-                            action.setAction(Action.MOVE);
-                            action.setDirection(Direction.RIGHT);
-                            model.performAction(action);
-                            break;
-
-                        // using a selected tool
-
-                        case actionUp:
-                            switch (tool) {
-                                case GUN:
-                                    action.setAction(Action.SHOOT);
-                                    break;
-                                case PICKAXE:
-                                    action.setAction(Action.DIG);
-                            }
-                            action.setDirection(Direction.UP);
-                            model.performAction(action);
-                            break;
-                        case actionLeft:
-                            switch (tool) {
-                                case GUN:
-                                    action.setAction(Action.SHOOT);
-                                    break;
-                                case PICKAXE:
-                                    action.setAction(Action.DIG);
-                            }
-                            action.setDirection(Direction.LEFT);
-                            model.performAction(action);
-                            break;
-                        case actionDown:
-                            switch (tool) {
-                                case GUN:
-                                    action.setAction(Action.SHOOT);
-                                    break;
-                                case PICKAXE:
-                                    action.setAction(Action.DIG);
-                            }
-                            action.setDirection(Direction.DOWN);
-                            model.performAction(action);
-                            break;
-                        case actionRight:
-                            switch (tool) {
-                                case GUN:
-                                    action.setAction(Action.SHOOT);
-                                    break;
-                                case PICKAXE:
-                                    action.setAction(Action.DIG);
-                            }
-                            action.setDirection(Direction.RIGHT);
-                            model.performAction(action);
-                            break;
-
-                        // selecting a tool
-
-                        case selectGun:
-                            tool = Tool.GUN;
-                            break;
-                        case selectPickaxe:
-                            tool = Tool.PICKAXE;
-                            break;
-
-                        // miscellaneous
-
-                        case BlackenKeys.RESIZE_EVENT:
-                            window.handleResize();
-                            break;
-
-                    }
-
-                }
             }
 
-        }}).start();
+        } } ).start();
 
     }
 
