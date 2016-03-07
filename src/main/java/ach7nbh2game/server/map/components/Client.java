@@ -185,6 +185,32 @@ public abstract class Client extends AMapComponent {
 
             }
 
+        } else if (thing instanceof CavernWall) {
+            CavernWall cwall = (CavernWall) thing;
+            switch(action.action) {
+                case MOVE:
+                    if (cwall.getVisible()) {
+                        map.swap(this, cwall);
+                        cwall.removeFromMap();
+                        switch (cwall.getItem()) {
+                            case GUN2:
+                                state.upgradeGun(Constants.gun2);
+                                break;
+                            case PICK3:
+                                state.upgradePickaxe(Constants.pickaxe3);
+                                break;
+                            case BULLET1:
+                                incAmmo(3);
+                        }
+                    }
+                    break;
+                case DIG:
+                    if (!(cwall.getVisible())) {
+                        cwall.decHealth(this, state.getPickaxeDmg());
+                    }
+                    break;
+            }
+
         } else if (thing instanceof Wall) {
             switch(action.action) {
                 case DIG:

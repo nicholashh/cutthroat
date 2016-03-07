@@ -31,7 +31,13 @@ public class Constants {
     public static final int pickaxe3 = 30;
 
     // wall tiers
-    public static final int wall1 = 50;
+    public static final int wall1 = 40;
+
+    // cavern tiers
+    public enum CavernSize {LARGE, MEDIUM}
+
+    // all the items
+    public enum Item {GUN1, GUN2, PICK1, PICK2, PICK3, BULLET1}
 
     // use selected tool
     public enum Tool {GUN, PICKAXE}

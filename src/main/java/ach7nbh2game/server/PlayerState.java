@@ -42,6 +42,12 @@ public class PlayerState {
         gunDmg = dmg;
     }
 
+    public void upgradeGun( int dmg) {
+        if (dmg > gunDmg) {
+            gunDmg = dmg;
+        }
+    }
+
     public int getPickaxeDmg() {
         return pickaxeDmg;
     }
@@ -50,12 +56,24 @@ public class PlayerState {
         pickaxeDmg = dmg;
     }
 
+    public void upgradePickaxe(int dmg) {
+        if (dmg > pickaxeDmg) {
+            pickaxeDmg = dmg;
+        }
+    }
+
     public int getBulletDmg() {
         return bulletDmg;
     }
 
     public void setBulletDmg(int dmg) {
         bulletDmg = dmg;
+    }
+
+    public void upgradeBullet(int dmg) {
+        if (dmg > bulletDmg) {
+            bulletDmg = dmg;
+        }
     }
 
     public int getAmmo() {

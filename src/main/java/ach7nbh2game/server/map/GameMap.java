@@ -1,9 +1,7 @@
 package ach7nbh2game.server.map;
 
 import ach7nbh2game.main.Constants;
-import ach7nbh2game.server.map.components.Ground;
-import ach7nbh2game.server.map.components.IMapComponent;
-import ach7nbh2game.server.map.components.Wall;
+import ach7nbh2game.server.map.components.*;
 import ach7nbh2game.util.id.Coordinate;
 import ach7nbh2game.util.Logger;
 import com.googlecode.blacken.grid.Grid;
@@ -141,6 +139,7 @@ public class GameMap {
                         }
                     }
 
+                    // success, we've found a place to put the block
                     if (!overlapping) {
 
                         for (int y = yMid - thingHalfHeight; y < yMid + thingHalfHeight; y++) {
@@ -148,6 +147,32 @@ public class GameMap {
                                 Wall newWall = new Wall();
                                 newWall.placeOnMap(this, x, y);
                             }
+                        }
+
+                        if (i == 0) {
+                            Logger.Singleton.log(this, 1, "Making large cavern.");
+
+                            Cavern newCavern = new Cavern(Constants.CavernSize.LARGE);
+                            int cavernWidth = (int) (thingWidth*0.33);
+                            int cavernHeight = (int) (thingHeight*0.33);
+                            int cavernHWidth = (int) (cavernWidth*0.5);
+                            int cavernHHeight = (int) (cavernHeight*0.5);
+
+                            int rAreaHWidth = (int) (thingWidth*0.75*0.5);
+                            int rAreaHHeight = (int) (thingHeight*0.75*0.5);
+
+                            int xMidCavern = xMid-thingHalfWidth+rand.nextInt(rAreaHWidth*2-cavernWidth)+cavernHWidth;
+                            int yMidCavern = yMid-thingHalfHeight+rand.nextInt(rAreaHHeight*2-cavernHeight)
+                                    +cavernHHeight;
+
+                            for (int y = yMidCavern-cavernHHeight; y < yMidCavern+cavernHHeight; y++) {
+                                for (int x = xMidCavern-cavernHWidth; x < xMidCavern+cavernHWidth; x++) {
+                                    CavernWall newWall = new CavernWall(newCavern);
+                                    newCavern.addWall(newWall);
+                                    newWall.placeOnMap(this, x, y);
+                                }
+                            }
+                            newCavern.init();
                         }
 
                         Logger.Singleton.log(this, 1, "factor = " + factor + ", which one = " + j + ", SUCCESS");
