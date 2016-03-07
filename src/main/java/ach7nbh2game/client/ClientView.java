@@ -37,7 +37,7 @@ public class ClientView {
     private String usernPromptMod = usernPrompt;
     private String usernInput = "";
 
-    private State state;
+    private State state = State.USERN;;
 
     // tool to use for actions
     private Tool tool = Tool.GUN;
@@ -53,7 +53,6 @@ public class ClientView {
 
         System.out.println("starting the ClientView!");
 
-        state = State.USERN;
         window.start();
         beginAcceptingCharacterInput();
 
