@@ -1,6 +1,8 @@
 package ach7nbh2game.server;
 
 import ach7nbh2game.main.Constants;
+import ach7nbh2game.network.packets.GameState;
+import ach7nbh2game.network.packets.PlayerObservableState;
 import ach7nbh2game.server.map.AGameActor;
 import ach7nbh2game.server.map.GameMap;
 import ach7nbh2game.server.map.components.Client;
@@ -108,6 +110,17 @@ public abstract class Game extends AGameActor {
             announceLobbies();
         }
 
+    }
+
+    public GameState fillGameStateInfo() {
+        GameState state = new GameState();
+        for (Client client : players.values()) {
+            PlayerObservableState obsState = new PlayerObservableState();
+            obsState.setHealth(client.getHealth());
+            obsState.setScore(client.getScore());
+            state.setOtherPlayerState(client.getName(), obsState);
+        }
+        return state;
     }
 
     // SERVER CLOCK CODE (tick... tick... tick...)

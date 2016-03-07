@@ -1,9 +1,7 @@
 package ach7nbh2game.network;
 
-import ach7nbh2game.network.packets.PlayerInfo;
+import ach7nbh2game.network.packets.*;
 import ach7nbh2game.main.Constants.*;
-import ach7nbh2game.network.packets.ClientAction;
-import ach7nbh2game.network.packets.GameState;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
 
@@ -28,6 +26,8 @@ public class Network {
         kryo.register(HashSet.class, 3388);
         kryo.register(Direction.class, 3389);
         kryo.register(Action.class, 3390);
+        kryo.register(PlayerState.class, 3391);
+        kryo.register(PlayerObservableState.class, 3392);
 
         kryo.register(RegisterMessage.class, 3370);
         kryo.register(TextMessage.class, 3371);

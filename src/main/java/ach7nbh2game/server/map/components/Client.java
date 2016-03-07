@@ -232,10 +232,9 @@ public abstract class Client extends AMapComponent {
         //Logger.Singleton.log(this, 0, "sendGameState:");
 
         if (!mapIsNull()) {
-            GameState gameState = new GameState();
-            // TODO put in constructor instead of setter?
-            gameState.setFrame(Utility.componentToInteger(
-                    getMap().getPerspectiveFrom(getX(),getY())));
+            GameState gameState = getGame().fillGameStateInfo();
+            gameState.setPlayerState(state);
+            gameState.setFrame(Utility.componentToInteger(getMap().getPerspectiveFrom(getX(),getY())));
             sendGameState(gameState);
         } else {
             // TODO: not allowed
