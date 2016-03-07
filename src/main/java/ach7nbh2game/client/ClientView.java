@@ -61,14 +61,23 @@ public class ClientView {
 
     }
 
-    public void showMap (ArrayList<ArrayList<Integer>> map) {
+	public void updateState (GameState gameState) {
 
-    	state = State.IN_GAME_MODE;
-    	
-        window.fill(Component.CenterPanel, map);
-        window.repaint();
+		state = State.IN_GAME_MODE;
 
-    }
+		window.fill(Component.CenterPanel, gameState.getFrame());
+		popularMenus(gameState);
+		window.repaint();
+
+	}
+
+	private void popularMenus (GameState gameState) {
+
+		// TODO
+
+		showPrompt("num ammo = " + gameState.getPlayerState().getAmmo(), Component.RightPanel);
+
+	}
 
 	public String askForUsername () {
 		return askForThing(usernamePrompt, "");
@@ -105,6 +114,8 @@ public class ClientView {
 
 		updatePrompt = () -> showPrompt(label + userInput);
 		updatePrompt.run();
+
+		window.repaint();
 		
 		if (!updateOnly) {
 
@@ -163,14 +174,12 @@ public class ClientView {
             for (int j = 0; j < numTextCols; j++) toAdd.add((int)line[j]);
             toAdd.addAll(makeBlankCols(numColsPaddingRight));
             toPrint.add(toAdd);
-            
-        }
-        
-        toPrint.addAll(makeBlankRows(numRowsPaddingBottom, numColsAvailable));
 
-        window.fill(component, toPrint);
-        
-        window.repaint();
+		}
+
+		toPrint.addAll(makeBlankRows(numRowsPaddingBottom, numColsAvailable));
+
+		window.fill(component, toPrint);
         
     }
 	
@@ -195,10 +204,6 @@ public class ClientView {
 		}
 		return toReturn;
 	}
-
-    public void showScores (GameState gameState) {
-    	// TODO
-    }
 
     private void beginAcceptingCharacterInput () {
 

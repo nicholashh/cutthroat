@@ -10,7 +10,6 @@ import ach7nbh2game.network.packets.GameState;
 import ach7nbh2game.network.packets.PlayerInfo;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
@@ -97,12 +96,8 @@ public class GameClient {
 				view.updateThing(newLabel);
 			}
 
-            public void showMap(ArrayList<ArrayList<Integer>> frame) {
-                view.showMap(frame);
-            }
-
-            public void showScores(GameState state) {
-                view.showScores(state);
+            public void updateState(GameState state) {
+                view.updateState(state);
             }
 
         });

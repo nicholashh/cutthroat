@@ -62,8 +62,7 @@ public class ClientModel {
         //Logger.Singleton.log(this, 0, "updateState:");
         //Logger.Singleton.log(this, 1, "state = " + state);
 
-        view.showMap(state.getFrame());
-        view.showScores(state);
+        view.updateState(state);
 
     }
     
