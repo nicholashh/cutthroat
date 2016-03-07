@@ -21,6 +21,7 @@ public abstract class Client extends AMapComponent {
     private final ClientID id;
     private final PlayerInfo info;
     private PlayerState state = new PlayerState();
+    private boolean dead = false;
 
     private Random rand = new Random();
 
@@ -54,15 +55,17 @@ public abstract class Client extends AMapComponent {
     public void decHealth(int healthDiff, Bullet bullet) {
         state.setHealth(state.getHealth()-healthDiff);
         if (state.getHealth() <= 0) {
+            dead = true;
             removeFromMap();
             bullet.getOwner().incScore(1);
 
             (new Thread() { public void run() {
                 try {Thread.sleep(5000);} catch (InterruptedException e) {}
 
-                state.setHealth(Constants.clientHealth);
+                state.respawn();
                 Coordinate newloc = getMap().getRandomLocationWithA(Ground.class);
                 placeOnMap(getMap(), newloc);
+                dead = false;
             }}).start();
         }
     }
@@ -141,86 +144,87 @@ public abstract class Client extends AMapComponent {
     }
 
     public void perform (ClientAction action) {
+        if (!dead) {
 
-        Logger.Singleton.log(this, 0, "perform(action = " + action + ")");
-        Logger.Singleton.log(this, 1, "before: " + getMap().getPerspectiveFrom(getX(), getY(), 3, 3));
+            Logger.Singleton.log(this, 0, "perform(action = " + action + ")");
+            Logger.Singleton.log(this, 1, "before: " + getMap().getPerspectiveFrom(getX(), getY(), 3, 3));
 
-        Direction direction = action.direction;
-        Coordinate nextLocation = nextLocation(direction);
-        int newX = nextLocation.x;
-        int newY = nextLocation.y;
+            Direction direction = action.direction;
+            Coordinate nextLocation = nextLocation(direction);
+            int newX = nextLocation.x;
+            int newY = nextLocation.y;
 
-        GameMap map = getMap();
-        IMapComponent thing = map.get(newY, newX);
+            GameMap map = getMap();
+            IMapComponent thing = map.get(newY, newX);
 
-        if (thing instanceof Ground) {
+            if (thing instanceof Ground) {
 
-            switch (action.action) {
+                switch (action.action) {
 
-                case MOVE: {
+                    case MOVE: {
 
-                    Logger.Singleton.log(this, 1, "moving " + direction);
+                        Logger.Singleton.log(this, 1, "moving " + direction);
 
-                    map.swap(this, thing);
+                        map.swap(this, thing);
 
-                    break;
+                        break;
 
-                }
-
-                case SHOOT: {
-
-                    Logger.Singleton.log(this, 0, "firing bullet " + direction);
-
-                    if (state.getAmmo() > 0) {
-                        Bullet newBullet = new Bullet(direction, this, state.getBulletDmg());
-                        newBullet.placeOnMap(map, newX, newY);
-                        newBullet.setGame(getGame());
-                        newBullet.start();
-                        decAmmo(1);
                     }
 
-                    break;
+                    case SHOOT: {
 
-                }
+                        Logger.Singleton.log(this, 0, "firing bullet " + direction);
 
-            }
-
-        } else if (thing instanceof CavernWall) {
-            CavernWall cwall = (CavernWall) thing;
-            switch(action.action) {
-                case MOVE:
-                    if (cwall.getVisible()) {
-                        map.swap(this, cwall);
-                        cwall.removeFromMap();
-                        switch (cwall.getItem()) {
-                            case GUN2:
-                                state.upgradeGun(Constants.gun2);
-                                break;
-                            case PICK3:
-                                state.upgradePickaxe(Constants.pickaxe3);
-                                break;
-                            case BULLET1:
-                                incAmmo(3);
+                        if (state.getAmmo() > 0) {
+                            Bullet newBullet = new Bullet(direction, this, state.getBulletDmg());
+                            newBullet.placeOnMap(map, newX, newY);
+                            newBullet.setGame(getGame());
+                            newBullet.start();
+                            decAmmo(1);
                         }
-                    }
-                    break;
-                case DIG:
-                    if (!(cwall.getVisible())) {
-                        cwall.decHealth(this, state.getPickaxeDmg());
-                    }
-                    break;
-            }
 
-        } else if (thing instanceof Wall) {
-            switch(action.action) {
-                case DIG:
-                    Logger.Singleton.log(this, 0, "digging "+direction);
+                        break;
 
-                    Wall wall = (Wall) thing;
-                    wall.decHealth(this, state.getPickaxeDmg());
+                    }
+
+                }
+
+            } else if (thing instanceof CavernWall) {
+                CavernWall cwall = (CavernWall) thing;
+                switch (action.action) {
+                    case MOVE:
+                        if (cwall.getVisible()) {
+                            map.swap(this, cwall);
+                            cwall.removeFromMap();
+                            switch (cwall.getItem()) {
+                                case GUN2:
+                                    state.upgradeGun(Constants.gun2);
+                                    break;
+                                case PICK3:
+                                    state.upgradePickaxe(Constants.pickaxe3);
+                                    break;
+                                case BULLET1:
+                                    incAmmo(3);
+                            }
+                        }
+                        break;
+                    case DIG:
+                        if (!(cwall.getVisible())) {
+                            cwall.decHealth(this, state.getPickaxeDmg());
+                        }
+                        break;
+                }
+
+            } else if (thing instanceof Wall) {
+                switch (action.action) {
+                    case DIG:
+                        Logger.Singleton.log(this, 0, "digging " + direction);
+
+                        Wall wall = (Wall) thing;
+                        wall.decHealth(this, state.getPickaxeDmg());
+                }
             }
         }
-
     }
 
     public void sendGameState () {
