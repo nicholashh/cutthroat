@@ -80,9 +80,6 @@ public abstract class Client extends AMapComponent {
             dead = true;
             removeFromMap();
             killer.incScore(1);
-            if (state.getScore() >= getGame().getKillsToWin()) {
-                getGame().iJustWon(this);
-            }
 
             (new Thread() { public void run() {
                 try {Thread.sleep(5000);} catch (InterruptedException e) {}
@@ -105,6 +102,9 @@ public abstract class Client extends AMapComponent {
 
     public void incScore(int scoreDiff) {
         state.setScore(state.getScore()+scoreDiff);
+        if (state.getScore() >= getGame().getKillsToWin()) {
+            getGame().iJustWon(this);
+        }
     }
 
     public void decScore(int scoreDiff) {

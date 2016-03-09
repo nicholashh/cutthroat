@@ -108,7 +108,7 @@ public class ClientView {
 		double emptybar = wholebar-filledbar;
 
 		for (int i = 0; i < emptybar; i++) {
-			leftPrompt += ' ';
+			leftPrompt += "\n ";
 		}
 		for (int i = 0; i < filledbar; i++) {
 			leftPrompt += "\n"+"\u2588";
@@ -151,7 +151,7 @@ public class ClientView {
 
 		showPrompt(bottomPrompt, Component.BottomPanel, VerticalAlignment.TOP, HorizontalAlignment.CENTER);
 
-		String topPrompt = "First to 5 kills wins!";
+		String topPrompt = "First to 5 kills wins";
 		showPrompt(topPrompt, Component.TopPanel, VerticalAlignment.CENTER, HorizontalAlignment.LEFT);
 
 	}

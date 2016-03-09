@@ -124,6 +124,7 @@ public abstract class Game extends AGameActor {
     }
 
     public void iJustWon(Client client) {
+        gameHasStarted = false;
         server.theWinnerIs(client.getInfo());
     }
 
