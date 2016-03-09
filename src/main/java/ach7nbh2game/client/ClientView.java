@@ -7,11 +7,14 @@ import ach7nbh2game.main.Constants.Direction;
 import ach7nbh2game.main.Constants.Tool;
 import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.network.packets.GameState;
+import ach7nbh2game.network.packets.PlayerObservableState;
+import ach7nbh2game.network.packets.PlayerState;
 import ach7nbh2game.util.Logger;
 import ach7nbh2game.util.lambda.LambdaZeroVoid;
 import com.googlecode.blacken.terminal.BlackenKeys;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class ClientView {
 
@@ -32,8 +35,10 @@ public class ClientView {
     private final int selectGun = '1';
     private final int selectPickaxe = '2';
 
-    // states
     private enum State {TEXT_INPUT_MODE, IN_GAME_MODE}
+
+	private enum VerticalAlignment {TOP, CENTER}
+	private enum HorizontalAlignment {LEFT, CENTER}
     private final String welcomeMessage = "Welcome to Cutthroat!\n\n\n";
     private final String usernamePrompt = welcomeMessage + "Username: ";
     private final String serverPrompt = welcomeMessage + "Server Hostname: ";
@@ -73,9 +78,41 @@ public class ClientView {
 
 	private void popularMenus (GameState gameState) {
 
-		// TODO
+		String rightPrompt = "";
 
-		showPrompt("num ammo = " + gameState.getPlayerState().getAmmo(), Component.RightPanel);
+		Map<String, PlayerObservableState> otherPlayerStates = gameState.getOtherPlayerStates();
+
+		rightPrompt += " Health";
+		for (String player : otherPlayerStates.keySet())
+			rightPrompt += String.format("\n %3d: %s", otherPlayerStates.get(player).getHealth(), player);
+
+		rightPrompt += "\n\n Scores";
+		for (String player : otherPlayerStates.keySet())
+			rightPrompt += String.format("\n %2d: %s", otherPlayerStates.get(player).getScore(), player);
+
+		PlayerState myState = gameState.getPlayerState();
+
+		rightPrompt += "\n";
+		rightPrompt += "\n My Items";
+		rightPrompt += "\n Pickaxe Damage: " + myState.getPickaxeDmg();
+		rightPrompt += "\n Gun     Damage: " + myState.getGunDmg();
+		rightPrompt += "\n Bullet  Damage: " + myState.getBulletDmg();
+		rightPrompt += "\n Number of Ammo: " + myState.getAmmo();
+
+		showPrompt(rightPrompt, Component.RightPanel, VerticalAlignment.TOP, HorizontalAlignment.LEFT);
+
+		String topPrompt = "";
+		topPrompt += "Selected Tool: ";
+		switch (tool) {
+			case GUN:
+				topPrompt += "Gun";
+				break;
+			case PICKAXE:
+				topPrompt += "Pickaxe";
+				break;
+		}
+
+		showPrompt(topPrompt, Component.TopPanel, VerticalAlignment.CENTER, HorizontalAlignment.LEFT);
 
 	}
 
@@ -138,12 +175,18 @@ public class ClientView {
 		}
 		
 	}
-	
+
 	private void showPrompt (final String prompt) {
 		showPrompt(prompt, Component.CenterPanel);
 	}
 
 	private void showPrompt (final String prompt, final Component component) {
+		showPrompt(prompt, component, VerticalAlignment.CENTER, HorizontalAlignment.CENTER);
+	}
+
+	private void showPrompt (final String prompt, final Component component,
+			final VerticalAlignment verticalAlignment,
+			final HorizontalAlignment horizontalAlignment) {
 
 		//Logger.Singleton.log(this, 0, "showPrompt(" +
 		//		"component = \"" + component + "\", " +
@@ -154,30 +197,56 @@ public class ClientView {
         final String[] separate = prompt.split("\n");
         
         final int numTextRows = separate.length;
-        final int numRowsAvailable = window.height(component);
-        final int numRowsPaddingTop = calcHalfDifferenceOrZero(numRowsAvailable, numTextRows);
-        final int numRowsPaddingBottom = numRowsAvailable - (numRowsPaddingTop + numTextRows);
-        
-        final int numColsAvailable = window.width(component);
-        
-        toPrint.addAll(makeBlankRows(numRowsPaddingTop, numColsAvailable));
-        
-        for (int i = 0; i < numTextRows; i++) {
-        	
-        	final char[] line = separate[i].toCharArray();
-        	final int numTextCols = line.length;
-            final int numColsPaddingLeft = calcHalfDifferenceOrZero(numColsAvailable, numTextCols);
-            final int numColsPaddingRight = numColsAvailable - (numColsPaddingLeft + numTextCols); 
+		final int numColsAvailable = window.width(component);
+		final int numRowsAvailable = window.height(component);
 
-            final ArrayList<Integer> toAdd = new ArrayList<>();
-            toAdd.addAll(makeBlankCols(numColsPaddingLeft));
-            for (int j = 0; j < numTextCols; j++) toAdd.add((int)line[j]);
-            toAdd.addAll(makeBlankCols(numColsPaddingRight));
-            toPrint.add(toAdd);
+		final int numRowsPaddingTop = calcHalfDifferenceOrZero(numRowsAvailable, numTextRows);
+		final int numRowsPaddingBottom = numRowsAvailable - (numRowsPaddingTop + numTextRows);
+
+		switch (verticalAlignment) {
+			case CENTER:
+				toPrint.addAll(makeBlankRows(numRowsPaddingTop, numColsAvailable));
+				break;
+		}
+
+		for (int i = 0; i < numTextRows; i++) {
+
+			final char[] line = separate[i].toCharArray();
+			final int numTextCols = line.length;
+			final int numColsPaddingLeft = calcHalfDifferenceOrZero(numColsAvailable, numTextCols);
+			final int numColsPaddingRight = numColsAvailable - (numColsPaddingLeft + numTextCols);
+
+			final ArrayList<Integer> toAdd = new ArrayList<>();
+
+			switch (horizontalAlignment) {
+				case CENTER:
+					toAdd.addAll(makeBlankCols(numColsPaddingLeft));
+					break;
+			}
+
+			for (int j = 0; j < numTextCols; j++) toAdd.add((int)line[j]);
+
+			switch (horizontalAlignment) {
+				case CENTER:
+					toAdd.addAll(makeBlankCols(numColsPaddingRight));
+					break;
+				case LEFT:
+					toAdd.addAll(makeBlankCols(numColsPaddingLeft + numColsPaddingRight));
+					break;
+			}
+
+			toPrint.add(toAdd);
 
 		}
 
-		toPrint.addAll(makeBlankRows(numRowsPaddingBottom, numColsAvailable));
+		switch (verticalAlignment) {
+			case CENTER:
+				toPrint.addAll(makeBlankRows(numRowsPaddingBottom, numColsAvailable));
+				break;
+			case TOP:
+				toPrint.addAll(makeBlankRows(numRowsPaddingTop + numRowsPaddingBottom, numColsAvailable));
+				break;
+		}
 
 		window.fill(component, toPrint);
         

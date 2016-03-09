@@ -37,10 +37,10 @@ public class Window {
     private int centerPanelWidth = Constants.clientMapWidth;
 
     // the variant component sizes
-    private int leftPanelWidth = 5;
+    private int leftPanelWidth = 1;
     private int rightPanelWidth = 21;
     private int topPanelHeight = 1;
-    private int bottomPanelHeight = 3;
+    private int bottomPanelHeight = 1;
     private int mapBorder = 1;
     private int windowBorder = 1;
 
@@ -66,16 +66,16 @@ public class Window {
             case CenterPanel:
             case TopPanel:
             case BottomPanel:
-                position += dimensions()[0][2];
-            case LeftMapBorder:
             case TopMapBorder:
             case BottomMapBorder:
+                position += dimensions()[0][2];
+            case LeftMapBorder:
                 position += dimensions()[0][1];
             case LeftPanel:
-                position += dimensions()[0][0];
-            case LeftWindowBorder:
             case TopWindowBorder:
-            case BottomWindowBorder: }
+            case BottomWindowBorder:
+                position += dimensions()[0][0];
+            case LeftWindowBorder: }
         return position;
     }
 
@@ -95,14 +95,14 @@ public class Window {
                 return windowBorder;
             case TopWindowBorder:
             case BottomWindowBorder:
-                width += dimensions()[0][0] + dimensions()[0][6];
+                //width += dimensions()[0][0] + dimensions()[0][6];
                 width += dimensions()[0][1] + dimensions()[0][5];
-            case TopMapBorder:
-            case BottomMapBorder:
                 width += dimensions()[0][2] + dimensions()[0][4];
             case CenterPanel:
             case TopPanel:
             case BottomPanel:
+            case TopMapBorder:
+            case BottomMapBorder:
                 width += dimensions()[0][3]; }
         return width;
     }
@@ -154,7 +154,7 @@ public class Window {
                 return windowBorder;
             case LeftWindowBorder:
             case RightWindowBorder:
-                height += dimensions()[1][0] + dimensions()[1][6];
+                //height += dimensions()[1][0] + dimensions()[1][6];
                 height += dimensions()[1][1] + dimensions()[1][5];
                 height += dimensions()[1][2] + dimensions()[1][4];
             case CenterPanel:
@@ -185,7 +185,7 @@ public class Window {
         TerminalInterface newTerminal = new SwingTerminal();
         newTerminal.init("Andrew Nick Game",
                 bottom(Component.BottomWindowBorder) + 1,
-                right(Component.TopWindowBorder) + 1);
+                right(Component.RightWindowBorder) + 1);
         terminal = new CursesLikeAPI(newTerminal);
 
         ColorPalette palette = new ColorPalette();
@@ -197,32 +197,43 @@ public class Window {
 
     }
 
-    private void drawTerminalStructure() {
+    private void drawTerminalStructure () {
 
         for (Component component : Component.values()) {
             switch (component) {
-                case LeftPanel:
-                case RightPanel:
-                case TopPanel:
-                case BottomPanel:
-                    fill(component, '='); break;
-                case CenterPanel:
-                    fill(component, '*'); break;
-                case LeftWindowBorder:
-                    fill(component, ' '); break;
                 case LeftMapBorder:
                 case RightMapBorder:
                     fill(component, "\u2502".codePointAt(0)); break;
-                case RightWindowBorder:
-                case TopWindowBorder:
-                    fill(component, ' '); break;
                 case TopMapBorder:
                 case BottomMapBorder:
                     fill(component, "\u2500".codePointAt(0)); break;
-                case BottomWindowBorder:
-                    fill(component, ' '); break;
             }
         }
+
+        //for (Component component : Component.values()) {
+        //    switch (component) {
+        //        case LeftPanel:
+        //        case RightPanel:
+        //        case TopPanel:
+        //        case BottomPanel:
+        //            fill(component, '='); break;
+        //        case CenterPanel:
+        //            fill(component, '*'); break;
+        //        case LeftWindowBorder:
+        //            fill(component, ' '); break;
+        //        case LeftMapBorder:
+        //        case RightMapBorder:
+        //            fill(component, "\u2502".codePointAt(0)); break;
+        //        case RightWindowBorder:
+        //        case TopWindowBorder:
+        //            fill(component, ' '); break;
+        //        case TopMapBorder:
+        //        case BottomMapBorder:
+        //            fill(component, "\u2500".codePointAt(0)); break;
+        //        case BottomWindowBorder:
+        //            fill(component, ' '); break;
+        //    }
+        //}
 
         //for (Component component : Component.values()) {
         //    switch (component) {
