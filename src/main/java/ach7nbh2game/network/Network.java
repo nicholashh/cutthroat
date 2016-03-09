@@ -40,6 +40,7 @@ public class Network {
         kryo.register(ReqLobbies.class, 13378);
         kryo.register(LobbyList.class, 3379);
         kryo.register(JoinLobby.class, 3380);
+        kryo.register(EndGame.class, 3393);
     }
 
     static public class RegisterMessage {
@@ -87,5 +88,9 @@ public class Network {
 
     static public class JoinLobby {
         public int lobbyID;
+    }
+
+    static public class EndGame {
+        public PlayerInfo client;
     }
 }

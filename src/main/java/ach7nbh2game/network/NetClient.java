@@ -6,6 +6,7 @@ import ach7nbh2game.network.adapters.IServerToClient;
 import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.network.packets.PlayerInfo;
 import ach7nbh2game.util.Logger;
+import ach7nbh2game.util.id.ClientID;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -85,6 +86,11 @@ public class NetClient {
                     LobbyList msg = (LobbyList) object;
                     adapter.announceLobbies(client.getID(),
                             msg.lobbies, msg.players, msg.lobbyToPlayers);
+                }
+
+                if (object instanceof EndGame) {
+                    EndGame msg = (EndGame) object;
+                    adapter.theWinnerIs(msg.client);
                 }
             }
 

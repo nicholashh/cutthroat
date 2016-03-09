@@ -1,5 +1,7 @@
 package ach7nbh2game.main;
 
+import java.util.HashMap;
+
 public class Constants {
 
     // client display settings
@@ -31,13 +33,14 @@ public class Constants {
     public static final int pickaxe3 = 30;
 
     // wall tiers
-    public static final int wall1 = 40;
+    public static final int wall1 = 60;
 
     // cavern tiers
     public enum CavernSize {LARGE, MEDIUM}
 
     // all the items
     public enum Item {GUN1, GUN2, PICK1, PICK2, PICK3, BULLET1}
+    public static final HashMap<Item, Integer> itemToTier = new HashMap<>();
 
     // use selected tool
     public enum Tool {GUN, PICKAXE}

@@ -7,6 +7,7 @@ import ach7nbh2game.network.packets.GameState;
 import ach7nbh2game.network.packets.PlayerInfo;
 import ach7nbh2game.util.Logger;
 import ach7nbh2game.util.Utility;
+import ach7nbh2game.util.id.ClientID;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -227,6 +228,13 @@ public class ClientModel {
             // TODO what if in multiple lobbies and a second one starts?
         }
 
+    }
+
+    public void endGame(PlayerInfo client) {
+        inGame = false;
+        view.endGame(client);
+        try {Thread.sleep(5000);} catch (InterruptedException e) {}
+        server.requestLobbies(playerInfo.getID());
     }
 
     //public void move(Direction direction) {

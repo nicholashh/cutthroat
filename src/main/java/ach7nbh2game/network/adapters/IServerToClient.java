@@ -1,6 +1,7 @@
 package ach7nbh2game.network.adapters;
 
 import ach7nbh2game.network.packets.GameState;
+import ach7nbh2game.network.packets.PlayerInfo;
 
 import java.util.Map;
 import java.util.Set;
@@ -25,4 +26,5 @@ public interface IServerToClient {
             Map<Integer, String> players,
             Map<Integer, Set<Integer>> lobbyToPlayers);
 
+    void theWinnerIs(PlayerInfo client);
 }

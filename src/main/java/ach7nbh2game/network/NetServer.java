@@ -5,6 +5,7 @@ import ach7nbh2game.network.Network.*;
 import ach7nbh2game.network.adapters.IClientToServer;
 import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.network.packets.GameState;
+import ach7nbh2game.network.packets.PlayerInfo;
 import ach7nbh2game.util.Logger;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -167,6 +168,12 @@ public class NetServer {
         listMsg.players = players;
         listMsg.lobbyToPlayers = lobbyToPlayers;
         server.sendToTCP(clientID, listMsg);
+    }
+
+    public void endGame(PlayerInfo client) {
+        EndGame eg = new EndGame();
+        eg.client = client;
+        server.sendToAllTCP(eg);
     }
 
     // This holds per connection state.

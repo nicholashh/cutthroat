@@ -72,7 +72,7 @@ public class ServerModel {
 
         GameID id = new GameID(rand.nextInt());
 
-        Game newLobby = new Game(id, name) {
+        Game newLobby = new Game(network, id, name) {
             // use this object's closure over the network object
             // to send updated lobby information to every client
             @Override public void announceLobbies () { announceAllLobbies(); }

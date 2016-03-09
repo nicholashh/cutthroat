@@ -8,6 +8,7 @@ import ach7nbh2game.network.adapters.IServerToClient;
 import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.network.packets.GameState;
 import ach7nbh2game.network.packets.PlayerInfo;
+import ach7nbh2game.util.id.ClientID;
 
 import java.io.IOException;
 import java.util.Map;
@@ -36,6 +37,11 @@ public class GameClient {
             public void announceLobbies(int clientID, Map<Integer, String> lobbies,
                     Map<Integer, String> players, Map<Integer, Set<Integer>> lobbyToPlayers) {
                 model.updateLobbyList(lobbies, players, lobbyToPlayers);
+            }
+
+            @Override
+            public void theWinnerIs(PlayerInfo client) {
+                model.endGame(client);
             }
 
         });
@@ -98,6 +104,11 @@ public class GameClient {
 
             public void updateState(GameState state) {
                 view.updateState(state);
+            }
+
+            @Override
+            public void endGame(PlayerInfo client) {
+                view.endGame(client);
             }
 
         });

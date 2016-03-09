@@ -1,6 +1,7 @@
 package ach7nbh2game.server;
 
 import ach7nbh2game.main.Constants;
+import ach7nbh2game.network.adapters.IServerToClient;
 import ach7nbh2game.network.packets.GameState;
 import ach7nbh2game.network.packets.PlayerObservableState;
 import ach7nbh2game.server.map.AGameActor;
@@ -11,6 +12,7 @@ import ach7nbh2game.util.id.ClientID;
 import ach7nbh2game.util.id.Coordinate;
 import ach7nbh2game.util.id.GameID;
 import ach7nbh2game.util.Logger;
+import com.esotericsoftware.kryonet.Server;
 
 import java.util.Collection;
 import java.util.Deque;
@@ -22,6 +24,8 @@ public abstract class Game extends AGameActor {
 
     private final GameID id;
 
+    private final IServerToClient server;
+
     private boolean gameHasStarted = false;
 
     private int tick = 0;
@@ -30,10 +34,13 @@ public abstract class Game extends AGameActor {
 
     private Map<ClientID,Client> players = new HashMap<>();
 
+    private int killsToWin = 5;
+
     public abstract void announceLobbies () ;
 
-    public Game (GameID idIn, String name) {
+    public Game (IServerToClient serverIn, GameID idIn, String name) {
         super(name);
+        server = serverIn;
         id = idIn;
     }
 
@@ -110,6 +117,14 @@ public abstract class Game extends AGameActor {
             announceLobbies();
         }
 
+    }
+
+    public int getKillsToWin() {
+        return killsToWin;
+    }
+
+    public void iJustWon(Client client) {
+        server.theWinnerIs(client.getInfo());
     }
 
     public GameState fillGameStateInfo() {

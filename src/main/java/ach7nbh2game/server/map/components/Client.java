@@ -44,6 +44,10 @@ public abstract class Client extends AMapComponent {
         return id;
     }
 
+    public PlayerInfo getInfo() {
+        return info;
+    }
+
     public int getHealth() {
         return state.getHealth();
     }
@@ -58,6 +62,27 @@ public abstract class Client extends AMapComponent {
             dead = true;
             removeFromMap();
             bullet.getOwner().incScore(1);
+
+            (new Thread() { public void run() {
+                try {Thread.sleep(5000);} catch (InterruptedException e) {}
+
+                state.respawn();
+                Coordinate newloc = getMap().getRandomLocationWithA(Ground.class);
+                placeOnMap(getMap(), newloc);
+                dead = false;
+            }}).start();
+        }
+    }
+
+    public void decHealth(int healthDiff, Client killer) {
+        state.setHealth(state.getHealth()-healthDiff);
+        if (state.getHealth() <= 0) {
+            dead = true;
+            removeFromMap();
+            killer.incScore(1);
+            if (state.getScore() >= getGame().getKillsToWin()) {
+                getGame().iJustWon(this);
+            }
 
             (new Thread() { public void run() {
                 try {Thread.sleep(5000);} catch (InterruptedException e) {}
@@ -222,6 +247,12 @@ public abstract class Client extends AMapComponent {
 
                         Wall wall = (Wall) thing;
                         wall.decHealth(this, state.getPickaxeDmg());
+                }
+            } else if (thing instanceof Client) {
+                switch(action.action) {
+                    case DIG:
+                        Client other = (Client) thing;
+                        other.decHealth(state.getPickaxeDmg(), this);
                 }
             }
         }

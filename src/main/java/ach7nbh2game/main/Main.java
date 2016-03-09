@@ -23,7 +23,7 @@ public class Main {
                 System.exit(-1);
             } else {
 
-                System.out.println("CUTTHROAT ~ code version: 51");
+                System.out.println("CUTTHROAT ~ code version: 52");
                 System.out.println("running Main with arguments " + args[0]);
 
                 for (char c : args[0].toCharArray()) {

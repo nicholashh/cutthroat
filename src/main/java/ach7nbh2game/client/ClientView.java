@@ -2,13 +2,11 @@ package ach7nbh2game.client;
 
 import ach7nbh2game.client.Window.Component;
 import ach7nbh2game.client.adapters.IViewToModel;
+import ach7nbh2game.main.Constants;
 import ach7nbh2game.main.Constants.Action;
 import ach7nbh2game.main.Constants.Direction;
 import ach7nbh2game.main.Constants.Tool;
-import ach7nbh2game.network.packets.ClientAction;
-import ach7nbh2game.network.packets.GameState;
-import ach7nbh2game.network.packets.PlayerObservableState;
-import ach7nbh2game.network.packets.PlayerState;
+import ach7nbh2game.network.packets.*;
 import ach7nbh2game.util.Logger;
 import ach7nbh2game.util.lambda.LambdaZeroVoid;
 import com.googlecode.blacken.terminal.BlackenKeys;
@@ -84,11 +82,11 @@ public class ClientView {
 
 		rightPrompt += " Health";
 		for (String player : otherPlayerStates.keySet())
-			rightPrompt += String.format("\n %3d: %s", otherPlayerStates.get(player).getHealth(), player);
+			rightPrompt += String.format("\n %s: %3d", player, otherPlayerStates.get(player).getHealth());
 
 		rightPrompt += "\n\n Scores";
 		for (String player : otherPlayerStates.keySet())
-			rightPrompt += String.format("\n %2d: %s", otherPlayerStates.get(player).getScore(), player);
+			rightPrompt += String.format("\n %s: %2d", player, otherPlayerStates.get(player).getScore());
 
 		PlayerState myState = gameState.getPlayerState();
 
@@ -101,19 +99,81 @@ public class ClientView {
 
 		showPrompt(rightPrompt, Component.RightPanel, VerticalAlignment.TOP, HorizontalAlignment.LEFT);
 
-		String topPrompt = "";
-		topPrompt += "Selected Tool: ";
-		switch (tool) {
-			case GUN:
-				topPrompt += "Gun";
+		String leftPrompt = "";
+
+		leftPrompt += "\u2665";
+		double percentHealth = myState.getHealth()*1.0/Constants.clientHealth;
+		int wholebar = window.height(Component.LeftPanel)-1;
+		double filledbar = wholebar*percentHealth;
+		double emptybar = wholebar-filledbar;
+
+		for (int i = 0; i < emptybar; i++) {
+			leftPrompt += ' ';
+		}
+		for (int i = 0; i < filledbar; i++) {
+			leftPrompt += "\n"+"\u2588";
+		}
+
+		showPrompt(leftPrompt, Component.LeftPanel, VerticalAlignment.TOP, HorizontalAlignment.LEFT);
+
+		String bottomPrompt = "";
+
+		bottomPrompt += selectedGun();
+		switch(myState.getGunDmg()) {
+			case Constants.gun1:
+				bottomPrompt += "1 ";
 				break;
-			case PICKAXE:
-				topPrompt += "Pickaxe";
+			case Constants.gun2:
+				bottomPrompt += "2 ";
+		}
+
+		bottomPrompt += selectedPick();
+		switch(myState.getPickaxeDmg()) {
+			case Constants.pickaxe1:
+				bottomPrompt += "1 ";
+				break;
+			case Constants.pickaxe2:
+				bottomPrompt += "2 ";
+				break;
+			case Constants.pickaxe3:
+				bottomPrompt += "3 ";
 				break;
 		}
 
+		bottomPrompt += "Bullet lvl: ";
+		switch(myState.getBulletDmg()) {
+			case Constants.bullet1:
+				bottomPrompt += "1 ";
+				break;
+		}
+
+		bottomPrompt += "Ammo: "+myState.getAmmo();
+
+		showPrompt(bottomPrompt, Component.BottomPanel, VerticalAlignment.TOP, HorizontalAlignment.CENTER);
+
+		String topPrompt = "First to 5 kills wins!";
 		showPrompt(topPrompt, Component.TopPanel, VerticalAlignment.CENTER, HorizontalAlignment.LEFT);
 
+	}
+
+	private String selectedGun() {
+		if (tool == Tool.GUN) {
+			return "*Gun lvl: ";
+		} else {
+			return " Gun lvl: ";
+		}
+	}
+	private String selectedPick() {
+		if (tool == Tool.PICKAXE) {
+			return "*Pickaxe lvl: ";
+		} else {
+			return " Pickaxe lvl: ";
+		}
+	}
+
+	public void endGame(PlayerInfo client) {
+		state = State.TEXT_INPUT_MODE;
+		updateThing(client.getUsername()+" won!");
 	}
 
 	public String askForUsername () {
