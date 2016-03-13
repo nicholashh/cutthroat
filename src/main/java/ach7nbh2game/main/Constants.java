@@ -1,7 +1,5 @@
 package ach7nbh2game.main;
 
-import java.util.HashMap;
-
 public class Constants {
 
     // client display settings
@@ -40,7 +38,7 @@ public class Constants {
 
     // all the items
     public enum Item {GUN1, GUN2, PICK1, PICK2, PICK3, BULLET1}
-    public static final HashMap<Item, Integer> itemToTier = new HashMap<>();
+    //public static final HashMap<Item, Integer> itemToTier = new HashMap<>();
 
     // use selected tool
     public enum Tool {GUN, PICKAXE}
@@ -52,5 +50,13 @@ public class Constants {
 
     // networking options
     public static final int bufferSize = 20000000;
+
+    // client-side sounds
+    public enum GameSound {
+        GUN_FIRE, GUN_WHIFF,
+        PICKAXE_HIT_WALL, PICKAXE_HIT_PLAYER, PICKAXE_WHIFF,
+        BULLET_HIT_WALL, BULLET_HIT_PLAYER,
+        PLAYER_SPAWNS, PLAYER_DIES,
+        GAME_BEGINS, GAME_ENDS}
 
 }
