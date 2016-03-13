@@ -1,6 +1,6 @@
 package ach7nbh2game.network.packets;
 
-import ach7nbh2game.main.Constants.GameSound;
+import ach7nbh2game.main.Constants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,13 +38,13 @@ public class GameState {
         return playerState;
     }
 
-    private ArrayList<GameSound> sounds;
+    private ArrayList<Constants.ServerToClientSound> sounds;
 
-    public void setSounds (ArrayList<GameSound> sounds) {
+    public void setSounds (ArrayList<Constants.ServerToClientSound> sounds) {
         this.sounds = sounds;
     }
 
-    public ArrayList<GameSound> getSounds () {
+    public ArrayList<Constants.ServerToClientSound> getSounds () {
         return sounds;
     }
 

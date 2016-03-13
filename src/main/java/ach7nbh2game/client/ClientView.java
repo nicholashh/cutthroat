@@ -73,7 +73,7 @@ public class ClientView {
 		window.fill(Component.CenterPanel, gameState.getFrame());
 		popularMenus(gameState);
 		window.repaint();
-		for (Constants.GameSound gs : gameState.getSounds()) {
+		for (Constants.ServerToClientSound gs : gameState.getSounds()) {
 			switch(gs) {
 				case GUN_FIRE:
 					SoundEffect.GUN.play();

@@ -52,11 +52,14 @@ public class Constants {
     public static final int bufferSize = 20000000;
 
     // client-side sounds
-    public enum GameSound {
+    public interface GameSound {}
+    public enum ServerToClientSound implements GameSound {
         GUN_FIRE, GUN_WHIFF,
         PICKAXE_HIT_WALL, PICKAXE_HIT_PLAYER, PICKAXE_WHIFF,
         BULLET_HIT_WALL, BULLET_HIT_PLAYER,
         PLAYER_SPAWNS, PLAYER_DIES,
         GAME_BEGINS, GAME_ENDS}
+    public enum ClientOnlySound implements GameSound {
+        SOUNDTRACK, GAME_BEGINS, GAME_ENDS}
 
 }

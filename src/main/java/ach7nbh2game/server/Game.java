@@ -1,6 +1,7 @@
 package ach7nbh2game.server;
 
 import ach7nbh2game.main.Constants;
+import ach7nbh2game.main.Constants.ServerToClientSound;
 import ach7nbh2game.network.adapters.IServerToClient;
 import ach7nbh2game.network.packets.GameState;
 import ach7nbh2game.network.packets.PlayerObservableState;
@@ -8,16 +9,12 @@ import ach7nbh2game.server.map.AGameActor;
 import ach7nbh2game.server.map.GameMap;
 import ach7nbh2game.server.map.components.Client;
 import ach7nbh2game.server.map.components.Ground;
+import ach7nbh2game.util.Logger;
 import ach7nbh2game.util.id.ClientID;
 import ach7nbh2game.util.id.Coordinate;
 import ach7nbh2game.util.id.GameID;
-import ach7nbh2game.util.Logger;
-import com.esotericsoftware.kryonet.Server;
 
-import java.util.Collection;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 public abstract class Game extends AGameActor {
@@ -35,6 +32,8 @@ public abstract class Game extends AGameActor {
     private Map<ClientID,Client> players = new HashMap<>();
 
     private int killsToWin = 5;
+
+    private ArrayList<ServerToClientSound> sounds = new ArrayList<>();
 
     public abstract void announceLobbies () ;
 
@@ -130,6 +129,7 @@ public abstract class Game extends AGameActor {
 
     public GameState fillGameStateInfo() {
         GameState state = new GameState();
+        state.setSounds(sounds);
         for (Client client : players.values()) {
             PlayerObservableState obsState = new PlayerObservableState();
             obsState.setHealth(client.getHealth());
@@ -193,6 +193,7 @@ public abstract class Game extends AGameActor {
 
         if (tick % Constants.clientUpdatesFrequency == 0) {
             updateAllPlayers();
+            resetTempState();
         }
 
         endTime = System.currentTimeMillis();
@@ -203,6 +204,14 @@ public abstract class Game extends AGameActor {
         Logger.Singleton.log(this, 1, "timeSpentUpdatingStateThisTime = " + timeSpentUpdatingStateThisTime);
         Logger.Singleton.log(this, 1, "timeSpentSendingStateToPlayersThisTime = " + timeSpentSendingStateToPlayersThisTime);
 
+    }
+
+    public void addSound (ServerToClientSound sound) {
+        sounds.add(sound);
+    }
+
+    private void resetTempState () {
+        sounds.clear();
     }
 
     private void startGameTimer () {

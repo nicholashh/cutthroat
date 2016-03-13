@@ -7,7 +7,6 @@ import ach7nbh2game.network.packets.GameState;
 import ach7nbh2game.network.packets.PlayerInfo;
 import ach7nbh2game.util.Logger;
 import ach7nbh2game.util.Utility;
-import ach7nbh2game.util.id.ClientID;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -50,7 +49,9 @@ public class ClientModel {
             try {
                 server.connectTo(0, view.askForServerIP(), playerInfo);
             } catch (IOException e) {
-                // no-op
+                System.out.println("failed to connect to server");
+                e.printStackTrace();
+                // TODO
             }
         }
 

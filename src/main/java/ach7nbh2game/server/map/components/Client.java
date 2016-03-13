@@ -2,6 +2,7 @@ package ach7nbh2game.server.map.components;
 
 import ach7nbh2game.main.Constants;
 import ach7nbh2game.main.Constants.Direction;
+import ach7nbh2game.main.Constants.ServerToClientSound;
 import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.network.packets.GameState;
 import ach7nbh2game.network.packets.PlayerInfo;
@@ -120,7 +121,7 @@ public abstract class Client extends AMapComponent {
     }
 
     public void decAmmo(int ammoDiff) {
-        state.setAmmo(state.getAmmo()-ammoDiff);
+        state.setAmmo(state.getAmmo() - ammoDiff);
     }
 
     // essentially a setter for the callback
@@ -179,6 +180,7 @@ public abstract class Client extends AMapComponent {
             int newX = nextLocation.x;
             int newY = nextLocation.y;
 
+            Game game = getGame();
             GameMap map = getMap();
             IMapComponent thing = map.get(newY, newX);
 
@@ -203,9 +205,12 @@ public abstract class Client extends AMapComponent {
                         if (state.getAmmo() > 0) {
                             Bullet newBullet = new Bullet(direction, this, state.getBulletDmg());
                             newBullet.placeOnMap(map, newX, newY);
-                            newBullet.setGame(getGame());
+                            newBullet.setGame(game);
                             newBullet.start();
                             decAmmo(1);
+                            game.addSound(ServerToClientSound.GUN_FIRE);
+                        } else {
+                            game.addSound(ServerToClientSound.GUN_WHIFF);
                         }
 
                         break;
