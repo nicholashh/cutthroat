@@ -60,6 +60,8 @@ public class ClientView {
         System.out.println("starting the ClientView!");
 
         window.start();
+		SoundEffect.init();
+		SoundEffect.volume = SoundEffect.Volume.MEDIUM;
         beginAcceptingCharacterInput();
 
     }
@@ -71,7 +73,12 @@ public class ClientView {
 		window.fill(Component.CenterPanel, gameState.getFrame());
 		popularMenus(gameState);
 		window.repaint();
-
+		for (Constants.GameSound gs : gameState.getSounds()) {
+			switch(gs) {
+				case GUN_FIRE:
+					SoundEffect.GUN.play();
+			}
+		}
 	}
 
 	private void popularMenus (GameState gameState) {

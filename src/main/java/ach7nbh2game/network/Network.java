@@ -1,5 +1,6 @@
 package ach7nbh2game.network;
 
+import ach7nbh2game.main.Constants;
 import ach7nbh2game.network.packets.*;
 import ach7nbh2game.main.Constants.*;
 import com.esotericsoftware.kryo.Kryo;
@@ -28,6 +29,7 @@ public class Network {
         kryo.register(Action.class, 3390);
         kryo.register(PlayerState.class, 3391);
         kryo.register(PlayerObservableState.class, 3392);
+        kryo.register(Constants.GameSound.class, 3394);
 
         kryo.register(RegisterMessage.class, 3370);
         kryo.register(TextMessage.class, 3371);
