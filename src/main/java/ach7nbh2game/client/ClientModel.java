@@ -133,10 +133,10 @@ public class ClientModel {
             	
             } else {
 
-                waitingForInput = true;
-
                 Thread newThread = new Thread() {
                     public void run() {
+
+                        waitingForInput = true;
 
                         String action = view.askForThing(promptFinal, "");
 
