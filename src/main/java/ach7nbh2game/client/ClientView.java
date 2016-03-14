@@ -252,11 +252,10 @@ public class ClientView {
 				"value = \"" + value.replace('\n', ' ') + "\", " +
 				"label = \"" + label.replace('\n', ' ') + "\")");
 
-		state = State.TEXT_INPUT_MODE;
-			
 		if (!updateOnly) {
 			userInputDone = false;
 			userInput = value;
+			state = State.TEXT_INPUT_MODE;
 		}
 
 		updatePrompt = () -> showPrompt(label + userInput);

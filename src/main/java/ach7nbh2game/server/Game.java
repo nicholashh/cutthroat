@@ -122,9 +122,10 @@ public abstract class Game extends AGameActor {
 
     public void iJustWon (Client winner) {
         gameHasStarted = false;
-        for (Client client : players.values()) {
+        for (Client client : players.values())
             client.endGame(winner);
-        }
+        for (Client client : players.values())
+            client.gameHasEnded();
     }
 
     public GameState fillGameStateInfo() {
