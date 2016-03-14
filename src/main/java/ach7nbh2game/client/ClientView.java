@@ -194,7 +194,7 @@ public class ClientView {
 
 		showPrompt(bottomPrompt, Component.BottomPanel, VerticalAlignment.TOP, HorizontalAlignment.CENTER);
 
-		String topPrompt = "First to 5 kills wins";
+		String topPrompt = "First to " + Constants.killsToWin + " kills wins";
 		showPrompt(topPrompt, Component.TopPanel, VerticalAlignment.CENTER, HorizontalAlignment.LEFT);
 
 	}
