@@ -219,11 +219,12 @@ public class ClientModel {
 
         if (!inGame) {
 
-            inGame = true;
-
             for (Thread thread : infoRequestThreads) {
                 thread.interrupt();
             }
+
+            inGame = true;
+            waitingForInput = false;
 
         } else {
             // TODO what if in multiple lobbies and a second one starts?

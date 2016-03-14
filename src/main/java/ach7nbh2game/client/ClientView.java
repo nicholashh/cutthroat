@@ -244,8 +244,8 @@ public class ClientView {
 	public void updateThing (String newLabel) {
 		askForThing(newLabel, "", true);
 	}
-	
-	public String askForThing (String label, String value, boolean updateOnly) {
+
+	private String askForThing (String label, String value, boolean updateOnly) {
 
 		Logger.Singleton.log(this, 0, "askForThing(" +
 				"updateOnly = " + updateOnly + ", " +
