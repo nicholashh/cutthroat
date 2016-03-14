@@ -1,5 +1,6 @@
 package ach7nbh2game.server.map.components;
 
+import ach7nbh2game.main.Constants;
 import ach7nbh2game.main.Constants.Direction;
 import ach7nbh2game.server.Callback;
 import ach7nbh2game.server.map.GameMap;
@@ -55,28 +56,7 @@ public class Bullet extends AMapComponent {
 
             Client player = (Client) thing;
             player.decHealth(damage*owner.getState().getGunDmg(), this);
-
-            // just for now...
-//            mapChar = 42;
-//            boolean which = rand.nextBoolean();
-//            switch (direction) {
-//                case UP:
-//                    direction = which ? Direction.LEFT : Direction.RIGHT;
-//                    break;
-//                case LEFT:
-//                    direction = which ? Direction.DOWN : Direction.UP;
-//                    break;
-//                case DOWN:
-//                    direction = which ? Direction.RIGHT : Direction.LEFT;
-//                    break;
-//                case RIGHT:
-//                    direction = which ? Direction.UP : Direction.DOWN;
-//                    break;
-//            }
-
-//            if (numTries > 0) {
-//                move(numTries - 1);
-//            }
+            getGame().addSound(Constants.ServerToClientSound.BULLET_HIT_PLAYER);
 
         } else if (thing instanceof Wall || thing instanceof Bullet || thing == null) {
 
@@ -93,6 +73,9 @@ public class Bullet extends AMapComponent {
                 other.getCallback().cancel();
                 other.removeFromMap();
 
+                getGame().addSound(Constants.ServerToClientSound.BULLET_HIT_BULLET);
+            } else {
+                getGame().addSound(Constants.ServerToClientSound.BULLET_HIT_WALL);
             }
 
         }

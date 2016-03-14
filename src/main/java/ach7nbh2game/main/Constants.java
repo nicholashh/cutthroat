@@ -56,10 +56,8 @@ public class Constants {
     public enum ServerToClientSound implements GameSound {
         GUN_FIRE, GUN_WHIFF,
         PICKAXE_HIT_WALL, PICKAXE_HIT_PLAYER, PICKAXE_WHIFF,
-        BULLET_HIT_WALL, BULLET_HIT_PLAYER,
-        PLAYER_SPAWNS, PLAYER_DIES,
-        GAME_BEGINS, GAME_ENDS}
-    public enum ClientOnlySound implements GameSound {
-        SOUNDTRACK, GAME_BEGINS, GAME_ENDS}
+        BULLET_HIT_WALL, BULLET_HIT_PLAYER, BULLET_HIT_BULLET,
+        PICKUP_ITEM,
+        PLAYER_SPAWNS, PLAYER_DIES}
 
 }

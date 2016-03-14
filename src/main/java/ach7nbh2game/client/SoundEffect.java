@@ -14,7 +14,20 @@ import javax.sound.sampled.*;
  * 4. You can use the static variable SoundEffect.volume to mute the sound.
  */
 public enum SoundEffect {
-    GUN("gun.wav");
+    GUN_FIRE("gun_fire.wav"),
+    GUN_WHIFF("gun_whiff.wav"),
+    PICK_WALL("pick_wall.wav"),
+    PICK_WHIFF("pick_whiff.wav"),
+    PICK_PLAYER("pick_player.wav"),
+    PICKUP("pickup.wav"),
+    PLAYER_DEATH("player_death.wav"),
+    GAME_END("game_end.wav"),
+    MENU_BGM("AMemoryAway.wav"),
+    GAME_START("game_start.wav"),
+    PLAYER_SPAWN("player_spawn.wav"),
+    BULLET_WALL("bullet_wall.wav"),
+    BULLET_PLAYER("bullet_player.wav"),
+    BULLET_BULLET("bullet_bullet.wav");
 
     // Nested class for specifying volume
     public static enum Volume {
@@ -30,7 +43,7 @@ public enum SoundEffect {
     SoundEffect(String soundFileName) {
         try {
             // Use URL (instead of File) to read from disk and JAR.
-            URL url = this.getClass().getClassLoader().getResource(soundFileName);
+            URL url = this.getClass().getClassLoader().getResource("sounds/"+soundFileName);
             // Set up an audio input stream piped from the sound file.
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(url);
             // Get a clip resource.
@@ -53,6 +66,22 @@ public enum SoundEffect {
                 clip.stop();   // Stop the player if it is still running
             clip.setFramePosition(0); // rewind to the beginning
             clip.start();     // Start playing
+        }
+    }
+
+    public void loop() {
+        if (volume != Volume.MUTE) {
+            if (clip.isRunning()) {
+                clip.stop();
+            }
+            clip.setFramePosition(0);
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
+        }
+    }
+
+    public void stop() {
+        if (clip.isRunning()) {
+            clip.stop();
         }
     }
 

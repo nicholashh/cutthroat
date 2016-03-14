@@ -62,11 +62,16 @@ public class ClientView {
         window.start();
 		SoundEffect.init();
 		SoundEffect.volume = SoundEffect.Volume.MEDIUM;
+		SoundEffect.MENU_BGM.loop();
         beginAcceptingCharacterInput();
 
     }
 
 	public void updateState (GameState gameState) {
+		if (state != State.IN_GAME_MODE) {
+			SoundEffect.MENU_BGM.stop();
+			SoundEffect.GAME_START.play();
+		}
 
 		state = State.IN_GAME_MODE;
 
@@ -76,7 +81,37 @@ public class ClientView {
 		for (Constants.ServerToClientSound gs : gameState.getSounds()) {
 			switch(gs) {
 				case GUN_FIRE:
-					SoundEffect.GUN.play();
+					SoundEffect.GUN_FIRE.play();
+					break;
+				case GUN_WHIFF:
+					SoundEffect.GUN_WHIFF.play();
+					break;
+				case PICKAXE_HIT_WALL:
+					SoundEffect.PICK_WALL.play();
+					break;
+				case PICKAXE_HIT_PLAYER:
+					SoundEffect.PICK_PLAYER.play();
+					break;
+				case PICKAXE_WHIFF:
+					SoundEffect.PICK_WHIFF.play();
+					break;
+				case PICKUP_ITEM:
+					SoundEffect.PICKUP.play();
+					break;
+				case PLAYER_DIES:
+					SoundEffect.PLAYER_DEATH.play();
+					break;
+				case PLAYER_SPAWNS:
+					SoundEffect.PLAYER_SPAWN.play();
+					break;
+				case BULLET_HIT_PLAYER:
+					SoundEffect.BULLET_PLAYER.play();
+					break;
+				case BULLET_HIT_WALL:
+					SoundEffect.BULLET_WALL.play();
+					break;
+				case BULLET_HIT_BULLET:
+					SoundEffect.BULLET_BULLET.play();
 			}
 		}
 	}
@@ -181,6 +216,9 @@ public class ClientView {
 	public void endGame(PlayerInfo client) {
 		state = State.TEXT_INPUT_MODE;
 		updateThing(client.getUsername()+" won!");
+		SoundEffect.GAME_END.play();
+		try {Thread.sleep(5000);} catch (InterruptedException e) {e.printStackTrace();}
+		SoundEffect.MENU_BGM.loop();
 	}
 
 	public String askForUsername () {

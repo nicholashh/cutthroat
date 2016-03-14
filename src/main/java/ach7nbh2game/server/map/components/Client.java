@@ -63,6 +63,7 @@ public abstract class Client extends AMapComponent {
             dead = true;
             removeFromMap();
             bullet.getOwner().incScore(1);
+            getGame().addSound(ServerToClientSound.PLAYER_DIES);
 
             (new Thread() { public void run() {
                 try {Thread.sleep(5000);} catch (InterruptedException e) {}
@@ -81,6 +82,7 @@ public abstract class Client extends AMapComponent {
             dead = true;
             removeFromMap();
             killer.incScore(1);
+            getGame().addSound(ServerToClientSound.PLAYER_DIES);
 
             (new Thread() { public void run() {
                 try {Thread.sleep(5000);} catch (InterruptedException e) {}
@@ -214,8 +216,10 @@ public abstract class Client extends AMapComponent {
                         }
 
                         break;
-
                     }
+
+                    case DIG:
+                        game.addSound(ServerToClientSound.PICKAXE_WHIFF);
 
                 }
 
@@ -236,11 +240,13 @@ public abstract class Client extends AMapComponent {
                                 case BULLET1:
                                     incAmmo(3);
                             }
+                            game.addSound(ServerToClientSound.PICKUP_ITEM);
                         }
                         break;
                     case DIG:
                         if (!(cwall.getVisible())) {
                             cwall.decHealth(this, state.getPickaxeDmg());
+                            game.addSound(ServerToClientSound.PICKAXE_HIT_WALL);
                         }
                         break;
                 }
@@ -252,12 +258,14 @@ public abstract class Client extends AMapComponent {
 
                         Wall wall = (Wall) thing;
                         wall.decHealth(this, state.getPickaxeDmg());
+                        game.addSound(ServerToClientSound.PICKAXE_HIT_WALL);
                 }
             } else if (thing instanceof Client) {
                 switch(action.action) {
                     case DIG:
                         Client other = (Client) thing;
                         other.decHealth(state.getPickaxeDmg(), this);
+                        game.addSound(ServerToClientSound.PICKAXE_HIT_PLAYER);
                 }
             }
         }
