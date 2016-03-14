@@ -68,12 +68,13 @@ public class ClientView {
     }
 
 	public void updateState (GameState gameState) {
+		
 		if (state != State.IN_GAME_MODE) {
 			SoundEffect.MENU_BGM.stop();
 			SoundEffect.GAME_START.play();
+			state = State.IN_GAME_MODE;
+			userInput = "";
 		}
-
-		state = State.IN_GAME_MODE;
 
 		window.fill(Component.CenterPanel, gameState.getFrame());
 		popularMenus(gameState);

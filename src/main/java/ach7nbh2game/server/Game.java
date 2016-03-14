@@ -43,25 +43,29 @@ public abstract class Game extends AGameActor {
 
     public void addPlayer (Client client) {
 
-        // TODO: can't add player if game has started
-
         Logger.Singleton.log(this, 0, "addPlayer:");
         Logger.Singleton.log(this, 1, "client = " + client);
 
-        players.put(client.getID(), client);
-        updateAllPlayers();
+        if (!gameHasStarted) {
+            players.put(client.getID(), client);
+            updateAllPlayers();
+        } else {
+            // TODO: can't add player if game has started
+        }
 
     }
 
     public void removePlayer (Client client) {
 
-        // TODO: special action required if game has started
-
         Logger.Singleton.log(this, 0, "removePlayer:");
         Logger.Singleton.log(this, 1, "client = " + client);
 
-        players.remove(client.getID());
-        updateAllPlayers();
+        if (!gameHasStarted) {
+            players.remove(client.getID());
+            updateAllPlayers();
+        } else {
+            // TODO: special action required if game has started
+        }
 
     }
 

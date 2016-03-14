@@ -292,8 +292,9 @@ public abstract class Client extends AMapComponent {
     }
 
     public void endGame (Client winner) {
-        state = new PlayerState();
         sendEndGame(winner.getInfo());
+        state = new PlayerState();
+        setMap(null);
     }
 
 }
