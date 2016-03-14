@@ -215,11 +215,9 @@ public class ClientView {
 	}
 
 	public void endGame(PlayerInfo client) {
-		state = State.TEXT_INPUT_MODE;
+		//state = State.TEXT_INPUT_MODE;
 		updateThing(client.getUsername()+" won!");
 		SoundEffect.GAME_END.play();
-		try {Thread.sleep(5000);} catch (InterruptedException e) {e.printStackTrace();}
-		SoundEffect.MENU_BGM.loop();
 	}
 
 	public String askForUsername () {

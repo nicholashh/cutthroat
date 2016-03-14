@@ -236,6 +236,7 @@ public class ClientModel {
         view.endGame(client);
         try {Thread.sleep(5000);} catch (InterruptedException e) {}
         server.requestLobbies(playerInfo.getID());
+        SoundEffect.MENU_BGM.loop();
     }
 
     //public void move(Direction direction) {

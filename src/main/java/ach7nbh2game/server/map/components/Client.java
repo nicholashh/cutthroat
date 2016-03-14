@@ -73,6 +73,7 @@ public abstract class Client extends AMapComponent {
                 Coordinate newloc = getMap().getRandomLocationWithA(Ground.class);
                 placeOnMap(getMap(), newloc);
                 dead = false;
+                getGame().addSound(ServerToClientSound.PLAYER_SPAWNS);
             }}).start();
         }
     }
