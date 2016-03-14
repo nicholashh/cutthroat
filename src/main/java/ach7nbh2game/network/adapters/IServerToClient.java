@@ -9,9 +9,10 @@ import java.util.Set;
 public interface IServerToClient {
 
     /**
-     * notify a client that the game (for the lobby they are in) has started
+     * notify a client that the game (for the lobby they are in) has started/ended
      */
     void enterGame (int clientID);
+    void endGame (int clientID, PlayerInfo winner);
 
     /**
      * send a client a new game state
@@ -26,5 +27,4 @@ public interface IServerToClient {
             Map<Integer, String> players,
             Map<Integer, Set<Integer>> lobbyToPlayers);
 
-    void theWinnerIs(PlayerInfo client);
 }

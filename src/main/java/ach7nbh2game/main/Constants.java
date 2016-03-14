@@ -60,4 +60,6 @@ public class Constants {
         PICKUP_ITEM,
         PLAYER_SPAWNS, PLAYER_DIES}
 
+    public static final int killsToWin = 2;
+
 }

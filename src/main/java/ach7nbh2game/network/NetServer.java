@@ -170,10 +170,10 @@ public class NetServer {
         server.sendToTCP(clientID, listMsg);
     }
 
-    public void endGame(PlayerInfo client) {
+    public void endGame(int clientID, PlayerInfo client) {
         EndGame eg = new EndGame();
         eg.client = client;
-        server.sendToAllTCP(eg);
+        server.sendToTCP(clientID, eg);
     }
 
     // This holds per connection state.

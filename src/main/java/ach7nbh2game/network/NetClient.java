@@ -6,7 +6,6 @@ import ach7nbh2game.network.adapters.IServerToClient;
 import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.network.packets.PlayerInfo;
 import ach7nbh2game.util.Logger;
-import ach7nbh2game.util.id.ClientID;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -18,14 +17,14 @@ public class NetClient {
     private Client client;
     private String name;
     private String host;
-    private IServerToClient adapter;
+    private IServerToClient model;
     private boolean isConnected = false;
 
     public NetClient (IServerToClient adapterIn) {
 
         System.out.println("making new NetClient...");
 
-        adapter = adapterIn;
+        model = adapterIn;
 
     }
 
@@ -72,26 +71,27 @@ public class NetClient {
                 if (object instanceof DiffMessage) {
                     Logger.Singleton.log(NetClient.this, 0, "received: DiffMessage");
                     DiffMessage diffMsg = (DiffMessage) object;
-                    adapter.updateGameState(client.getID(), diffMsg.pkt);
+                    model.updateGameState(client.getID(), diffMsg.pkt);
                     return;
                 }
 
                 if (object instanceof EnterGame) {
                     Logger.Singleton.log(NetClient.this, 0, "received: EnterGame");
-                    adapter.enterGame(connection.getID());
+                    model.enterGame(connection.getID());
                 }
 
                 if (object instanceof LobbyList) {
                     Logger.Singleton.log(NetClient.this, 0, "received: LobbyList");
                     LobbyList msg = (LobbyList) object;
-                    adapter.announceLobbies(client.getID(),
+                    model.announceLobbies(client.getID(),
                             msg.lobbies, msg.players, msg.lobbyToPlayers);
                 }
 
                 if (object instanceof EndGame) {
                     EndGame msg = (EndGame) object;
-                    adapter.theWinnerIs(msg.client);
+                    model.endGame(client.getID(), msg.client);
                 }
+
             }
 
             public void disconnected (Connection connection) {
@@ -109,7 +109,7 @@ public class NetClient {
     }
 
     public void installAdapter(IServerToClient newadapter) {
-        adapter = newadapter;
+        model = newadapter;
     }
 
     public void createLobby(String name) {

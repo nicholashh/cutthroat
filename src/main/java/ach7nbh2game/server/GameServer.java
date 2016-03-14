@@ -6,7 +6,6 @@ import ach7nbh2game.network.adapters.IServerToClient;
 import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.network.packets.GameState;
 import ach7nbh2game.network.packets.PlayerInfo;
-import ach7nbh2game.server.map.components.Client;
 import ach7nbh2game.util.id.ClientID;
 import ach7nbh2game.util.id.GameID;
 
@@ -64,6 +63,10 @@ public class GameServer {
                 network.enterGame(clientID);
             }
 
+            public void endGame (int clientID, PlayerInfo client) {
+                network.endGame(clientID, client);
+            }
+
             public void updateGameState(int clientID, GameState state) {
                 network.updateGameState(clientID, state);
             }
@@ -73,10 +76,6 @@ public class GameServer {
                 network.announceLobbies(clientID, lobbies, players, lobbyToPlayers);
             }
 
-            @Override
-            public void theWinnerIs(PlayerInfo client) {
-                network.endGame(client);
-            }
         });
 
     }

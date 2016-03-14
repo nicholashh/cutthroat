@@ -2,7 +2,6 @@ package ach7nbh2game.server;
 
 import ach7nbh2game.main.Constants;
 import ach7nbh2game.main.Constants.ServerToClientSound;
-import ach7nbh2game.network.adapters.IServerToClient;
 import ach7nbh2game.network.packets.GameState;
 import ach7nbh2game.network.packets.PlayerObservableState;
 import ach7nbh2game.server.map.AGameActor;
@@ -21,8 +20,6 @@ public abstract class Game extends AGameActor {
 
     private final GameID id;
 
-    private final IServerToClient server;
-
     private boolean gameHasStarted = false;
 
     private int tick = 0;
@@ -31,15 +28,12 @@ public abstract class Game extends AGameActor {
 
     private Map<ClientID,Client> players = new HashMap<>();
 
-    private int killsToWin = 5;
-
     private ArrayList<ServerToClientSound> sounds = new ArrayList<>();
 
     public abstract void announceLobbies () ;
 
-    public Game (IServerToClient serverIn, GameID idIn, String name) {
+    public Game (GameID idIn, String name) {
         super(name);
-        server = serverIn;
         id = idIn;
     }
 
@@ -119,12 +113,14 @@ public abstract class Game extends AGameActor {
     }
 
     public int getKillsToWin() {
-        return killsToWin;
+        return Constants.killsToWin;
     }
 
-    public void iJustWon(Client client) {
+    public void iJustWon (Client winner) {
         gameHasStarted = false;
-        server.theWinnerIs(client.getInfo());
+        for (Client client : players.values()) {
+            client.endGame(winner);
+        }
     }
 
     public GameState fillGameStateInfo() {

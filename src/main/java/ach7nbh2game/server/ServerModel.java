@@ -58,6 +58,9 @@ public class ServerModel {
                     //Logger.Singleton.log(this, 1, "state = " + state);
                     network.updateGameState(clientID.value, state);
                 }
+                @Override public void sendEndGame(PlayerInfo winner) {
+                    network.endGame(clientID.value, winner);
+                }
             });
         } else {
             // TODO: this client has already connected
@@ -72,7 +75,7 @@ public class ServerModel {
 
         GameID id = new GameID(rand.nextInt());
 
-        Game newLobby = new Game(network, id, name) {
+        Game newLobby = new Game(id, name) {
             // use this object's closure over the network object
             // to send updated lobby information to every client
             @Override public void announceLobbies () { announceAllLobbies(); }

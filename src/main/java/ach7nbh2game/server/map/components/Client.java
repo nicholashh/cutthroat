@@ -30,6 +30,7 @@ public abstract class Client extends AMapComponent {
     public abstract void enterGame ();
     public abstract void announceLobbies ();
     public abstract void sendGameState (GameState state);
+    public abstract void sendEndGame (PlayerInfo winner);
 
     public Client (ClientID idIn, PlayerInfo infoIn) {
         super("Client(" + infoIn.getUsername() + ")");
@@ -288,6 +289,11 @@ public abstract class Client extends AMapComponent {
 
     public int getMapChar () {
         return info.getIcon();
+    }
+
+    public void endGame (Client winner) {
+        state = new PlayerState();
+        sendEndGame(winner.getInfo());
     }
 
 }
