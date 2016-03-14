@@ -61,7 +61,7 @@ public class ClientView {
 
         window.start();
 		SoundEffect.init();
-		SoundEffect.volume = SoundEffect.Volume.MEDIUM;
+		SoundEffect.volume = SoundEffect.Volume.LOW;
 		SoundEffect.MENU_BGM.loop();
         beginAcceptingCharacterInput();
 
@@ -77,7 +77,7 @@ public class ClientView {
 		}
 
 		window.fill(Component.CenterPanel, gameState.getFrame());
-		popularMenus(gameState);
+		populateMenus(gameState);
 		window.repaint();
 		for (Constants.ServerToClientSound gs : gameState.getSounds()) {
 			switch(gs) {
@@ -117,7 +117,7 @@ public class ClientView {
 		}
 	}
 
-	private void popularMenus (GameState gameState) {
+	private void populateMenus (GameState gameState) {
 
 		String rightPrompt = "";
 
@@ -199,6 +199,13 @@ public class ClientView {
 
 	}
 
+	private void clearMenus () {
+		showPrompt("", Component.LeftPanel);
+		showPrompt("", Component.RightPanel);
+		showPrompt("", Component.TopPanel);
+		showPrompt("", Component.BottomPanel);
+	}
+
 	private String selectedGun() {
 		if (tool == Tool.GUN) {
 			return "*Gun lvl: ";
@@ -215,8 +222,8 @@ public class ClientView {
 	}
 
 	public void endGame(PlayerInfo client) {
-		//state = State.TEXT_INPUT_MODE;
-		updateThing(client.getUsername()+" won!");
+		clearMenus();
+		updateThing(client.getUsername() + " won!");
 		SoundEffect.GAME_END.play();
 	}
 
@@ -244,13 +251,12 @@ public class ClientView {
 				"updateOnly = " + updateOnly + ", " +
 				"value = \"" + value.replace('\n', ' ') + "\", " +
 				"label = \"" + label.replace('\n', ' ') + "\")");
+
+		state = State.TEXT_INPUT_MODE;
 			
 		if (!updateOnly) {
-
-			state = State.TEXT_INPUT_MODE;
 			userInputDone = false;
 			userInput = value;
-			
 		}
 
 		updatePrompt = () -> showPrompt(label + userInput);
