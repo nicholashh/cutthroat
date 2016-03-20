@@ -25,6 +25,9 @@ public class Constants {
     public static final int gun1 = 1;
     public static final int gun2 = 2;
 
+    // rocket launcher tiers
+    public static final int rocket1 = 120;
+
     // pickaxe tiers
     public static final int pickaxe1 = 10;
     public static final int pickaxe2 = 20;
@@ -37,11 +40,11 @@ public class Constants {
     public enum CavernSize {LARGE, MEDIUM}
 
     // all the items
-    public enum Item {GUN1, GUN2, PICK1, PICK2, PICK3, BULLET1}
+    public enum Item {GUN1, GUN2, ROCKET0, ROCKET1, RL0, RL1, PICK1, PICK2, PICK3, BULLET1}
     //public static final HashMap<Item, Integer> itemToTier = new HashMap<>();
 
     // use selected tool
-    public enum Tool {GUN, PICKAXE}
+    public enum Tool {GUN, PICKAXE, ROCEKT}
 
     // game time-sensitive settings
     public static final int serverTicksPerSecond = 30;
