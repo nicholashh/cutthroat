@@ -61,7 +61,8 @@ public class Constants {
         PICKAXE_HIT_WALL, PICKAXE_HIT_PLAYER, PICKAXE_WHIFF,
         BULLET_HIT_WALL, BULLET_HIT_PLAYER, BULLET_HIT_BULLET,
         PICKUP_ITEM,
-        PLAYER_SPAWNS, PLAYER_DIES}
+        PLAYER_SPAWNS, PLAYER_DIES,
+        ROCKET_LAUNCH, ROCKET_EXPLODE}
 
     public static final int killsToWin = 10;
 

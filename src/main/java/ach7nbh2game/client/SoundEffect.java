@@ -27,7 +27,9 @@ public enum SoundEffect {
     PLAYER_SPAWN("player_spawn.wav"),
     BULLET_WALL("bullet_wall.wav"),
     BULLET_PLAYER("bullet_player.wav"),
-    BULLET_BULLET("bullet_bullet.wav");
+    BULLET_BULLET("bullet_bullet.wav"),
+    ROCKET_LAUNCH("rocket_launch.wav"),
+    ROCKET_EXPLODE("rocket_explosion.wav");
 
     // Nested class for specifying volume
     public static enum Volume {

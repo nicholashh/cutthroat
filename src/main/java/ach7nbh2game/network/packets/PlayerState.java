@@ -10,6 +10,8 @@ public class PlayerState {
     private int gunDmg = Constants.gun1;
     private int pickaxeDmg = Constants.pickaxe1;
     private int bulletDmg = Constants.bullet1;
+    private Constants.Item rocket = Constants.Item.ROCKET0;
+    private int rocketAmmo = 0;
     private int ammo = Constants.initAmmo;
 
     public void setHealth(int healthIn) {
@@ -74,6 +76,23 @@ public class PlayerState {
         if (dmg > bulletDmg) {
             bulletDmg = dmg;
         }
+    }
+
+    public boolean hasRocket() {
+        return rocket == Constants.Item.ROCKET1;
+    }
+
+    public void pickupRocket() {
+        rocket = Constants.Item.ROCKET1;
+        rocketAmmo = 2;
+    }
+
+    public int getRocketAmmo() {
+        return rocketAmmo;
+    }
+
+    public void setRocketAmmo(int newammo) {
+        rocketAmmo = newammo;
     }
 
     public int getAmmo() {

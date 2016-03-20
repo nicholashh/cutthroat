@@ -32,6 +32,9 @@ public class ClientView {
 
     private final int selectGun = '1';
     private final int selectPickaxe = '2';
+    private final int selectRocket = '3';
+
+    private PlayerState myState = null;
 
     private enum State {TEXT_INPUT_MODE, IN_GAME_MODE}
 
@@ -113,6 +116,13 @@ public class ClientView {
 					break;
 				case BULLET_HIT_BULLET:
 					SoundEffect.BULLET_BULLET.play();
+                    break;
+                case ROCKET_LAUNCH:
+                    SoundEffect.ROCKET_LAUNCH.play();
+                    break;
+                case ROCKET_EXPLODE:
+                    SoundEffect.ROCKET_EXPLODE.play();
+                    break;
 			}
 		}
 	}
@@ -131,7 +141,7 @@ public class ClientView {
 		for (String player : otherPlayerStates.keySet())
 			rightPrompt += String.format("\n %s: %2d", player, otherPlayerStates.get(player).getScore());
 
-		PlayerState myState = gameState.getPlayerState();
+		myState = gameState.getPlayerState();
 
 		rightPrompt += "\n";
 		rightPrompt += "\n My Items";
@@ -183,14 +193,17 @@ public class ClientView {
 				break;
 		}
 
-		bottomPrompt += "Bullet lvl: ";
+        bottomPrompt += selectedRocket();
+        bottomPrompt += myState.getRocketAmmo();
+
+		bottomPrompt += " Bullet lvl: ";
 		switch(myState.getBulletDmg()) {
 			case Constants.bullet1:
 				bottomPrompt += "1 ";
 				break;
 		}
 
-		bottomPrompt += "Ammo: "+myState.getAmmo();
+		bottomPrompt += "Gun Ammo: "+myState.getAmmo();
 
 		showPrompt(bottomPrompt, Component.BottomPanel, VerticalAlignment.TOP, HorizontalAlignment.CENTER);
 
@@ -199,26 +212,35 @@ public class ClientView {
 
 	}
 
-	private void clearMenus () {
+    private String selectedGun() {
+        if (tool == Tool.GUN) {
+            return "*Gun lvl: ";
+        } else {
+            return " Gun lvl: ";
+        }
+    }
+
+    private String selectedPick() {
+        if (tool == Tool.PICKAXE) {
+            return "*Pickaxe lvl: ";
+        } else {
+            return " Pickaxe lvl: ";
+        }
+    }
+
+    private String selectedRocket() {
+        if (tool == Tool.ROCEKT) {
+            return "*Rocket: ";
+        } else {
+            return " Rocket: ";
+        }
+    }
+
+    private void clearMenus () {
 		showPrompt("", Component.LeftPanel);
 		showPrompt("", Component.RightPanel);
 		showPrompt("", Component.TopPanel);
 		showPrompt("", Component.BottomPanel);
-	}
-
-	private String selectedGun() {
-		if (tool == Tool.GUN) {
-			return "*Gun lvl: ";
-		} else {
-			return " Gun lvl: ";
-		}
-	}
-	private String selectedPick() {
-		if (tool == Tool.PICKAXE) {
-			return "*Pickaxe lvl: ";
-		} else {
-			return " Pickaxe lvl: ";
-		}
 	}
 
 	public void endGame(PlayerInfo client) {
@@ -511,6 +533,15 @@ public class ClientView {
                 	case selectPickaxe:
                 		tool = Tool.PICKAXE;
                 		break;
+                    case selectRocket:
+                        try {
+                            if (myState.hasRocket()) {
+                                tool = Tool.ROCEKT;
+                            }
+                        } catch (NullPointerException e) {
+                            // nothing
+                        }
+                        break;
 
                 	// miscellaneous
 
