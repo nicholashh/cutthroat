@@ -174,32 +174,32 @@ public class ClientView {
 		bottomPrompt += selectedGun();
 		switch(myState.getGunDmg()) {
 			case Constants.gun1:
-				bottomPrompt += "1 ";
+				bottomPrompt += "1) ";
 				break;
 			case Constants.gun2:
-				bottomPrompt += "2 ";
+				bottomPrompt += "2) ";
 		}
 
 		bottomPrompt += selectedPick();
 		switch(myState.getPickaxeDmg()) {
 			case Constants.pickaxe1:
-				bottomPrompt += "1 ";
+				bottomPrompt += "1) ";
 				break;
 			case Constants.pickaxe2:
-				bottomPrompt += "2 ";
+				bottomPrompt += "2) ";
 				break;
 			case Constants.pickaxe3:
-				bottomPrompt += "3 ";
+				bottomPrompt += "3) ";
 				break;
 		}
 
         bottomPrompt += selectedRocket();
         bottomPrompt += myState.getRocketAmmo();
 
-		bottomPrompt += " Bullet lvl: ";
+		bottomPrompt += " Bullet(";
 		switch(myState.getBulletDmg()) {
 			case Constants.bullet1:
-				bottomPrompt += "1 ";
+				bottomPrompt += "1) ";
 				break;
 		}
 
@@ -214,17 +214,17 @@ public class ClientView {
 
     private String selectedGun() {
         if (tool == Tool.GUN) {
-            return "*Gun lvl: ";
+            return "*Gun(";
         } else {
-            return " Gun lvl: ";
+            return " Gun(";
         }
     }
 
     private String selectedPick() {
         if (tool == Tool.PICKAXE) {
-            return "*Pickaxe lvl: ";
+            return "*Pick(";
         } else {
-            return " Pickaxe lvl: ";
+            return " Pick(";
         }
     }
 
@@ -483,7 +483,7 @@ public class ClientView {
                 	case actionUp:
                 		switch (tool) {
                 		case GUN:
-                			action.setAction(Action.SHOOT);
+                			action.setAction(Action.SHOOT_GUN);
                 			break;
                 		case PICKAXE:
                 			action.setAction(Action.DIG);
@@ -494,7 +494,7 @@ public class ClientView {
                 	case actionLeft:
                 		switch (tool) {
                 		case GUN:
-                			action.setAction(Action.SHOOT);
+                			action.setAction(Action.SHOOT_GUN);
                 			break;
                 		case PICKAXE:
                 			action.setAction(Action.DIG);
@@ -505,7 +505,7 @@ public class ClientView {
                 	case actionDown:
                 		switch (tool) {
                 		case GUN:
-                			action.setAction(Action.SHOOT);
+                			action.setAction(Action.SHOOT_GUN);
                 			break;
                 		case PICKAXE:
                 			action.setAction(Action.DIG);
@@ -516,7 +516,7 @@ public class ClientView {
                 	case actionRight:
                 		switch (tool) {
                 		case GUN:
-                			action.setAction(Action.SHOOT);
+                			action.setAction(Action.SHOOT_GUN);
                 			break;
                 		case PICKAXE:
                 			action.setAction(Action.DIG);

@@ -202,7 +202,7 @@ public abstract class Client extends AMapComponent {
 
                     }
 
-                    case SHOOT: {
+                    case SHOOT_GUN: {
 
                         Logger.Singleton.log(this, 0, "firing bullet " + direction);
 

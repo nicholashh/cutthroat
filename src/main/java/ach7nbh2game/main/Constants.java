@@ -11,7 +11,7 @@ public class Constants {
     public static final int mapWidth = 81;
 
     // client action helper definitions
-    public enum Action {MOVE, SHOOT, DIG}
+    public enum Action {MOVE, SHOOT_GUN, DIG, SHOOT_ROCKET}
     public enum Direction {UP, LEFT, DOWN, RIGHT}
 
     // client stat definitions
