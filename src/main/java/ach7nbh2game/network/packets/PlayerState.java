@@ -88,6 +88,14 @@ public class PlayerState {
         rocketAmmo = 2;
     }
 
+    public int getRocketDmg() {
+        if (hasRocket()) {
+            return Constants.rocket1;
+        } else {
+            return 0;
+        }
+    }
+
     public int getRocketAmmo() {
         return rocketAmmo;
     }

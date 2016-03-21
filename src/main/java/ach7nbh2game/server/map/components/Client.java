@@ -125,7 +125,15 @@ public abstract class Client extends AMapComponent {
     }
 
     public void decAmmo(int ammoDiff) {
-        state.setAmmo(state.getAmmo() - ammoDiff);
+        state.setAmmo(state.getAmmo()-ammoDiff);
+    }
+
+    public void incRocketAmmo(int ammoDiff) {
+        state.setRocketAmmo(state.getRocketAmmo()+ammoDiff);
+    }
+
+    public void decRocketAmmo(int ammoDiff) {
+        state.setRocketAmmo(state.getRocketAmmo()-ammoDiff);
     }
 
     // essentially a setter for the callback
