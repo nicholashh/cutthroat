@@ -63,20 +63,25 @@ public class Rocket extends Projectile {
                  *
                  *  (-2,-2)(-1,-2)( 0,-2)( 1,-2)( 2,-2)
                  */
+                if (i <= -1) {left = true;}
+                if (i >= 1) {right = true;}
+                if (j >= 1) {top = true;}
+                if (j <= -1) {bottom = true;}
+                
                 if (Math.abs(i) == 2 || Math.abs(j) == 2) {
                     damageVal *= 0.25;
                     level = 2;
-                    if (i <= -1) {left = true;}
-                    if (i >= 1) {right = true;}
-                    if (j >= 1) {top = true;}
-                    if (j <= -1) {bottom = true;}
+//                    if (i <= -1) {left = true;}
+//                    if (i >= 1) {right = true;}
+//                    if (j >= 1) {top = true;}
+//                    if (j <= -1) {bottom = true;}
                 } else {
                     damageVal *= 0.5;
                     level = 1;
-                    if (i == -1) {left = true;}
-                    if (i == 1) {right = true;}
-                    if (j == 1) {top = true;}
-                    if (j == -1) {bottom = true;}
+//                    if (i == -1) {left = true;}
+//                    if (i == 1) {right = true;}
+//                    if (j == 1) {top = true;}
+//                    if (j == -1) {bottom = true;}
                 }
                 if ((left || right) && (top || bottom)) {
                     corner = true;
