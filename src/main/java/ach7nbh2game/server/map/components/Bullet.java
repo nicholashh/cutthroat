@@ -23,6 +23,8 @@ public class Bullet extends Projectile {
         Logger.Singleton.log(this, 0, "killing self");
         this.kill();
 
+        other.applyDamage(getDamage() * getOwner().getState().getGunDmg(), getOwner());
+
         if (other instanceof Projectile) {
 
             Logger.Singleton.log(this, 1, "killing other projectile, too");
