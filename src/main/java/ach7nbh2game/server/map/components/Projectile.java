@@ -1,6 +1,5 @@
 package ach7nbh2game.server.map.components;
 
-import ach7nbh2game.main.Constants;
 import ach7nbh2game.main.Constants.Direction;
 import ach7nbh2game.server.Callback;
 import ach7nbh2game.server.map.GameMap;
@@ -43,25 +42,12 @@ public abstract class Projectile extends AMapComponent {
         IMapComponent thing = map.get(nextLocation(getDirection()));
 
         if (thing instanceof Ground) {
-            interactionWithGround((Ground)thing);
-        } else if (thing instanceof Client) {
-            interactionWithClient((Client) thing);
-        } else if (thing instanceof Wall || thing instanceof Projectile || thing == null) {
+            Logger.Singleton.log(this, 0, "moving");
+            getMap().swap(this, thing);
+        } else {
             interactionWithKillable(thing);
-        } else { /* TODO */ }
+        }
 
-    }
-
-    private void interactionWithGround (Ground other) {
-        Logger.Singleton.log(this, 0, "moving");
-        getMap().swap(this, other);
-    }
-
-    private void interactionWithClient (Client other) {
-        removeFromMap();
-        getCallback().cancel();
-        other.applyDamage(getDamage() * getOwner().getState().getGunDmg(), getOwner());
-        getGame().addSound(Constants.ServerToClientSound.BULLET_HIT_PLAYER);
     }
 
     protected abstract void interactionWithKillable (IMapComponent other);
