@@ -487,6 +487,10 @@ public class ClientView {
                 			break;
                 		case PICKAXE:
                 			action.setAction(Action.DIG);
+                            break;
+                        case ROCEKT:
+                            action.setAction(Action.SHOOT_ROCKET);
+                            break;
                 		}
                 		action.setDirection(Direction.UP);
                 		model.performAction(action);
@@ -498,7 +502,11 @@ public class ClientView {
                 			break;
                 		case PICKAXE:
                 			action.setAction(Action.DIG);
-                		}
+                            break;
+                        case ROCEKT:
+                            action.setAction(Action.SHOOT_ROCKET);
+                            break;
+                        }
                 		action.setDirection(Direction.LEFT);
                 		model.performAction(action);
                 		break;
@@ -509,7 +517,11 @@ public class ClientView {
                 			break;
                 		case PICKAXE:
                 			action.setAction(Action.DIG);
-                		}
+                            break;
+                        case ROCEKT:
+                            action.setAction(Action.SHOOT_ROCKET);
+                            break;
+                        }
                 		action.setDirection(Direction.DOWN);
                 		model.performAction(action);
                 		break;
@@ -520,7 +532,11 @@ public class ClientView {
                 			break;
                 		case PICKAXE:
                 			action.setAction(Action.DIG);
-                		}
+                            break;
+                        case ROCEKT:
+                            action.setAction(Action.SHOOT_ROCKET);
+                            break;
+                        }
                 		action.setDirection(Direction.RIGHT);
                 		model.performAction(action);
                 		break;
