@@ -66,4 +66,6 @@ public class Constants {
 
     public static final int killsToWin = 10;
 
+    public static String defaultHostname = "cutthroat.pwnz.org";
+
 }

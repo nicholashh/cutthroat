@@ -8,6 +8,9 @@ public class Main {
 
     public static void main (String[] args) {
 
+        Runtime.getRuntime().addShutdownHook(new Thread () {
+            public void run () { Logger.Singleton.log("exiting..."); }});
+
         try {
 
             int numServers = 0;
@@ -23,7 +26,7 @@ public class Main {
                 System.exit(-1);
             } else {
 
-                System.out.println("CUTTHROAT ~ code version: 56");
+                System.out.println("CUTTHROAT ~ code version: 57");
                 System.out.println("running Main with arguments " + args[0]);
 
                 for (char c : args[0].toCharArray()) {
@@ -31,16 +34,21 @@ public class Main {
                         numServers = 1; // TODO ports?
                     } else if (c == 'c') {
                         numClients = 1; // TODO window focus?
+                    } else if (c == 'v') {
+                        Logger.Singleton.loggingServer = true;
+                        Logger.Singleton.loggingNetwork = true;
+                        Logger.Singleton.loggingClient = true;
+                    } else if (c == 'l') {
+                        Constants.defaultHostname = "localhost";
+                    } else if (c == 'i') {
+                        Constants.defaultHostname = "";
                     } else if (c != '-') {
                         printUsage();
                         System.exit(-1);
                     }
                 }
-            }
 
-            Logger.Singleton.loggingServer = true;
-            Logger.Singleton.loggingNetwork = true;
-            Logger.Singleton.loggingClient = true;
+            }
 
             for (int i = 0; i < numServers; i++) {
                 GameServer newServer = new GameServer();
@@ -60,12 +68,12 @@ public class Main {
 
     private static void printUsage () {
 
-        System.err.println("Usage: java -jar cutthroat.jar -[s][c]");
-        System.err.println("    [s] will make one server");
-        System.err.println("    [c] will make one client");
-        System.err.println("    multiple s or c flags allowed");
-        System.err.println("    if no flags, default is -c");
-        System.err.println("    example: -ssccc");
+        System.err.println("Usage: java -jar cutthroat.jar -[s][c][v]");
+        System.err.println("    [s] will make one Server");
+        System.err.println("    [c] will make one Client");
+        System.err.println("    [v] will turn on Verbose logging");
+        System.err.println("    redundant flags will have no effect");
+        System.err.println("    if no flags given, default is -c");
 
     }
 

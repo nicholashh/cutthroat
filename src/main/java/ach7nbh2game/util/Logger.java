@@ -50,4 +50,10 @@ public class Logger {
 
     }
 
+    public void log (String message) {
+
+        System.out.println("\u001B[0m" + dateFormat.format(new Date()) + " " + message);
+
+    }
+
 }
