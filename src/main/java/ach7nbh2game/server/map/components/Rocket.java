@@ -67,7 +67,6 @@ public class Rocket extends Projectile {
                  *
                  *  (-2,-2)(-1,-2)( 0,-2)( 1,-2)( 2,-2)
                  */
-                
                 if (Math.abs(i) == 2 || Math.abs(j) == 2) {
                     if (Math.abs(i) == 2) {leftRightEdge = true;}
                     if (Math.abs(j) == 2) {topBottomEdge = true;}
