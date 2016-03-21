@@ -16,7 +16,6 @@ public class CavernWall extends Wall {
         cavern = cavernIn;
     }
 
-    @Override
     public int getMapChar() {
         if (!visible) {
             if (health > maxHealth*0.75) {
@@ -38,8 +37,7 @@ public class CavernWall extends Wall {
         }
     }
 
-    @Override
-    public void decHealth(Client client, int healthDiff) {
+    public void applyDamage (int healthDiff, Client client) {
         health -= healthDiff;
         if (health <= 0) {
             visible = true;
@@ -51,12 +49,9 @@ public class CavernWall extends Wall {
         }
     }
 
-    @Override
     public void removeFromMap () {
-
         Ground newGround = new Ground();
         newGround.placeOnMap(getMap(), getX(), getY());
-
     }
 
     public void setItem(Constants.Item itemIn) {

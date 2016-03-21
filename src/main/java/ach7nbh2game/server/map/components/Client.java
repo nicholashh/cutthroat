@@ -22,7 +22,6 @@ public abstract class Client extends AMapComponent {
     private final ClientID id;
     private final PlayerInfo info;
     private PlayerState state = new PlayerState();
-    private boolean dead = false;
 
     private Random rand = new Random();
 
@@ -46,55 +45,37 @@ public abstract class Client extends AMapComponent {
         return id;
     }
 
-    public PlayerInfo getInfo() {
+    public PlayerInfo getInfo () {
         return info;
     }
 
-    public int getHealth() {
+    public int getHealth () {
         return state.getHealth();
     }
 
-    public void incHealth(int healthDiff) {
-        state.setHealth(state.getHealth()+healthDiff);
-    }
+    public void applyDamage (int damage, Client killer) {
 
-    public void decHealth(int healthDiff, Bullet bullet) {
-        state.setHealth(state.getHealth()-healthDiff);
+        state.setHealth(state.getHealth()-damage);
+
         if (state.getHealth() <= 0) {
-            dead = true;
-            removeFromMap();
-            bullet.getOwner().incScore(1);
-            getGame().addSound(ServerToClientSound.PLAYER_DIES);
 
-            (new Thread() { public void run() {
-                try {Thread.sleep(5000);} catch (InterruptedException e) {}
-
-                state.respawn();
-                Coordinate newloc = getMap().getRandomLocationWithA(Ground.class);
-                placeOnMap(getMap(), newloc);
-                dead = false;
-                getGame().addSound(ServerToClientSound.PLAYER_SPAWNS);
-            }}).start();
-        }
-    }
-
-    public void decHealth(int healthDiff, Client killer) {
-        state.setHealth(state.getHealth()-healthDiff);
-        if (state.getHealth() <= 0) {
-            dead = true;
             removeFromMap();
             killer.incScore(1);
             getGame().addSound(ServerToClientSound.PLAYER_DIES);
 
             (new Thread() { public void run() {
+
                 try {Thread.sleep(5000);} catch (InterruptedException e) {}
 
                 state.respawn();
                 Coordinate newloc = getMap().getRandomLocationWithA(Ground.class);
                 placeOnMap(getMap(), newloc);
-                dead = false;
+                getGame().addSound(ServerToClientSound.PLAYER_SPAWNS);
+
             }}).start();
+
         }
+
     }
 
     public PlayerState getState() {
@@ -129,7 +110,7 @@ public abstract class Client extends AMapComponent {
     }
 
     public void incRocketAmmo(int ammoDiff) {
-        state.setRocketAmmo(state.getRocketAmmo()+ammoDiff);
+        state.setRocketAmmo(state.getRocketAmmo() + ammoDiff);
     }
 
     public void decRocketAmmo(int ammoDiff) {
@@ -182,7 +163,7 @@ public abstract class Client extends AMapComponent {
     }
 
     public void perform (ClientAction action) {
-        if (!dead) {
+        if (!isDead()) {
 
             Logger.Singleton.log(this, 0, "perform(action = " + action + ")");
             Logger.Singleton.log(this, 1, "before: " + getMap().getPerspectiveFrom(getX(), getY(), 3, 3));
@@ -228,8 +209,28 @@ public abstract class Client extends AMapComponent {
                         break;
                     }
 
-                    case DIG:
+                    case SHOOT_ROCKET: {
+
+                        Logger.Singleton.log(this, 0, "firing rocket " + direction);
+
+                        if (state.hasRocket() && state.getRocketAmmo() > 0) {
+                            Rocket newRocket = new Rocket(direction, this, state.getRocketDmg());
+                            newRocket.placeOnMap(map, newX, newY);
+                            newRocket.setGame(game);
+                            newRocket.start();
+                            decRocketAmmo(1);
+                            game.addSound(ServerToClientSound.ROCKET_LAUNCH);
+                        } else {
+                            game.addSound(ServerToClientSound.GUN_WHIFF);
+                        }
+
+                        break;
+                    }
+
+                    case DIG: {
                         game.addSound(ServerToClientSound.PICKAXE_WHIFF);
+                        break;
+                    }
 
                 }
 
@@ -255,7 +256,7 @@ public abstract class Client extends AMapComponent {
                         break;
                     case DIG:
                         if (!(cwall.getVisible())) {
-                            cwall.decHealth(this, state.getPickaxeDmg());
+                            cwall.applyDamage(state.getPickaxeDmg(), this);
                             game.addSound(ServerToClientSound.PICKAXE_HIT_WALL);
                         }
                         break;
@@ -267,14 +268,14 @@ public abstract class Client extends AMapComponent {
                         Logger.Singleton.log(this, 0, "digging " + direction);
 
                         Wall wall = (Wall) thing;
-                        wall.decHealth(this, state.getPickaxeDmg());
+                        wall.applyDamage(state.getPickaxeDmg(), this);
                         game.addSound(ServerToClientSound.PICKAXE_HIT_WALL);
                 }
             } else if (thing instanceof Client) {
                 switch(action.action) {
                     case DIG:
                         Client other = (Client) thing;
-                        other.decHealth(state.getPickaxeDmg(), this);
+                        other.applyDamage(state.getPickaxeDmg(), this);
                         game.addSound(ServerToClientSound.PICKAXE_HIT_PLAYER);
                 }
             }
@@ -308,5 +309,6 @@ public abstract class Client extends AMapComponent {
         state = new PlayerState();
         setMap(null);
     }
+    public boolean canDie () {return true;}
 
 }

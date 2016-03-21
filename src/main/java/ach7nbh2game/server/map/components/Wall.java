@@ -35,15 +35,13 @@ public class Wall extends AMapComponent {
 
     }
 
-    public int getHealth() {
+    public boolean canDie () {return true;}
+
+    public int getHealth () {
         return health;
     }
 
-    public void setHealth(int newhealth) {
-        health = newhealth;
-    }
-
-    public void decHealth(Client client, int healthDiff) {
+    public void applyDamage (int healthDiff, Client client) {
         health -= healthDiff;
         if (health <= 0) {
             removeFromMap();

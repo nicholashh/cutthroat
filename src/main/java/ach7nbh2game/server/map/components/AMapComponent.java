@@ -46,28 +46,33 @@ public abstract class AMapComponent extends AGameActor implements IMapComponent 
 
     public void placeOnMap (GameMap map, int xIn, int yIn) {
 
-        // TODO: temporarily allowing this for tag-restarting capabilities
-        //if (mapIsNull()) {
+        if (mapIsNull()) {
 
             map.set(yIn, xIn, this);
             setMap(map);
 
-        //} else {
+        } else {
             // TODO: not allowed
-        //}
+        }
 
     }
+
+    private boolean isDead = false;
 
     public void placeOnMap(GameMap map, Coordinate loc) {
         map.set(loc.y, loc.x, this);
         setMap(map);
+        isDead = false;
     }
 
     public void removeFromMap () {
-
         Ground newGround = new Ground();
         newGround.placeOnMap(getMap(), x, y);
+        isDead = true;
+    }
 
+    public boolean isDead () {
+        return isDead;
     }
 
     public Coordinate nextLocation (Direction direction) {

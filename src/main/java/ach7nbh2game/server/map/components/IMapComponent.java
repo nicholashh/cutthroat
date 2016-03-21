@@ -7,6 +7,11 @@ public interface IMapComponent {
     void setX (int xIn);
     void setY (int yIn);
 
+    int getHealth ();
+    void applyDamage (int damage, Client killer);
+    boolean isDead ();
+    boolean canDie ();
+
     int getMapChar ();
 
 }

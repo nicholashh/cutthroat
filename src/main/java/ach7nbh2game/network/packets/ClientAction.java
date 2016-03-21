@@ -27,4 +27,8 @@ public class ClientAction {
         return action;
     }
 
+    public String toString () {
+        return "ClientAction(" + direction + "," + action + ")";
+    }
+
 }
