@@ -30,7 +30,7 @@ public class Rocket extends Projectile {
         Logger.Singleton.log(this, 0, "killing self");
         this.kill();
 
-        getGame().addSound(Constants.ServerToClientSound.ROCKET_LAUNCH);
+        getGame().addSound(Constants.ServerToClientSound.ROCKET_EXPLODE);
 
         if (other instanceof Projectile) {
             Logger.Singleton.log(this, 1, "killing other projectile, too");
@@ -91,7 +91,7 @@ public class Rocket extends Projectile {
 
                             int delay = 1 + delayOffset * levelFinal;
 
-                            setCallback(getGame().requestCallback(new Callback(delay, 1, () -> {
+                            setCallback(Rocket.this.getGame().requestCallback(new Callback(delay, 1, () -> {
 
                                 if (cornerFinal) {
                                     mapChar = '.';
@@ -103,7 +103,7 @@ public class Rocket extends Projectile {
                                     // TODO
                                 }
 
-                                setCallback(getGame().requestCallback(new Callback(delayOffset, 1, () -> {
+                                setCallback(Rocket.this.getGame().requestCallback(new Callback(delayOffset, 1, () -> {
                                     mapChar = ' ';
                                 })));
 

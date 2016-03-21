@@ -12,7 +12,7 @@ public class PlayerState {
     private int bulletDmg = Constants.bullet1;
     //TODO start with rocket0 and no ammo
     private Constants.Item rocket = Constants.Item.ROCKET1;
-    private int rocketAmmo = 2;
+    private int rocketAmmo = 10;
     private int ammo = Constants.initAmmo;
 
     public void setHealth(int healthIn) {
