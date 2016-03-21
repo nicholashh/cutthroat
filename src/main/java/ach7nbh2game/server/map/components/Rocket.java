@@ -51,20 +51,32 @@ public class Rocket extends Projectile {
                 int level = 0;
                 boolean left = false, right = false, top = false, bottom = false, corner = false;
                 int damageVal = Constants.rocket1;
+
+                /*
+                 *  (-2, 2)(-1, 2)( 0, 2)( 1, 2)( 2, 2)
+                 *
+                 *  (-2, 1)(-1, 1)( 0, 1)( 1, 1)( 2, 1)
+                 *
+                 *  (-2, 0)(-1, 0)       ( 1, 0)( 2, 0)
+                 *
+                 *  (-2,-1)(-1,-1)( 0,-1)( 1,-1)( 2,-1)
+                 *
+                 *  (-2,-2)(-1,-2)( 0,-2)( 1,-2)( 2,-2)
+                 */
                 if (Math.abs(i) == 2 || Math.abs(j) == 2) {
                     damageVal *= 0.25;
                     level = 2;
-                    if (i == -2) {left = true;}
-                    if (i == 2) {right = true;}
-                    if (j == -2) {top = true;}
-                    if (j == 2) {bottom = true;}
-                } else if (Math.abs(i) == 1 || Math.abs(j) == 1) {
+                    if (i <= -1) {left = true;}
+                    if (i >= 1) {right = true;}
+                    if (j >= 1) {top = true;}
+                    if (j <= -1) {bottom = true;}
+                } else {
                     damageVal *= 0.5;
                     level = 1;
                     if (i == -1) {left = true;}
                     if (i == 1) {right = true;}
-                    if (j == -1) {top = true;}
-                    if (j == 1) {bottom = true;}
+                    if (j == 1) {top = true;}
+                    if (j == -1) {bottom = true;}
                 }
                 if ((left || right) && (top || bottom)) {
                     corner = true;
