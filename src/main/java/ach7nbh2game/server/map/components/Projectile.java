@@ -41,6 +41,11 @@ public abstract class Projectile extends AMapComponent {
         GameMap map = getMap();
         IMapComponent thing = map.get(nextLocation(getDirection()));
 
+        if (thing == null) {
+            this.kill();
+            return;
+        }
+
         if (thing instanceof Ground) {
             Logger.Singleton.log(this, 0, "moving");
             getMap().swap(this, thing);
