@@ -30,6 +30,7 @@ public class Network {
         kryo.register(PlayerState.class, 3391);
         kryo.register(PlayerObservableState.class, 3392);
         kryo.register(Constants.ServerToClientSound.class, 3394);
+        kryo.register(Constants.Item.class, 3395);
 
         kryo.register(RegisterMessage.class, 3370);
         kryo.register(TextMessage.class, 3371);
