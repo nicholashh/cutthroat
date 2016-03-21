@@ -254,7 +254,7 @@ public class ClientView {
 	}
 	
 	public String askForServerIP () {
-		return askForThing(serverPrompt, ""); // localhost // cutthroat.pwnz.org
+		return askForThing(serverPrompt, "cutthroat.pwnz.org"); // localhost // cutthroat.pwnz.org
 	}
 	
 	private LambdaZeroVoid updatePrompt;
