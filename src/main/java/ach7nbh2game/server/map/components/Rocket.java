@@ -30,26 +30,30 @@ public class Rocket extends Projectile {
         Logger.Singleton.log(this, 0, "killing self");
         this.kill();
 
-        getGame().addSound(Constants.ServerToClientSound.ROCKET_EXPLODE);
+        int x = other.getX();
+        int y = other.getY();
 
         if (other instanceof Projectile) {
             Logger.Singleton.log(this, 1, "killing other projectile, too");
             ((Projectile)other).kill();
         }
 
-        int x = other.getX();
-        int y = other.getY();
+        getGame().addSound(Constants.ServerToClientSound.ROCKET_EXPLODE);
+
         for (int i = -2; i <= 2; i++) {
             for (int j = -2; j <= 2; j++) {
                 int newX = x + i;
                 int newY = y + j;
 
-                IMapComponent thing = getMap().get(newX, newY);
+                IMapComponent thing = getMap().get(newY, newX);
+                Logger.Singleton.log(this, 1, "i = " + i + ", j = " + j +
+                        ", x = " + newX + ", y = " + newY + ", thing = " + thing);
 
-                if (thing == null) break;
+                if (thing == null) continue;
 
                 int level = 0;
-                boolean left = false, right = false, top = false, bottom = false, corner = false;
+                boolean leftRightEdge = false;
+                boolean topBottomEdge = false;
                 int damageVal = Constants.rocket1;
 
                 /*
@@ -63,46 +67,35 @@ public class Rocket extends Projectile {
                  *
                  *  (-2,-2)(-1,-2)( 0,-2)( 1,-2)( 2,-2)
                  */
-                if (i <= -1) {left = true;}
-                if (i >= 1) {right = true;}
-                if (j >= 1) {top = true;}
-                if (j <= -1) {bottom = true;}
                 
                 if (Math.abs(i) == 2 || Math.abs(j) == 2) {
+                    if (Math.abs(i) == 2) {leftRightEdge = true;}
+                    if (Math.abs(j) == 2) {topBottomEdge = true;}
                     damageVal *= 0.25;
                     level = 2;
-//                    if (i <= -1) {left = true;}
-//                    if (i >= 1) {right = true;}
-//                    if (j >= 1) {top = true;}
-//                    if (j <= -1) {bottom = true;}
-                } else {
+                } else if (Math.abs(i) == 1 || Math.abs(j) == 1) {
+                    if (Math.abs(i) == 1) {leftRightEdge = true;}
+                    if (Math.abs(j) == 1) {topBottomEdge = true;}
                     damageVal *= 0.5;
                     level = 1;
-//                    if (i == -1) {left = true;}
-//                    if (i == 1) {right = true;}
-//                    if (j == 1) {top = true;}
-//                    if (j == -1) {bottom = true;}
-                }
-                if ((left || right) && (top || bottom)) {
-                    corner = true;
                 }
 
-                final int levelFinal = level;
-                final boolean topFinal = top;
-                final boolean bottomFinal = bottom;
-                final boolean leftFinal = left;
-                final boolean rightFinal = right;
-                final boolean cornerFinal = corner;
+                final int levelFinal = level, ii = i, jj = j;
+                final boolean leftRightFinal = leftRightEdge;
+                final boolean topBottomFinal = topBottomEdge;
+                final boolean cornerFinal = leftRightFinal && topBottomFinal;
 
                 thing.applyDamage(damageVal, getOwner());
 
                 if (thing.isDead() || !thing.canDie()) {
 
+                    Logger.Singleton.log(this, 2, "making new ground");
+
                     Ground newGround = new Ground () {
 
                         private int mapChar = ' ';
 
-                        private final int delayOffset = 6;
+                        private final int delayOffset = 3;
 
                         {
 
@@ -110,18 +103,28 @@ public class Rocket extends Projectile {
 
                             setCallback(Rocket.this.getGame().requestCallback(new Callback(delay, 1, () -> {
 
+                                Logger.Singleton.log(Rocket.this, 0, "ground callback 1 of 2");
+                                Logger.Singleton.log(this, 1, "i = " + ii + ", j = " + jj +
+                                        ", x = " + newX + ", y = " + newY + ", thing = " + thing);
+
                                 if (cornerFinal) {
                                     mapChar = '.';
-                                } else if (leftFinal || rightFinal) {
+                                } else if (leftRightFinal) {
                                     mapChar = '|';
-                                } else if (topFinal || bottomFinal) {
+                                } else if (topBottomFinal) {
                                     mapChar = '-';
                                 } else {
                                     // TODO
                                 }
 
                                 setCallback(Rocket.this.getGame().requestCallback(new Callback(delayOffset, 1, () -> {
+
+                                    Logger.Singleton.log(Rocket.this, 0, "ground callback 2 of 2");
+                                    Logger.Singleton.log(this, 1, "i = " + ii + ", j = " + jj +
+                                            ", x = " + newX + ", y = " + newY + ", thing = " + thing);
+
                                     mapChar = ' ';
+
                                 })));
 
                             })));
@@ -136,6 +139,8 @@ public class Rocket extends Projectile {
 
                     newGround.placeOnMap(getMap(), newX, newY);
 
+                } else {
+                    Logger.Singleton.log(this, 2, "NOT making new ground");
                 }
 
             }

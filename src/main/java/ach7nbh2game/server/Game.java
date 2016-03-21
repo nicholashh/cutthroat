@@ -147,7 +147,7 @@ public abstract class Game extends AGameActor {
         //Logger.Singleton.log(this, 0, "requestCallback:");
         //Logger.Singleton.log(this, 1, "request = " + request);
 
-        CallbackRegistration registration = new CallbackRegistration(tick, request);
+        CallbackRegistration registration = new CallbackRegistration(tick - 1, request);
         callbackRegistrations.add(registration);
         return registration;
 
