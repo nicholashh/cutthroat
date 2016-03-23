@@ -133,22 +133,21 @@ public class ClientView {
 
 		Map<String, PlayerObservableState> otherPlayerStates = gameState.getOtherPlayerStates();
 
-		rightPrompt += " Health";
+		rightPrompt += " \u25B6HEALTH";
 		for (String player : otherPlayerStates.keySet())
-			rightPrompt += String.format("\n %s: %3d", player, otherPlayerStates.get(player).getHealth());
+			rightPrompt += String.format("\n  %s: %3d", player, otherPlayerStates.get(player).getHealth());
 
-		rightPrompt += "\n\n Scores";
+		rightPrompt += "\n\n \u25B6KILLS";
 		for (String player : otherPlayerStates.keySet())
-			rightPrompt += String.format("\n %s: %2d", player, otherPlayerStates.get(player).getScore());
+			rightPrompt += String.format("\n  %s:  %2d", player, otherPlayerStates.get(player).getScore());
 
 		myState = gameState.getPlayerState();
 
 		rightPrompt += "\n";
-		rightPrompt += "\n My Items";
-		rightPrompt += "\n Pickaxe Damage: " + myState.getPickaxeDmg();
-		rightPrompt += "\n Gun     Damage: " + myState.getGunDmg();
-		rightPrompt += "\n Bullet  Damage: " + myState.getBulletDmg();
-		rightPrompt += "\n Number of Ammo: " + myState.getAmmo();
+		rightPrompt += "\n \u25B6My Items";
+		rightPrompt += String.format("\n  Pickaxe Damage:  %2d", myState.getPickaxeDmg());
+		rightPrompt += String.format("\n  Gun     Damage:  %2d", myState.getGunDmg());
+		rightPrompt += String.format("\n  Bullet  Damage:  %2d", myState.getBulletDmg());
 
 		showPrompt(rightPrompt, Component.RightPanel, VerticalAlignment.TOP, HorizontalAlignment.LEFT);
 
@@ -174,11 +173,13 @@ public class ClientView {
 		bottomPrompt += selectedGun();
 		switch(myState.getGunDmg()) {
 			case Constants.gun1:
-				bottomPrompt += "1) ";
+				bottomPrompt += "1)";
 				break;
 			case Constants.gun2:
-				bottomPrompt += "2) ";
+				bottomPrompt += "2)";
 		}
+
+        bottomPrompt += ":"+myState.getAmmo()+" ";
 
 		bottomPrompt += selectedPick();
 		switch(myState.getPickaxeDmg()) {
@@ -202,8 +203,6 @@ public class ClientView {
 				bottomPrompt += "1) ";
 				break;
 		}
-
-		bottomPrompt += "Gun Ammo: "+myState.getAmmo();
 
 		showPrompt(bottomPrompt, Component.BottomPanel, VerticalAlignment.TOP, HorizontalAlignment.CENTER);
 
@@ -230,9 +229,9 @@ public class ClientView {
 
     private String selectedRocket() {
         if (tool == Tool.ROCEKT) {
-            return "*Rocket: ";
+            return "*Rocket:";
         } else {
-            return " Rocket: ";
+            return " Rocket:";
         }
     }
 
