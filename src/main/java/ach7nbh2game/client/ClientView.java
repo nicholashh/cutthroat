@@ -40,11 +40,16 @@ public class ClientView {
 
 	private enum VerticalAlignment {TOP, CENTER}
 	private enum HorizontalAlignment {LEFT, CENTER}
-    private final String welcomeMessage = "Welcome to Cutthroat!\n\n\n";
+    private final String welcomeMessage =
+			"_________         __    __  .__                        __   \n" +
+					"\\_   ___ \\ __ ___/  |__/  |_|  |_________  _________ _/  |__\n" +
+					"/    \\  \\/|  |  \\   __\\   __\\  |  \\_  __ \\/  _ \\__  \\\\   ___\\\n" +
+					"\\     \\___|  |  /|  |  |  | |   Y  \\  | \\(  <_> ) __ \\|  |  \n" +
+					" \\______  /____/ |__|  |__| |___|  /__|   \\____(____  /__|  \n" +
+					"        \\/                       \\/                 \\/      \nVersion 0.7\n\n";
     private final String usernamePrompt = welcomeMessage + "Username: ";
-    private final String serverPrompt = welcomeMessage + "Server Hostname: ";
-	private final String serverPromptFailed = "Welcome to Cutthroat!\n\nCouldn't find the specified server.\nServer" +
-			" Hostname: ";
+    private final String serverPrompt = "\n\nServer Hostname: ";
+	private final String serverPromptFailed = "Couldn't find the specified server.\n\nServer Hostname: ";
 	private boolean userInputDone = false;
     private String userInput = "";
 

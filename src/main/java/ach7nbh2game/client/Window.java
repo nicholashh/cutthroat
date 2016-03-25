@@ -291,6 +291,11 @@ public class Window {
         } else {
     		// TODO
     		Logger.Singleton.log(this, 0, "fill(...): dimension mismatch");
+            Logger.Singleton.log(this, 1, component+" rows: "+height(component));
+            Logger.Singleton.log(this, 1, component+" cols: "+width(component));
+            Logger.Singleton.log(this, 1, "thing rows: "+thing.size());
+            Logger.Singleton.log(this, 1, "thing cols: "+thing.get(0).size());
+
         }
 
     }
