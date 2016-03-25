@@ -11,7 +11,7 @@ public class PlayerState {
     private int pickaxeDmg = Constants.pickaxe1;
     private int bulletDmg = Constants.bullet1;
     //TODO start with rocket0 and no ammo
-    private Constants.Item rocket = Constants.Item.ROCKET1;
+    private Constants.Item rocket = Constants.Item.RL1;
     private int rocketAmmo = 3;
     private int ammo = Constants.initAmmo;
 
@@ -80,11 +80,11 @@ public class PlayerState {
     }
 
     public boolean hasRocket() {
-        return rocket == Constants.Item.ROCKET1;
+        return rocket == Constants.Item.RL1;
     }
 
     public void pickupRocket() {
-        rocket = Constants.Item.ROCKET1;
+        rocket = Constants.Item.RL1;
         rocketAmmo = 3;
     }
 

@@ -21,6 +21,9 @@ public class Constants {
     // bullet tiers
     public static final int bullet1 = 25;
 
+    public static final int bulletBatchSize = 3;
+    public static final int rocketBatchSize = 1;
+
     // gun tiers
     public static final int gun1 = 1;
     public static final int gun2 = 2;
@@ -33,14 +36,20 @@ public class Constants {
     public static final int pickaxe2 = 20;
     public static final int pickaxe3 = 30;
 
-    // wall tiers
+    // wall vars
     public static final int wall1 = 60;
+    public static final double bulletDropFreq = 0.5;
+    public static final double rocketDropFreq = 0.25;
+    public static final double healthDropFreq = 0.25;
+
+    // pickups
+    public static final int healthPack = 50;
 
     // cavern tiers
     public enum CavernSize {LARGE, MEDIUM}
 
     // all the items
-    public enum Item {GUN1, GUN2, ROCKET0, ROCKET1, RL0, RL1, PICK1, PICK2, PICK3, BULLET1}
+    public enum Item {GUN1, GUN2, RL0, RL1, ROCKET, PICK1, PICK2, PICK3, BULLET1, HEALTH}
     //public static final HashMap<Item, Integer> itemToTier = new HashMap<>();
 
     // use selected tool

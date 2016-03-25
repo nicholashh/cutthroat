@@ -12,7 +12,7 @@ public class Rocket extends Projectile {
     }
 
     protected int getSpeed () {
-        return 1;
+        return 2;
     }
 
     public int getMapChar () {

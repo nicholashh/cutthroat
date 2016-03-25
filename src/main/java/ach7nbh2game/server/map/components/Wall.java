@@ -9,11 +9,25 @@ public class Wall extends AMapComponent {
 
     private int maxHealth = Constants.wall1;
     private int health = maxHealth;
+    private Constants.Item item = null;
 
     private Random rand = new Random();
 
     public Wall () {
         super("Wall");
+
+        boolean dropAtAll = rand.nextDouble() < 0.7;
+        double whichItem = rand.nextDouble();
+
+        if (dropAtAll) {
+            if (whichItem <= Constants.bulletDropFreq) {
+                item = Constants.Item.BULLET1;
+            } else if (whichItem <= Constants.bulletDropFreq+Constants.rocketDropFreq) {
+                item = Constants.Item.ROCKET;
+            } else if (whichItem <= Constants.bulletDropFreq+Constants.rocketDropFreq+Constants.healthDropFreq) {
+                item = Constants.Item.HEALTH;
+            }
+        }
     }
 
     public Wall(String name) {
@@ -22,17 +36,27 @@ public class Wall extends AMapComponent {
 
     public int getMapChar () {
 
-        // return 35;
         if (health > maxHealth*0.75) {
             return "\u2588".codePointAt(0);
         } else if (health > maxHealth*0.5) {
             return "\u2593".codePointAt(0);
         } else if (health > maxHealth*0.25) {
             return "\u2592".codePointAt(0);
-        } else {
+        } else if (health > 0){
             return "\u2591".codePointAt(0);
+        } else {
+            isDead = true;
+            if (item != null) {
+                if (item != Constants.Item.HEALTH) {
+                    return "\u25CF".codePointAt(0);
+                } else {
+                    return "\u002B".codePointAt(0);
+                }
+            } else {
+                removeFromMap();
+                return ' ';
+            }
         }
-
     }
 
     public boolean canDie () {return true;}
@@ -41,24 +65,15 @@ public class Wall extends AMapComponent {
         return health;
     }
 
+    public Constants.Item getItem() {
+        return item;
+    }
+
     public void applyDamage (int healthDiff, Client client) {
         health -= healthDiff;
         if (health <= 0) {
-            removeFromMap();
-            PlayerState state = client.getState();
-
-            boolean dropGun2 = rand.nextDouble() < 0.05;
-            boolean dropBullet1 = rand.nextDouble() < 0.5;
-            boolean dropPick2 = rand.nextDouble() < 0.05;
-
-            if (dropGun2) {
-                state.upgradeGun(Constants.gun2);
-            }
-            if (dropBullet1) {
-                client.incAmmo(3);
-            }
-            if (dropPick2) {
-                state.upgradePickaxe(Constants.pickaxe2);
+            if (item == null) {
+                removeFromMap();
             }
         }
     }

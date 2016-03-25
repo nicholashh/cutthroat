@@ -53,9 +53,27 @@ public abstract class Client extends AMapComponent {
         return state.getHealth();
     }
 
+    public void decHealth(int diff) {
+        int health = state.getHealth()-diff;
+        if (health < 0) {
+            state.setHealth(0);
+        } else {
+            state.setHealth(health);
+        }
+    }
+
+    public void incHealth(int diff) {
+        int health = state.getHealth()+diff;
+        if (health > Constants.clientHealth) {
+            state.setHealth(Constants.clientHealth);
+        } else {
+            state.setHealth(health);
+        }
+    }
+
     public void applyDamage (int damage, Client killer) {
 
-        state.setHealth(state.getHealth()-damage);
+        decHealth(damage);
 
         if (state.getHealth() <= 0) {
 
@@ -249,7 +267,8 @@ public abstract class Client extends AMapComponent {
                                     state.upgradePickaxe(Constants.pickaxe3);
                                     break;
                                 case BULLET1:
-                                    incAmmo(3);
+                                    incAmmo(Constants.bulletBatchSize);
+                                    break;
                             }
                             game.addSound(ServerToClientSound.PICKUP_ITEM);
                         }
@@ -263,13 +282,34 @@ public abstract class Client extends AMapComponent {
                 }
 
             } else if (thing instanceof Wall) {
+                Wall wall = (Wall) thing;
                 switch (action.action) {
+                    case MOVE:
+                        if (wall.isDead()) {
+                            map.swap(this, wall);
+                            wall.removeFromMap();
+                            switch (wall.getItem()) {
+                                case BULLET1:
+                                    incAmmo(Constants.bulletBatchSize);
+                                    break;
+                                case ROCKET:
+                                    incRocketAmmo(Constants.rocketBatchSize);
+                                    break;
+                                case HEALTH:
+                                    incHealth(Constants.healthPack);
+                                    break;
+                            }
+                            game.addSound(ServerToClientSound.PICKUP_ITEM);
+                        }
+                        break;
                     case DIG:
                         Logger.Singleton.log(this, 0, "digging " + direction);
 
-                        Wall wall = (Wall) thing;
-                        wall.applyDamage(state.getPickaxeDmg(), this);
-                        game.addSound(ServerToClientSound.PICKAXE_HIT_WALL);
+                        if (!(wall.isDead())) {
+                            wall.applyDamage(state.getPickaxeDmg(), this);
+                            game.addSound(ServerToClientSound.PICKAXE_HIT_WALL);
+                        }
+                        break;
                 }
             } else if (thing instanceof Client) {
                 switch(action.action) {

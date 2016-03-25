@@ -57,7 +57,7 @@ public abstract class AMapComponent extends AGameActor implements IMapComponent 
 
     }
 
-    private boolean isDead = false;
+    boolean isDead = false;
 
     public void placeOnMap(GameMap map, Coordinate loc) {
         map.set(loc.y, loc.x, this);

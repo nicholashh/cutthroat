@@ -11,7 +11,7 @@ public class Bullet extends Projectile {
     }
 
     protected int getSpeed () {
-        return 2;
+        return 1;
     }
 
     public int getMapChar () {
