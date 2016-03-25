@@ -45,13 +45,18 @@ public class ClientModel {
         playerInfo.setUsername(username);
         playerInfo.setIcon(username.toUpperCase().toCharArray()[0]);
 
+        boolean failedOnce = false;
         while (!server.isConnected()) {
             try {
-                server.connectTo(0, view.askForServerIP(), playerInfo);
+                if (!failedOnce) {
+                    server.connectTo(0, view.askForServerIP(), playerInfo);
+                } else {
+                    server.connectTo(0, view.askForServerIPFailed(), playerInfo);
+                }
             } catch (IOException e) {
                 System.out.println("failed to connect to server");
                 e.printStackTrace();
-                // TODO
+                failedOnce = true;
             }
         }
 

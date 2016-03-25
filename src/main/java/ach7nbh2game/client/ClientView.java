@@ -43,7 +43,9 @@ public class ClientView {
     private final String welcomeMessage = "Welcome to Cutthroat!\n\n\n";
     private final String usernamePrompt = welcomeMessage + "Username: ";
     private final String serverPrompt = welcomeMessage + "Server Hostname: ";
-    private boolean userInputDone = false;
+	private final String serverPromptFailed = "Welcome to Cutthroat!\n\nCouldn't find the specified server.\nServer" +
+			" Hostname: ";
+	private boolean userInputDone = false;
     private String userInput = "";
 
     private State state = null;
@@ -254,6 +256,10 @@ public class ClientView {
 	
 	public String askForServerIP () {
 		return askForThing(serverPrompt, Constants.defaultHostname);
+	}
+
+	public String askForServerIPFailed() {
+		return askForThing(serverPromptFailed, Constants.defaultHostname);
 	}
 	
 	private LambdaZeroVoid updatePrompt;

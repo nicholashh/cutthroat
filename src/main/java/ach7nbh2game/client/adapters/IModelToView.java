@@ -6,6 +6,7 @@ import ach7nbh2game.network.packets.PlayerInfo;
 public interface IModelToView {
     String askForUsername();
     String askForServerIP();
+    String askForServerIPFailed();
     String askForThing(String label, String value);
 	void updateThing(String newLabel);
     void updateState(GameState state);

@@ -92,6 +92,10 @@ public class GameClient {
                 return view.askForServerIP();
             }
 
+            public String askForServerIPFailed() {
+                return view.askForServerIPFailed();
+            }
+
             public String askForThing(String label, String value) {
                 return view.askForThing(label, value);
             }
