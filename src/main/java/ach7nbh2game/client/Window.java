@@ -337,7 +337,12 @@ public class Window {
     }
 
     public void repaint () {
-        terminal.refresh();
+        try {
+            terminal.refresh();
+        } catch (IndexOutOfBoundsException e) {
+            // TODO omg we really should not have to be doing this...
+            System.err.println("error in repaint(): " + e.toString());
+        }
     }
 
     public int waitForUserInput () {
