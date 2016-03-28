@@ -29,8 +29,12 @@ public class Bullet extends Projectile {
 
         if (other instanceof Projectile) {
 
-            Logger.Singleton.log(this, 1, "killing other projectile, too");
-            ((Projectile)other).kill();
+            if (other instanceof Rocket)
+                ((Rocket) other).interactionWithKillable(this);
+            else {
+                Logger.Singleton.log(this, 1, "killing other projectile, too");
+                ((Projectile) other).kill();
+            }
 
             getGame().addSound(Constants.ServerToClientSound.BULLET_HIT_BULLET);
         } else {
