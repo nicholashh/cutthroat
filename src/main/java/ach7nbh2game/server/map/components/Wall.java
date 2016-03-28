@@ -1,7 +1,6 @@
 package ach7nbh2game.server.map.components;
 
 import ach7nbh2game.main.Constants;
-import ach7nbh2game.network.packets.PlayerState;
 
 import java.util.Random;
 
@@ -16,7 +15,7 @@ public class Wall extends AMapComponent {
     public Wall () {
         super("Wall");
 
-        boolean dropAtAll = rand.nextDouble() < 0.7;
+        boolean dropAtAll = rand.nextDouble() < 0.5;
         double whichItem = rand.nextDouble();
 
         if (dropAtAll) {
@@ -47,10 +46,10 @@ public class Wall extends AMapComponent {
         } else {
             isDead = true;
             if (item != null) {
-                if (item != Constants.Item.HEALTH) {
-                    return "\u25CF".codePointAt(0);
-                } else {
-                    return "\u002B".codePointAt(0);
+                switch (item) {
+                    case HEALTH: return "\u002B".codePointAt(0);
+                    case ROCKET: return "\u2622".codePointAt(0);
+                    default: return "\u25CF".codePointAt(0);
                 }
             } else {
                 removeFromMap();
