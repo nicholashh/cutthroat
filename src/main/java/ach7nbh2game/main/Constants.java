@@ -4,7 +4,7 @@ public class Constants {
 
     // client display settings
     public static final int clientMapHeight = 21;
-    public static final int clientMapWidth = 61;
+    public static final int clientMapWidth = 63;
 
     // server world map settings
     public static final int mapHeight = 31;

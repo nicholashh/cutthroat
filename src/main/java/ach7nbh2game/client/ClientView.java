@@ -42,11 +42,11 @@ public class ClientView {
 	private enum HorizontalAlignment {LEFT, CENTER}
     private final String welcomeMessage =
 			"_________         __    __  .__                        __   \n" +
-					"\\_   ___ \\ __ ___/  |__/  |_|  |_________  _________ _/  |__\n" +
-					"/    \\  \\/|  |  \\   __\\   __\\  |  \\_  __ \\/  _ \\__  \\\\   ___\\\n" +
-					"\\     \\___|  |  /|  |  |  | |   Y  \\  | \\(  <_> ) __ \\|  |  \n" +
-					" \\______  /____/ |__|  |__| |___|  /__|   \\____(____  /__|  \n" +
-					"        \\/                       \\/                 \\/      \nVersion 0.7\n\n";
+			"\\_   ___ \\ __ ___/  |__/  |_|  |_________  _________ _/  |__\n" +
+			"/    \\  \\/|  |  \\   __\\   __\\  |  \\_  __ \\/  _ \\__  \\\\   ___\\\n" +
+			"\\     \\___|  |  /|  |  |  | |   Y  \\  | \\(  <_> ) __ \\|  |  \n" +
+			" \\______  /____/ |__|  |__| |___|  /__|   \\____(____  /__|  \n" +
+			"        \\/                       \\/                 \\/      \n\nVersion 0.7\n\n";
     private final String usernamePrompt = welcomeMessage + "Username: ";
     private final String serverPrompt = "\n\nServer Hostname: ";
 	private final String serverPromptFailed = "Couldn't find the specified server.\n\nServer Hostname: ";
@@ -142,19 +142,19 @@ public class ClientView {
 
 		rightPrompt += " \u25B6HEALTH";
 		for (String player : otherPlayerStates.keySet())
-			rightPrompt += String.format("\n  %s: %3d", player, otherPlayerStates.get(player).getHealth());
+			rightPrompt += String.format("\n  %3d: %s", otherPlayerStates.get(player).getHealth(), player);
 
 		rightPrompt += "\n\n \u25B6KILLS";
 		for (String player : otherPlayerStates.keySet())
-			rightPrompt += String.format("\n  %s:  %2d", player, otherPlayerStates.get(player).getScore());
+			rightPrompt += String.format("\n  %3d: %s", otherPlayerStates.get(player).getScore(), player);
 
 		myState = gameState.getPlayerState();
 
-		rightPrompt += "\n";
-		rightPrompt += "\n \u25B6My Items";
-		rightPrompt += String.format("\n  Pickaxe Damage:  %2d", myState.getPickaxeDmg());
-		rightPrompt += String.format("\n  Gun     Damage:  %2d", myState.getGunDmg());
-		rightPrompt += String.format("\n  Bullet  Damage:  %2d", myState.getBulletDmg());
+		//rightPrompt += "\n";
+		//rightPrompt += "\n \u25B6My Items";
+		//rightPrompt += String.format("\n  Pickaxe Damage:  %2d", myState.getPickaxeDmg());
+		//rightPrompt += String.format("\n  Gun     Damage:  %2d", myState.getGunDmg());
+		//rightPrompt += String.format("\n  Bullet  Damage:  %2d", myState.getBulletDmg());
 
 		showPrompt(rightPrompt, Component.RightPanel, VerticalAlignment.TOP, HorizontalAlignment.LEFT);
 
@@ -191,25 +191,26 @@ public class ClientView {
 		bottomPrompt += selectedPick();
 		switch(myState.getPickaxeDmg()) {
 			case Constants.pickaxe1:
-				bottomPrompt += "1) ";
+				bottomPrompt += "1)";
 				break;
 			case Constants.pickaxe2:
-				bottomPrompt += "2) ";
+				bottomPrompt += "2)";
 				break;
 			case Constants.pickaxe3:
-				bottomPrompt += "3) ";
+				bottomPrompt += "3)";
 				break;
 		}
+		bottomPrompt += ":\u221E ";
 
         bottomPrompt += selectedRocket();
         bottomPrompt += myState.getRocketAmmo();
 
-		bottomPrompt += " Bullet(";
-		switch(myState.getBulletDmg()) {
-			case Constants.bullet1:
-				bottomPrompt += "1) ";
-				break;
-		}
+		//bottomPrompt += " Bullet(";
+		//switch(myState.getBulletDmg()) {
+		//	case Constants.bullet1:
+		//		bottomPrompt += "1) ";
+		//		break;
+		//}
 
 		showPrompt(bottomPrompt, Component.BottomPanel, VerticalAlignment.TOP, HorizontalAlignment.CENTER);
 
@@ -236,9 +237,9 @@ public class ClientView {
 
     private String selectedRocket() {
         if (tool == Tool.ROCEKT) {
-            return "*Rocket:";
+            return "*Rocket(1):";
         } else {
-            return " Rocket:";
+            return " Rocket(1):";
         }
     }
 
