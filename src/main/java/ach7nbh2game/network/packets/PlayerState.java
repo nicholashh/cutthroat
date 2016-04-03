@@ -5,7 +5,7 @@ import ach7nbh2game.main.Constants;
 public class PlayerState {
 
     private int health = Constants.clientHealth;
-    private int score = 0;
+    private double score = 0;
 
     private int gunDmg = Constants.gun1;
     private int pickaxeDmg = Constants.pickaxe1;
@@ -27,11 +27,11 @@ public class PlayerState {
         return health;
     }
 
-    public void setScore(int scoreIn) {
+    public void setScore(double scoreIn) {
         score = scoreIn;
     }
 
-    public int getScore() {
+    public double getScore() {
         return score;
     }
 

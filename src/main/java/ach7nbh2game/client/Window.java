@@ -39,7 +39,7 @@ public class Window {
     // the variant component sizes
     private int leftPanelWidth = 1;
     private int rightPanelWidth = 21;
-    private int topPanelHeight = 1;
+    private int topPanelHeight = 2;
     private int bottomPanelHeight = 1;
     private int mapBorder = 1;
     private int windowBorder = 1;

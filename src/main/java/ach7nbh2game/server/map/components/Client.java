@@ -53,32 +53,21 @@ public abstract class Client extends AMapComponent {
         return state.getHealth();
     }
 
-    public void decHealth(int diff) {
-        int health = state.getHealth()-diff;
+    public void applyDamage (int damage, Client killer) {
+
+        int health = state.getHealth() - damage;
         if (health < 0) {
             state.setHealth(0);
-        } else {
-            state.setHealth(health);
-        }
-    }
-
-    public void incHealth(int diff) {
-        int health = state.getHealth()+diff;
-        if (health > Constants.clientHealth) {
+        } else if (health > Constants.clientHealth) {
             state.setHealth(Constants.clientHealth);
         } else {
             state.setHealth(health);
         }
-    }
-
-    public void applyDamage (int damage, Client killer) {
-
-        decHealth(damage);
 
         if (state.getHealth() <= 0) {
 
             removeFromMap();
-            killer.incScore(1);
+            killer.incScore(1 + this.getScore() * Constants.bountyPercent);
             getGame().addSound(ServerToClientSound.PLAYER_DIES);
 
             (new Thread() { public void run() {
@@ -100,11 +89,11 @@ public abstract class Client extends AMapComponent {
         return state;
     }
 
-    public int getScore() {
+    public double getScore() {
         return state.getScore();
     }
 
-    public void incScore(int scoreDiff) {
+    public void incScore(double scoreDiff) {
         state.setScore(state.getScore()+scoreDiff);
         if (state.getScore() >= getGame().getKillsToWin()) {
             getGame().iJustWon(this);
@@ -296,7 +285,7 @@ public abstract class Client extends AMapComponent {
                                     incRocketAmmo(Constants.rocketBatchSize);
                                     break;
                                 case HEALTH:
-                                    incHealth(Constants.healthPack);
+                                    applyDamage(-1 * Constants.healthPack, this);
                                     break;
                             }
                             game.addSound(ServerToClientSound.PICKUP_ITEM);

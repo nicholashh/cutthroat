@@ -73,8 +73,11 @@ public class Constants {
         PLAYER_SPAWNS, PLAYER_DIES,
         ROCKET_LAUNCH, ROCKET_EXPLODE}
 
+    // game mechanics tuning parameters
     public static final int killsToWin = 10;
+    public static double bountyPercent = 0.15;
 
+    // miscellaneous sugar
     public static String defaultHostname = "cutthroat.pwnz.org";
 
 }

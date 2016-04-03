@@ -144,9 +144,9 @@ public class ClientView {
 		for (String player : otherPlayerStates.keySet())
 			rightPrompt += String.format("\n  %3d: %s", otherPlayerStates.get(player).getHealth(), player);
 
-		rightPrompt += "\n\n \u25B6KILLS";
+		rightPrompt += "\n\n \u25B6SCORE";
 		for (String player : otherPlayerStates.keySet())
-			rightPrompt += String.format("\n  %3d: %s", otherPlayerStates.get(player).getScore(), player);
+			rightPrompt += String.format("\n  %05.2f: %s", otherPlayerStates.get(player).getScore(), player);
 
 		myState = gameState.getPlayerState();
 
@@ -214,8 +214,9 @@ public class ClientView {
 
 		showPrompt(bottomPrompt, Component.BottomPanel, VerticalAlignment.TOP, HorizontalAlignment.CENTER);
 
-		String topPrompt = "First to " + Constants.killsToWin + " kills wins";
-		showPrompt(topPrompt, Component.TopPanel, VerticalAlignment.CENTER, HorizontalAlignment.LEFT);
+		String topPrompt = "First to " + Constants.killsToWin + " points wins!\n";
+		topPrompt += "(1 kill = 1 point, " + (int)(100 * Constants.bountyPercent) + "% kill bounty)";
+		showPrompt(topPrompt, Component.TopPanel, VerticalAlignment.CENTER, HorizontalAlignment.CENTER);
 
 	}
 
