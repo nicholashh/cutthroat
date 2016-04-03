@@ -1,36 +1,54 @@
 package ach7nbh2game.server.map.components;
 
 import ach7nbh2game.main.Constants;
+import ach7nbh2game.main.Constants.Item;
+import ach7nbh2game.util.Logger;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Wall extends AMapComponent {
 
     private int maxHealth = Constants.wall1;
     private int health = maxHealth;
-    private Constants.Item item = null;
-
-    private Random rand = new Random();
+    private List<Item> items = new ArrayList<>();
 
     public Wall () {
-        super("Wall");
+        this("Wall");
+    }
 
+    public Wall (String name) {
+
+        super(name);
+
+        Random rand = new Random();
         boolean dropAtAll = rand.nextDouble() < 0.5;
         double whichItem = rand.nextDouble();
 
         if (dropAtAll) {
             if (whichItem <= Constants.bulletDropFreq) {
-                item = Constants.Item.BULLET1;
+                items.add(Item.BULLET1);
             } else if (whichItem <= Constants.bulletDropFreq+Constants.rocketDropFreq) {
-                item = Constants.Item.ROCKET;
+                items.add(Item.ROCKET);
             } else if (whichItem <= Constants.bulletDropFreq+Constants.rocketDropFreq+Constants.healthDropFreq) {
-                item = Constants.Item.HEALTH;
+                items.add(Item.HEALTH);
             }
         }
+
     }
 
-    public Wall(String name) {
-        super(name);
+    public Wall (List<Item> itemsIn) {
+
+        this();
+
+        Logger.Singleton.log(this, 0, "constructed with items = " + items);
+
+        items.clear();
+        items.addAll(itemsIn);
+
+        health = 0;
+
     }
 
     public int getMapChar () {
@@ -45,8 +63,8 @@ public class Wall extends AMapComponent {
             return "\u2591".codePointAt(0);
         } else {
             isDead = true;
-            if (item != null) {
-                switch (item) {
+            if (!items.isEmpty()) {
+                switch (items.get(0)) {
                     case HEALTH: return "\u002B".codePointAt(0);
                     case ROCKET: return "\u2622".codePointAt(0);
                     default: return "\u25CF".codePointAt(0);
@@ -64,14 +82,14 @@ public class Wall extends AMapComponent {
         return health;
     }
 
-    public Constants.Item getItem() {
-        return item;
+    public List<Item> getItems () {
+        return items;
     }
 
     public void applyDamage (int healthDiff, Client client) {
         health -= healthDiff;
         if (health <= 0) {
-            if (item == null) {
+            if (items.isEmpty()) {
                 removeFromMap();
             }
         }

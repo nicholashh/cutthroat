@@ -86,7 +86,7 @@ public class Rocket extends Projectile {
 
                 thing.applyDamage(damageVal, getOwner());
 
-                if (thing.isDead() || !thing.canDie()) {
+                if ((thing.isDead() || !thing.canDie()) && !(thing instanceof Client)) {
 
                     Logger.Singleton.log(this, 2, "making new ground");
 

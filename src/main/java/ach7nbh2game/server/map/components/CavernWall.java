@@ -2,6 +2,7 @@ package ach7nbh2game.server.map.components;
 
 import ach7nbh2game.main.Constants;
 
+// TODO: most of this should be refactored to use super calls to Wall
 public class CavernWall extends Wall {
 
     private int maxHealth = Constants.wall1;

@@ -2,28 +2,28 @@ package ach7nbh2game.server.map.components;
 
 import ach7nbh2game.main.Constants;
 import ach7nbh2game.main.Constants.Direction;
+import ach7nbh2game.main.Constants.Item;
 import ach7nbh2game.main.Constants.ServerToClientSound;
 import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.network.packets.GameState;
 import ach7nbh2game.network.packets.PlayerInfo;
+import ach7nbh2game.network.packets.PlayerState;
 import ach7nbh2game.server.Callback;
 import ach7nbh2game.server.Game;
-import ach7nbh2game.network.packets.PlayerState;
 import ach7nbh2game.server.map.GameMap;
 import ach7nbh2game.util.Logger;
 import ach7nbh2game.util.Utility;
 import ach7nbh2game.util.id.ClientID;
 import ach7nbh2game.util.id.Coordinate;
 
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Client extends AMapComponent {
 
     private final ClientID id;
     private final PlayerInfo info;
     private PlayerState state = new PlayerState();
-
-    private Random rand = new Random();
 
     // client objects know how to communicate with the clients they represent
     public abstract void enterGame ();
@@ -66,13 +66,23 @@ public abstract class Client extends AMapComponent {
 
         if (state.getHealth() <= 0) {
 
-            removeFromMap();
+            List<Item> items = new ArrayList<>();
+            if (state.getGunDmg() >= Constants.gun2)
+                items.add(Item.GUN2);
+            if (state.getPickaxeDmg() >= Constants.pickaxe3)
+                items.add(Item.PICK3);
+            else if (state.getPickaxeDmg() >= Constants.pickaxe2)
+                items.add(Item.PICK2);
+
+            if (items.isEmpty()) removeFromMap();
+            else removeFromMap(new Wall(items));
+
             killer.incScore(1 + this.getScore() * Constants.bountyPercent);
             getGame().addSound(ServerToClientSound.PLAYER_DIES);
 
             (new Thread() { public void run() {
 
-                try {Thread.sleep(5000);} catch (InterruptedException e) {}
+                try {Thread.sleep(5000);} catch (InterruptedException e) { /* TODO */ }
 
                 state.respawn();
                 Coordinate newloc = getMap().getRandomLocationWithA(Ground.class);
@@ -100,13 +110,13 @@ public abstract class Client extends AMapComponent {
         }
     }
 
-    public void decScore(int scoreDiff) {
-        state.setScore(state.getScore()-scoreDiff);
-    }
+    //public void decScore(int scoreDiff) {
+    //    state.setScore(state.getScore()-scoreDiff);
+    //}
 
-    public int getAmmo() {
-        return state.getAmmo();
-    }
+    //public int getAmmo() {
+    //    return state.getAmmo();
+    //}
 
     public void incAmmo(int ammoDiff) {
         state.setAmmo(state.getAmmo()+ammoDiff);
@@ -248,17 +258,7 @@ public abstract class Client extends AMapComponent {
                         if (cwall.getVisible()) {
                             map.swap(this, cwall);
                             cwall.removeFromMap();
-                            switch (cwall.getItem()) {
-                                case GUN2:
-                                    state.upgradeGun(Constants.gun2);
-                                    break;
-                                case PICK3:
-                                    state.upgradePickaxe(Constants.pickaxe3);
-                                    break;
-                                case BULLET1:
-                                    incAmmo(Constants.bulletBatchSize);
-                                    break;
-                            }
+                            upgradeItem(cwall.getItem());
                             game.addSound(ServerToClientSound.PICKUP_ITEM);
                         }
                         break;
@@ -277,17 +277,21 @@ public abstract class Client extends AMapComponent {
                         if (wall.isDead()) {
                             map.swap(this, wall);
                             wall.removeFromMap();
-                            switch (wall.getItem()) {
-                                case BULLET1:
-                                    incAmmo(Constants.bulletBatchSize);
-                                    break;
-                                case ROCKET:
-                                    incRocketAmmo(Constants.rocketBatchSize);
-                                    break;
-                                case HEALTH:
-                                    applyDamage(-1 * Constants.healthPack, this);
-                                    break;
-                            }
+                            for (Item item : wall.getItems())
+                                switch (item) {
+                                    case BULLET1:
+                                        incAmmo(Constants.bulletBatchSize);
+                                        break;
+                                    case ROCKET:
+                                        incRocketAmmo(Constants.rocketBatchSize);
+                                        break;
+                                    case HEALTH:
+                                        applyDamage(-1 * Constants.healthPack, this);
+                                        break;
+                                    default:
+                                        upgradeItem(item);
+                                        break;
+                                }
                             game.addSound(ServerToClientSound.PICKUP_ITEM);
                         }
                         break;
@@ -312,6 +316,23 @@ public abstract class Client extends AMapComponent {
                     case DIG: ((Projectile)thing).interactionWithKillable(thing);
                 }
             }
+        }
+    }
+
+    private void upgradeItem(Item item) {
+        switch (item) {
+            case GUN2:
+                state.upgradeGun(Constants.gun2);
+                break;
+            case PICK2:
+                state.upgradePickaxe(Constants.pickaxe2);
+                break;
+            case PICK3:
+                state.upgradePickaxe(Constants.pickaxe3);
+                break;
+            case BULLET1:
+                incAmmo(Constants.bulletBatchSize);
+                break;
         }
     }
 

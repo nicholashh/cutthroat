@@ -66,8 +66,11 @@ public abstract class AMapComponent extends AGameActor implements IMapComponent 
     }
 
     public void removeFromMap () {
-        Ground newGround = new Ground();
-        newGround.placeOnMap(getMap(), x, y);
+        removeFromMap(new Ground());
+    }
+
+    public void removeFromMap (AMapComponent replaceWith) {
+        replaceWith.placeOnMap(getMap(), x, y);
         isDead = true;
     }
 
