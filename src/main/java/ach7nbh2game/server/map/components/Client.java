@@ -113,7 +113,7 @@ public abstract class Client extends AMapComponent {
     }
 
     public void decAmmo(int ammoDiff) {
-        state.setAmmo(state.getAmmo()-ammoDiff);
+        state.setAmmo(state.getAmmo() - ammoDiff);
     }
 
     public void incRocketAmmo(int ammoDiff) {
@@ -121,7 +121,7 @@ public abstract class Client extends AMapComponent {
     }
 
     public void decRocketAmmo(int ammoDiff) {
-        state.setRocketAmmo(state.getRocketAmmo()-ammoDiff);
+        state.setRocketAmmo(state.getRocketAmmo() - ammoDiff);
     }
 
     // essentially a setter for the callback
@@ -306,6 +306,10 @@ public abstract class Client extends AMapComponent {
                         Client other = (Client) thing;
                         other.applyDamage(state.getPickaxeDmg(), this);
                         game.addSound(ServerToClientSound.PICKAXE_HIT_PLAYER);
+                }
+            } else if (thing instanceof Projectile) {
+                switch(action.action) {
+                    case DIG: ((Projectile)thing).interactionWithKillable(thing);
                 }
             }
         }
