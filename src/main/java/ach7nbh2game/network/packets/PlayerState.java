@@ -10,9 +10,8 @@ public class PlayerState {
     private int gunDmg = Constants.gun1;
     private int pickaxeDmg = Constants.pickaxe1;
     private int bulletDmg = Constants.bullet1;
-    //TODO start with rocket0 and no ammo
     private Constants.Item rocket = Constants.Item.RL1;
-    private int rocketAmmo = 3;
+    private int rocketAmmo = Constants.initRocketAmmo;
     private int ammo = Constants.initAmmo;
 
     public void setHealth(int healthIn) {

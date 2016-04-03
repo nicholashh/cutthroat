@@ -16,11 +16,9 @@ public class Constants {
 
     // client stat definitions
     public static final int clientHealth = 100;
-    public static final int initAmmo = 10;
 
     // bullet tiers
     public static final int bullet1 = 25;
-
     public static final int bulletBatchSize = 3;
     public static final int rocketBatchSize = 1;
 
@@ -50,7 +48,6 @@ public class Constants {
 
     // all the items
     public enum Item {GUN1, GUN2, RL0, RL1, ROCKET, PICK1, PICK2, PICK3, BULLET1, HEALTH}
-    //public static final HashMap<Item, Integer> itemToTier = new HashMap<>();
 
     // use selected tool
     public enum Tool {GUN, PICKAXE, ROCEKT}
@@ -76,6 +73,8 @@ public class Constants {
     // game mechanics tuning parameters
     public static final int killsToWin = 10;
     public static double bountyPercent = 0.15;
+    public static final int initAmmo = 10;
+    public static final int initRocketAmmo = 1;
 
     // miscellaneous sugar
     public static String defaultHostname = "cutthroat.pwnz.org";
