@@ -113,6 +113,10 @@ public class GameClient {
                 view.endGame(client);
             }
 
+            public void clearMenus() {
+                view.clearMenus();
+            }
+
         });
 
     }

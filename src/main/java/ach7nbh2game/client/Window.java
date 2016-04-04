@@ -183,7 +183,7 @@ public class Window {
     private void setUpTerminal () {
 
         TerminalInterface newTerminal = new SwingTerminal();
-        newTerminal.init("Andrew Nick Game",
+        newTerminal.init("Cutthroat",
                 bottom(Component.BottomWindowBorder) + 1,
                 right(Component.RightWindowBorder) + 1);
         terminal = new CursesLikeAPI(newTerminal);

@@ -244,7 +244,7 @@ public class ClientView {
         }
     }
 
-    private void clearMenus () {
+    public void clearMenus () {
 		showPrompt("", Component.LeftPanel);
 		showPrompt("", Component.RightPanel);
 		showPrompt("", Component.TopPanel);
@@ -252,8 +252,7 @@ public class ClientView {
 	}
 
 	public void endGame(PlayerInfo client) {
-		clearMenus();
-		updateThing(client.getUsername() + " won!");
+		showPrompt(client.getUsername() + " won!", Component.TopPanel);
 		SoundEffect.GAME_END.play();
 	}
 

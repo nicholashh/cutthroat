@@ -71,7 +71,7 @@ public class Constants {
         ROCKET_LAUNCH, ROCKET_EXPLODE}
 
     // game mechanics tuning parameters
-    public static final int killsToWin = 10;
+    public static final int killsToWin = 2;
     public static double bountyPercent = 0.15;
     public static final int initAmmo = 10;
     public static final int initRocketAmmo = 1;

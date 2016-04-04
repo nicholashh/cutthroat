@@ -11,4 +11,5 @@ public interface IModelToView {
 	void updateThing(String newLabel);
     void updateState(GameState state);
     void endGame(PlayerInfo client);
+    void clearMenus();
 }

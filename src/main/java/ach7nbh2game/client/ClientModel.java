@@ -241,6 +241,7 @@ public class ClientModel {
         inGame = false;
         view.endGame(client);
         try {Thread.sleep(5000);} catch (InterruptedException e) {}
+        view.clearMenus();
         server.requestLobbies(playerInfo.getID());
         SoundEffect.MENU_BGM.loop();
     }

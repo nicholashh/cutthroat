@@ -266,6 +266,8 @@ public abstract class Client extends AMapComponent {
                         if (!(cwall.getVisible())) {
                             cwall.applyDamage(state.getPickaxeDmg(), this);
                             game.addSound(ServerToClientSound.PICKAXE_HIT_WALL);
+                        } else {
+                            game.addSound(ServerToClientSound.PICKAXE_WHIFF);
                         }
                         break;
                 }
@@ -301,6 +303,8 @@ public abstract class Client extends AMapComponent {
                         if (!(wall.isDead())) {
                             wall.applyDamage(state.getPickaxeDmg(), this);
                             game.addSound(ServerToClientSound.PICKAXE_HIT_WALL);
+                        } else {
+                            game.addSound(ServerToClientSound.PICKAXE_WHIFF);
                         }
                         break;
                 }
