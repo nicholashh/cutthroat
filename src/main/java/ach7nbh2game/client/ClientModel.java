@@ -1,6 +1,7 @@
 package ach7nbh2game.client;
 
 import ach7nbh2game.client.adapters.IModelToView;
+import ach7nbh2game.main.Constants;
 import ach7nbh2game.network.adapters.IClientToServer;
 import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.network.packets.GameState;
@@ -75,6 +76,19 @@ public class ClientModel {
     
     private boolean waitingForInput = false;
     private int myLobby;
+    private int selected = 0;
+
+    public void selectUp() {
+        if (selected > 0) {
+            selected--;
+        }
+    }
+
+    public void selectDown() {
+        if (selected < Constants.clientMapHeight) {
+            selected++;
+        }
+    }
 
     public void updateLobbyList (
             final Map<Integer, String> lobbies,
@@ -89,46 +103,85 @@ public class ClientModel {
         if (!inGame) {
 
             // NORMAL BEHAVIOR
+            Object[] lobbyIDs = lobbies.keySet().toArray();
 
             String prompt = "";
-            prompt += "Lobbies available for you to join:\n";
+            prompt += "Lobbies";
+            for (int i = 0; i < (Constants.clientMapWidth/2)-"lobbies".length()-1; i++) {
+                prompt += " ";
+            }
+            prompt += "|";
+            prompt += "Players\n";
 
             //final Set<Integer> myLobbies = new HashSet<Integer>();
             final Map<Integer, Integer> smallIntToLobbyID = new HashMap<Integer, Integer>();
 
             if (lobbies.isEmpty()) {
 
-                prompt += "There are no lobbies for you to join.\n";
+                for (int i = 0; i < Constants.clientMapHeight-2; i++) {
+                    for (int j = 0; j < Constants.clientMapWidth/2-1; j++) {
+                        prompt += " ";
+                    }
+                    prompt += "|\n";
+                }
 
             } else {
 
-                int i = 0;
-                for (int lobbyID : lobbies.keySet()) {
-
-                    smallIntToLobbyID.put(i, lobbyID);
-                    prompt += i + ": " + lobbies.get(lobbyID) + "\n";
-                    i++;
-
-                    for (int playerID : lobbyToPlayers.get(lobbyID)) {
-                        if (playerID == playerInfo.getID()) {
-                            myLobby = lobbyID;
-                            prompt += "me! (" + playerInfo.getUsername() + ")\n";
-                        } else {
-                            String username = players.get(playerID);
-                            prompt += "player: " + username + "\n";
+                for (int i = 0; i < Constants.clientMapHeight-2; i++) {
+                    if (selected == i) {
+                        prompt += "*";
+                    } else {
+                        prompt += " ";
+                    }
+                    if (i < lobbyIDs.length) {
+                        char[] lname = lobbies.get(lobbyIDs[i]).toCharArray();
+                        for (int c = 0; c < Constants.clientMapWidth / 2 - 2; c++) {
+                            if (c < lname.length) {
+                                prompt += lname[c];
+                            } else {
+                                prompt += " ";
+                            }
+                        }
+                    } else {
+                        for (int c = 0; c < Constants.clientMapWidth / 2 - 2; c++) {
+                            prompt += " ";
                         }
                     }
-
+                    prompt += "| ";
+                    Object[] pInL = lobbyToPlayers.get(lobbyIDs[selected]).toArray();
+                    if (pInL.length > 0 && i < pInL.length) {
+                        for (int p = 0; p < Constants.clientMapWidth - prompt.length(); p++) {
+                            if (p < players.get(pInL[i]).length()) {
+                                prompt += players.get(pInL[i]);
+                            } else {
+                                prompt += " ";
+                            }
+                        }
+                    }
                 }
+
+//                int i = 0;
+//                for (int lobbyID : lobbies.keySet()) {
+//
+//                    smallIntToLobbyID.put(i, lobbyID);
+//                    prompt += i + ": " + lobbies.get(lobbyID) + "\n";
+//                    i++;
+//
+//                    for (int playerID : lobbyToPlayers.get(lobbyID)) {
+//                        if (playerID == playerInfo.getID()) {
+//                            myLobby = lobbyID;
+//                            prompt += "me! (" + playerInfo.getUsername() + ")\n";
+//                        } else {
+//                            String username = players.get(playerID);
+//                            prompt += "player: " + username + "\n";
+//                        }
+//                    }
+//
+//                }
 
             }
 
-            prompt += "\n\n";
-            prompt += "To update this list of lobbies, press enter.\n";
-            prompt += "To create a new lobby, enter it's alphanumeric name.\n";
-            prompt += "To join an existing lobby, enter it's numeric ID.\n";
-            prompt += "To start your game, re-enter your lobby's numeric ID.";
-            prompt += "\n\n---> ";
+            prompt += "CREATE LOBBY: ";
 
             final String promptFinal = prompt;
 
@@ -143,13 +196,19 @@ public class ClientModel {
 
                         waitingForInput = true;
 
-                        String action = view.askForThing(promptFinal, "");
+                        String action = view.askForThing(promptFinal, "", ClientView.VerticalAlignment.CENTER,
+                                ClientView.HorizontalAlignment.LEFT);
 
                         if (action.equals("")) {
 
-                            Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: requesting lobbies...");
-
-                            server.requestLobbies(playerInfo.getID());
+//                            Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: requesting lobbies...");
+//
+//                            server.requestLobbies(playerInfo.getID());
+                            if (!lobbies.isEmpty()) {
+                                server.joinLobby(playerInfo.getID(), (int)lobbyIDs[selected]);
+                            } else {
+                                server.requestLobbies((playerInfo.getID()));
+                            }
 
                         } else {
 

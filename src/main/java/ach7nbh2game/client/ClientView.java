@@ -38,8 +38,8 @@ public class ClientView {
 
     private enum State {TEXT_INPUT_MODE, IN_GAME_MODE}
 
-	private enum VerticalAlignment {TOP, CENTER}
-	private enum HorizontalAlignment {LEFT, CENTER}
+	public enum VerticalAlignment {TOP, CENTER}
+	public enum HorizontalAlignment {LEFT, CENTER}
     private final String welcomeMessage =
 			"_________         __    __  .__                        __   \n" +
 			"\\_   ___ \\ __ ___/  |__/  |_|  |_________  _________ _/  |__\n" +
@@ -214,7 +214,7 @@ public class ClientView {
 
 		showPrompt(bottomPrompt, Component.BottomPanel, VerticalAlignment.TOP, HorizontalAlignment.CENTER);
 
-		String topPrompt = "First to " + Constants.killsToWin + " points wins!\n";
+		String topPrompt = "First to " + Constants.killsToWin + " points wins\n";
 		topPrompt += "(1 kill = 1 point, " + (int)(100 * Constants.bountyPercent) + "% kill bounty)";
 		showPrompt(topPrompt, Component.TopPanel, VerticalAlignment.CENTER, HorizontalAlignment.CENTER);
 
@@ -252,7 +252,8 @@ public class ClientView {
 	}
 
 	public void endGame(PlayerInfo client) {
-		showPrompt(client.getUsername() + " won!", Component.TopPanel);
+		Logger.Singleton.log(this, 0, "ending game");
+		showPrompt(client.getUsername()+" won!", Component.TopPanel);
 		SoundEffect.GAME_END.play();
 	}
 
@@ -271,19 +272,24 @@ public class ClientView {
 	private LambdaZeroVoid updatePrompt;
 	
 	public String askForThing (String label, String value) {
-		return askForThing(label, value, false);
+		return askForThing(label, value, false, VerticalAlignment.CENTER, HorizontalAlignment.CENTER);
+	}
+
+	public String askForThing(String label, String value, VerticalAlignment valign, HorizontalAlignment halign) {
+		return askForThing(label, value, false, valign, halign);
 	}
 
 	public void updateThing (String newLabel) {
-		askForThing(newLabel, "", true);
+		askForThing(newLabel, "", true, VerticalAlignment.CENTER, HorizontalAlignment.CENTER);
 	}
 
-	private String askForThing (String label, String value, boolean updateOnly) {
+	private String askForThing (String label, String value, boolean updateOnly, VerticalAlignment valign,
+								HorizontalAlignment halign) {
 
-		Logger.Singleton.log(this, 0, "askForThing(" +
-				"updateOnly = " + updateOnly + ", " +
-				"value = \"" + value.replace('\n', ' ') + "\", " +
-				"label = \"" + label.replace('\n', ' ') + "\")");
+		Logger.Singleton.log(this, 0, "askForThing:\n" +
+				"\tupdateOnly = " + updateOnly + "\n" +
+				"\tvalue = \"" + value.replace('\n', ' ') + "\"\n" +
+				"\tlabel = \"" + label.replace('\n', ' ') + "\")");
 
 		if (!updateOnly) {
 			userInputDone = false;
@@ -291,7 +297,7 @@ public class ClientView {
 			state = State.TEXT_INPUT_MODE;
 		}
 
-		updatePrompt = () -> showPrompt(label + userInput);
+		updatePrompt = () -> showPrompt(label + userInput, Component.CenterPanel, valign, halign);
 		updatePrompt.run();
 
 		window.repaint();
@@ -442,16 +448,22 @@ public class ClientView {
                                 (input == 46))                   // period
                 			userInput += (char)input;
                 		else switch (input) {
-                		case BlackenKeys.KEY_BACKSPACE:
-                			// Logger.Singleton.log(this, 0, "BACKSPACE");
-                			int length = userInput.length();
-                			if (length > 0)
-                				userInput = userInput.substring(0, length - 1);
-                			break;
-                		case BlackenKeys.KEY_ENTER:
-                			// Logger.Singleton.log(this, 0, "ENTER");
-                			userInputDone = true;
-                			break;
+							case BlackenKeys.KEY_BACKSPACE:
+								// Logger.Singleton.log(this, 0, "BACKSPACE");
+								int length = userInput.length();
+								if (length > 0)
+									userInput = userInput.substring(0, length - 1);
+								break;
+							case BlackenKeys.KEY_ENTER:
+								// Logger.Singleton.log(this, 0, "ENTER");
+								userInputDone = true;
+								break;
+							case moveUp:
+								model.selectUp();
+								break;
+							case moveDown:
+								model.selectDown();
+								break;
                 		}
 
                 		updatePrompt.run();

@@ -50,6 +50,14 @@ public class GameClient {
                 model.action(actionIn);
             }
 
+            public void selectUp() {
+                model.selectUp();
+            }
+
+            public void selectDown() {
+                model.selectDown();
+            }
+
         });
 
         model = new ClientModel(new IClientToServer () {
@@ -98,6 +106,10 @@ public class GameClient {
 
             public String askForThing(String label, String value) {
                 return view.askForThing(label, value);
+            }
+            public String askForThing(String label, String value, ClientView.VerticalAlignment valign,
+                                      ClientView.HorizontalAlignment halign) {
+                return view.askForThing(label, value, valign, halign);
             }
 
 			public void updateThing(String newLabel) {
