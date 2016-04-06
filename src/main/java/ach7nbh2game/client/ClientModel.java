@@ -27,6 +27,8 @@ public class ClientModel {
 
     private Set<Thread> infoRequestThreads = new HashSet<>();
 
+    private int numLobbies = 0;
+
     public ClientModel (IClientToServer serverIn, IModelToView viewIn) {
 
         System.out.println("making new ClientModel...");
@@ -79,15 +81,86 @@ public class ClientModel {
     private int selected = 0;
 
     public void selectUp() {
+        Logger.Singleton.log(this, 0, "moved selection up");
         if (selected > 0) {
             selected--;
+            updateLobbyMenu();
         }
     }
 
     public void selectDown() {
-        if (selected < Constants.clientMapHeight) {
+        Logger.Singleton.log(this, 0, "moved selection down");
+        if (selected < numLobbies) {
             selected++;
+            updateLobbyMenu();
         }
+    }
+
+    private Map<Integer, String> mlobbies = new HashMap<>();
+    private Map<Integer, String> mplayers = new HashMap<>();
+    private Map<Integer, Set<Integer>> mlobbyToPlayers = new HashMap<>();
+
+    private void updateLobbyMenu() {
+        Object[] lobbyIDs = mlobbies.keySet().toArray();
+        numLobbies = lobbyIDs.length;
+
+        String prompt = "";
+        prompt += "Lobbies";
+        for (int i = 0; i < (Constants.clientMapWidth/2)-"lobbies".length()-1; i++) {
+            prompt += " ";
+        }
+        prompt += "|";
+        prompt += "Players\n";
+
+        //final Set<Integer> myLobbies = new HashSet<Integer>();
+        final Map<Integer, Integer> smallIntToLobbyID = new HashMap<Integer, Integer>();
+
+        if (mlobbies.isEmpty()) {
+
+            for (int i = 0; i < Constants.clientMapHeight-2; i++) {
+                for (int j = 0; j < Constants.clientMapWidth/2-1; j++) {
+                    prompt += " ";
+                }
+                prompt += "|\n";
+            }
+
+        } else {
+
+            for (int i = 0; i < Constants.clientMapHeight - 2; i++) {
+                if (selected == i) {
+                    prompt += "*";
+                } else {
+                    prompt += " ";
+                }
+                if (i < lobbyIDs.length) {
+                    char[] lname = mlobbies.get(lobbyIDs[i]).toCharArray();
+                    for (int c = 0; c < Constants.clientMapWidth / 2 - 2; c++) {
+                        if (c < lname.length) {
+                            prompt += lname[c];
+                        } else {
+                            prompt += " ";
+                        }
+                    }
+                } else {
+                    for (int c = 0; c < Constants.clientMapWidth / 2 - 2; c++) {
+                        prompt += " ";
+                    }
+                }
+                prompt += "| ";
+                Object[] pInL = mlobbyToPlayers.get(lobbyIDs[selected]).toArray();
+                if (pInL.length > 0 && i < pInL.length) {
+                    for (int p = 0; p < Constants.clientMapWidth / 2 - 2; p++) {
+                        if (p < mplayers.get(pInL[i]).length()) {
+                            prompt += mplayers.get(pInL[i]).toCharArray()[p];
+                        }
+                    }
+                }
+                prompt += "\n";
+            }
+        }
+        prompt += "CREATE LOBBY: ";
+
+        view.updateThing(prompt, ClientView.VerticalAlignment.CENTER, ClientView.HorizontalAlignment.LEFT);
     }
 
     public void updateLobbyList (
@@ -101,9 +174,13 @@ public class ClientModel {
         Logger.Singleton.log(this, 1, "lobbyToPlayers = " + lobbyToPlayers);
 
         if (!inGame) {
+            mlobbies = lobbies;
+            mplayers = players;
+            mlobbyToPlayers = lobbyToPlayers;
 
             // NORMAL BEHAVIOR
             Object[] lobbyIDs = lobbies.keySet().toArray();
+            numLobbies = lobbyIDs.length;
 
             String prompt = "";
             prompt += "Lobbies";
@@ -150,14 +227,13 @@ public class ClientModel {
                     prompt += "| ";
                     Object[] pInL = lobbyToPlayers.get(lobbyIDs[selected]).toArray();
                     if (pInL.length > 0 && i < pInL.length) {
-                        for (int p = 0; p < Constants.clientMapWidth - prompt.length(); p++) {
+                        for (int p = 0; p < Constants.clientMapWidth/2-2; p++) {
                             if (p < players.get(pInL[i]).length()) {
-                                prompt += players.get(pInL[i]);
-                            } else {
-                                prompt += " ";
+                                prompt += players.get(pInL[i]).toCharArray()[p];
                             }
                         }
                     }
+                    prompt += "\n";
                 }
 
 //                int i = 0;
@@ -187,7 +263,7 @@ public class ClientModel {
 
             if (waitingForInput) {
             	
-            	view.updateThing(promptFinal);
+            	view.updateThing(promptFinal, ClientView.VerticalAlignment.CENTER, ClientView.HorizontalAlignment.LEFT);
             	
             } else {
 
@@ -205,7 +281,12 @@ public class ClientModel {
 //
 //                            server.requestLobbies(playerInfo.getID());
                             if (!lobbies.isEmpty()) {
-                                server.joinLobby(playerInfo.getID(), (int)lobbyIDs[selected]);
+                                if (myLobby == (int)lobbyIDs[selected]) {
+                                    server.startGame(myLobby);
+                                } else {
+                                    server.joinLobby(playerInfo.getID(), (int)lobbyIDs[selected]);
+                                    myLobby = (int)lobbyIDs[selected];
+                                }
                             } else {
                                 server.requestLobbies((playerInfo.getID()));
                             }

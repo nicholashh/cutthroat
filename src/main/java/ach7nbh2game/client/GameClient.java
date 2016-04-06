@@ -116,6 +116,11 @@ public class GameClient {
 				view.updateThing(newLabel);
 			}
 
+            public void updateThing(String newLabel, ClientView.VerticalAlignment valign,
+                                    ClientView.HorizontalAlignment halign) {
+                view.updateThing(newLabel, valign, halign);
+            }
+
             public void updateState(GameState state) {
                 view.updateState(state);
             }

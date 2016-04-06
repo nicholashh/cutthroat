@@ -283,6 +283,10 @@ public class ClientView {
 		askForThing(newLabel, "", true, VerticalAlignment.CENTER, HorizontalAlignment.CENTER);
 	}
 
+	public void updateThing(String newLabel, VerticalAlignment valign, HorizontalAlignment halign) {
+		askForThing(newLabel, "", true, valign, halign);
+	}
+
 	private String askForThing (String label, String value, boolean updateOnly, VerticalAlignment valign,
 								HorizontalAlignment halign) {
 
@@ -460,9 +464,13 @@ public class ClientView {
 								break;
 							case moveUp:
 								model.selectUp();
+								window.repaint();
+								Logger.Singleton.log(this, 0, "repainted up");
 								break;
 							case moveDown:
 								model.selectDown();
+								window.repaint();
+								Logger.Singleton.log(this, 0, "repainted down");
 								break;
                 		}
 

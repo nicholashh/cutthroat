@@ -12,6 +12,7 @@ public interface IModelToView {
     String askForThing(String label, String value, ClientView.VerticalAlignment valign,
                        ClientView.HorizontalAlignment halign);
 	void updateThing(String newLabel);
+    void updateThing(String newLabel, ClientView.VerticalAlignment valign, ClientView.HorizontalAlignment halign);
     void updateState(GameState state);
     void endGame(PlayerInfo client);
     void clearMenus();
