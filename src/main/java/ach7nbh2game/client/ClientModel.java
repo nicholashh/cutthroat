@@ -15,6 +15,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static ach7nbh2game.client.ClientModel.Column.LOBBIES;
+import static ach7nbh2game.client.ClientModel.Column.PLAYERS;
+
 public class ClientModel {
 
     private IClientToServer server;
@@ -28,6 +31,7 @@ public class ClientModel {
     private Set<Thread> infoRequestThreads = new HashSet<>();
 
     private int numLobbies = 0;
+    private int numPlayers = 0;
 
     public ClientModel (IClientToServer serverIn, IModelToView viewIn) {
 
@@ -78,22 +82,55 @@ public class ClientModel {
     
     private boolean waitingForInput = false;
     private int myLobby;
+    public enum Column {LOBBIES, PLAYERS}
+    private Column focus = LOBBIES;
     private int selected = 0;
+    private int pselected = 0;
 
     public void selectUp() {
         Logger.Singleton.log(this, 0, "moved selection up");
-        if (selected > 0) {
-            selected--;
-            updateLobbyMenu();
+        switch(focus) {
+            case LOBBIES:
+                if (selected > 0) {
+                    selected--;
+                    updateLobbyMenu();
+                }
+                break;
+            case PLAYERS:
+                if (pselected > 0) {
+                    pselected--;
+                    updateLobbyMenu();
+                }
+                break;
         }
     }
 
     public void selectDown() {
         Logger.Singleton.log(this, 0, "moved selection down");
-        if (selected < numLobbies) {
-            selected++;
-            updateLobbyMenu();
+        switch(focus) {
+            case LOBBIES:
+                if (selected < numLobbies-1) {
+                    selected++;
+                    updateLobbyMenu();
+                }
+                break;
+            case PLAYERS:
+                if (pselected < numPlayers-1) {
+                    pselected++;
+                    updateLobbyMenu();
+                }
+                break;
         }
+    }
+
+    public void selectLeft() {
+        focus = LOBBIES;
+        updateLobbyMenu();
+    }
+
+    public void selectRight() {
+        focus = PLAYERS;
+        updateLobbyMenu();
     }
 
     private Map<Integer, String> mlobbies = new HashMap<>();
@@ -127,8 +164,8 @@ public class ClientModel {
         } else {
 
             for (int i = 0; i < Constants.clientMapHeight - 2; i++) {
-                if (selected == i) {
-                    prompt += "*";
+                if (focus == LOBBIES && selected == i) {
+                        prompt += "*";
                 } else {
                     prompt += " ";
                 }
@@ -146,9 +183,15 @@ public class ClientModel {
                         prompt += " ";
                     }
                 }
-                prompt += "| ";
+                prompt += "|";
                 Object[] pInL = mlobbyToPlayers.get(lobbyIDs[selected]).toArray();
+                numPlayers = pInL.length;
                 if (pInL.length > 0 && i < pInL.length) {
+                    if (focus == PLAYERS && pselected == i) {
+                        prompt += "*";
+                    } else {
+                        prompt += " ";
+                    }
                     for (int p = 0; p < Constants.clientMapWidth / 2 - 2; p++) {
                         if (p < mplayers.get(pInL[i]).length()) {
                             prompt += mplayers.get(pInL[i]).toCharArray()[p];
@@ -205,7 +248,7 @@ public class ClientModel {
             } else {
 
                 for (int i = 0; i < Constants.clientMapHeight-2; i++) {
-                    if (selected == i) {
+                    if (focus == LOBBIES && selected == i) {
                         prompt += "*";
                     } else {
                         prompt += " ";
@@ -224,9 +267,15 @@ public class ClientModel {
                             prompt += " ";
                         }
                     }
-                    prompt += "| ";
+                    prompt += "|";
                     Object[] pInL = lobbyToPlayers.get(lobbyIDs[selected]).toArray();
+                    numPlayers = pInL.length;
                     if (pInL.length > 0 && i < pInL.length) {
+                        if (focus == PLAYERS && pselected == i) {
+                            prompt += "*";
+                        } else {
+                            prompt += " ";
+                        }
                         for (int p = 0; p < Constants.clientMapWidth/2-2; p++) {
                             if (p < players.get(pInL[i]).length()) {
                                 prompt += players.get(pInL[i]).toCharArray()[p];

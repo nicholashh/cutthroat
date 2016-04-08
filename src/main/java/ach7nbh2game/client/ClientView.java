@@ -465,12 +465,18 @@ public class ClientView {
 							case moveUp:
 								model.selectUp();
 								window.repaint();
-								Logger.Singleton.log(this, 0, "repainted up");
 								break;
 							case moveDown:
 								model.selectDown();
 								window.repaint();
-								Logger.Singleton.log(this, 0, "repainted down");
+								break;
+							case moveLeft:
+								model.selectLeft();
+								window.repaint();
+								break;
+							case moveRight:
+								model.selectRight();
+								window.repaint();
 								break;
                 		}
 

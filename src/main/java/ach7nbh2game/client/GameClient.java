@@ -58,6 +58,14 @@ public class GameClient {
                 model.selectDown();
             }
 
+            public void selectLeft() {
+                model.selectLeft();
+            }
+
+            public void selectRight() {
+                model.selectRight();
+            }
+
         });
 
         model = new ClientModel(new IClientToServer () {
