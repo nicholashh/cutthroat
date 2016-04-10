@@ -25,10 +25,14 @@ public class ClientView {
     private final int moveDown = BlackenKeys.KEY_DOWN;
     private final int moveRight = BlackenKeys.KEY_RIGHT;
 
-    private final int actionUp = 'w';
-    private final int actionLeft = 'a';
-    private final int actionDown = 's';
-    private final int actionRight = 'd';
+	private final int actionUp1 = 'w';
+	private final int actionUp2 = 'W';
+	private final int actionLeft1 = 'a';
+	private final int actionLeft2 = 'A';
+	private final int actionDown1 = 's';
+	private final int actionDown2 = 'S';
+	private final int actionRight1 = 'd';
+	private final int actionRight2 = 'D';
 
     private final int selectGun = '1';
     private final int selectPickaxe = '2';
@@ -517,7 +521,8 @@ public class ClientView {
 
                 	// using a selected tool
 
-                	case actionUp:
+					case actionUp1:
+					case actionUp2:
                 		switch (tool) {
                 		case GUN:
                 			action.setAction(Action.SHOOT_GUN);
@@ -532,7 +537,8 @@ public class ClientView {
                 		action.setDirection(Direction.UP);
                 		model.performAction(action);
                 		break;
-                	case actionLeft:
+					case actionLeft1:
+					case actionLeft2:
                 		switch (tool) {
                 		case GUN:
                 			action.setAction(Action.SHOOT_GUN);
@@ -547,7 +553,8 @@ public class ClientView {
                 		action.setDirection(Direction.LEFT);
                 		model.performAction(action);
                 		break;
-                	case actionDown:
+					case actionDown1:
+					case actionDown2:
                 		switch (tool) {
                 		case GUN:
                 			action.setAction(Action.SHOOT_GUN);
@@ -562,7 +569,8 @@ public class ClientView {
                 		action.setDirection(Direction.DOWN);
                 		model.performAction(action);
                 		break;
-                	case actionRight:
+					case actionRight1:
+					case actionRight2:
                 		switch (tool) {
                 		case GUN:
                 			action.setAction(Action.SHOOT_GUN);
