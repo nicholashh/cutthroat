@@ -34,8 +34,8 @@ public class ClientView {
 	private final int actionRight1 = 'd';
 	private final int actionRight2 = 'D';
 
-    private final int selectGun = '1';
-    private final int selectPickaxe = '2';
+	private final int selectPickaxe = '1';
+    private final int selectGun = '2';
     private final int selectRocket = '3';
 
     private PlayerState myState = null;
@@ -60,7 +60,7 @@ public class ClientView {
     private State state = null;
 
     // tool to use for actions
-    private Tool tool = Tool.GUN;
+    private Tool tool = Tool.PICKAXE;
 
     public ClientView (IViewToModel modelIn) {
 
@@ -181,17 +181,7 @@ public class ClientView {
 
 		String bottomPrompt = "";
 
-		bottomPrompt += selectedGun();
-		switch(myState.getGunDmg()) {
-			case Constants.gun1:
-				bottomPrompt += "1)";
-				break;
-			case Constants.gun2:
-				bottomPrompt += "2)";
-		}
-
-        bottomPrompt += ":"+myState.getAmmo()+" ";
-
+		// pickaxe
 		bottomPrompt += selectedPick();
 		switch(myState.getPickaxeDmg()) {
 			case Constants.pickaxe1:
@@ -202,19 +192,22 @@ public class ClientView {
 				break;
 			case Constants.pickaxe3:
 				bottomPrompt += "3)";
-				break;
-		}
+				break; }
 		bottomPrompt += ":\u221E ";
 
+		// gun
+		bottomPrompt += selectedGun();
+		switch(myState.getGunDmg()) {
+			case Constants.gun1:
+				bottomPrompt += "1)";
+				break;
+			case Constants.gun2:
+				bottomPrompt += "2)"; }
+        bottomPrompt += ":"+myState.getAmmo()+" ";
+
+		// rocket
         bottomPrompt += selectedRocket();
         bottomPrompt += myState.getRocketAmmo();
-
-		//bottomPrompt += " Bullet(";
-		//switch(myState.getBulletDmg()) {
-		//	case Constants.bullet1:
-		//		bottomPrompt += "1) ";
-		//		break;
-		//}
 
 		showPrompt(bottomPrompt, Component.BottomPanel, VerticalAlignment.TOP, HorizontalAlignment.CENTER);
 
