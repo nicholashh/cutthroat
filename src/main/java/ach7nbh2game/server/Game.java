@@ -1,6 +1,7 @@
 package ach7nbh2game.server;
 
 import ach7nbh2game.main.Constants;
+import ach7nbh2game.main.Constants.Item;
 import ach7nbh2game.main.Constants.ServerToClientSound;
 import ach7nbh2game.network.packets.GameState;
 import ach7nbh2game.network.packets.PlayerObservableState;
@@ -8,6 +9,7 @@ import ach7nbh2game.server.map.AGameActor;
 import ach7nbh2game.server.map.GameMap;
 import ach7nbh2game.server.map.components.Client;
 import ach7nbh2game.server.map.components.Ground;
+import ach7nbh2game.server.map.components.Wall;
 import ach7nbh2game.util.Logger;
 import ach7nbh2game.util.id.ClientID;
 import ach7nbh2game.util.id.Coordinate;
@@ -258,6 +260,64 @@ public abstract class Game extends AGameActor {
             // TODO
         }
 
+    }
+
+    private int numRespawns = 0;
+
+    public void playerRespawn () {
+        if (++numRespawns % players.size() == 0) {
+            makeRandomCavern();
+        }
+    }
+
+    private void makeRandomCavern () {
+        GameMap map = getMap();
+        int numTries = 0;
+        Coordinate place;
+        while (true) {
+            place = map.getRandomLocationWithA(Ground.class);
+            boolean allGround = true;
+            for (int i = -2; i <= 2; i++) {
+                for (int j = -2; j <= 2; j++) {
+                    if (!(map.get(place.y + i, place.x + j) instanceof Ground)) {
+                        allGround = false;
+                    }
+                }
+            }
+            if (allGround) {
+                break;
+            } else if (++numTries > 100) {
+                return;
+            }
+        }
+        Random rand = new Random();
+        for (int i = -2; i <= 2; i++) {
+            for (int j = -2; j <= 2; j++) {
+                double randVal = rand.nextDouble();
+                List<Item> items = new ArrayList<>();
+                if (Math.abs(i) == 2 || Math.abs(j) == 2) {
+                    // add nothing
+                } else if (i == 0 && j == 0) {
+                    if (randVal < 0.33) {
+                        items.add(Item.GUN2);
+                    } else if (randVal < 0.66) {
+                        items.add(Item.PICK2);
+                    } else {
+                        items.add(Item.PICK3);
+                    }
+                } else {
+                    if (randVal < 0.33) {
+                        items.add(Item.BULLET1);
+                    } else if (randVal < 0.66) {
+                        items.add(Item.HEALTH);
+                    } else {
+                        items.add(Item.ROCKET);
+                    }
+                }
+                Wall newWall = new Wall(items);
+                newWall.placeOnMap(map, place.x + j, place.y + i);
+            }
+        }
     }
 
     @Override

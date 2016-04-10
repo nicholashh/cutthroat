@@ -42,12 +42,16 @@ public class Wall extends AMapComponent {
 
         this();
 
-        Logger.Singleton.log(this, 0, "constructed with items = " + items);
+        if (itemsIn.size() > 0) {
 
-        items.clear();
-        items.addAll(itemsIn);
+            Logger.Singleton.log(this, 0, "constructed with items = " + items);
 
-        health = 0;
+            items.clear();
+            items.addAll(itemsIn);
+
+            health = 0;
+
+        }
 
     }
 
