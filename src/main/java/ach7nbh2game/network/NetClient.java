@@ -147,6 +147,13 @@ public class NetClient {
         client.sendTCP(actMsg);
     }
 
+    public void playerReady(boolean value) {
+        ReadyMessage msg = new ReadyMessage();
+        msg.uname = name;
+        msg.value = value;
+        client.sendTCP(msg);
+    }
+
     @Override
     public String toString () {
         return "NetClient";

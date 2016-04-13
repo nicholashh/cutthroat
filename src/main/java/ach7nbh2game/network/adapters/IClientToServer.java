@@ -43,4 +43,6 @@ public interface IClientToServer {
 
     void connectTo(int clientID, String host, PlayerInfo info) throws IOException;
 
+    void playerReady(int clientID, boolean value);
+
 }

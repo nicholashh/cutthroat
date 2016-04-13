@@ -8,6 +8,7 @@ import ach7nbh2game.server.map.components.Client;
 import ach7nbh2game.util.id.ClientID;
 import ach7nbh2game.util.id.GameID;
 import ach7nbh2game.util.Logger;
+import ach7nbh2game.util.id.Pair;
 
 import java.util.*;
 
@@ -133,12 +134,15 @@ public class ServerModel {
 
     }
 
-    private Map<Integer, String> makePlayerToNameMap () {
+    private Map<Integer, Pair<String, Boolean>> makePlayerToNameMap () {
 
-        Map<Integer, String> toReturn = new HashMap<Integer, String>();
+        Map<Integer, Pair<String, Boolean>> toReturn = new HashMap<>();
 
         for (Client client : clients.values()) {
-            toReturn.put(client.getID().value, client.getName());
+            Pair<String, Boolean> inner = new Pair<>();
+            inner.first = client.getName();
+            inner.second = client.getReady();
+            toReturn.put(client.getID().value, inner);
         }
 
         return toReturn;
@@ -196,6 +200,23 @@ public class ServerModel {
             // TODO: this client has never connected before
         }
 
+    }
+
+    public void playerReady(int clientID, boolean value) {
+        if (value) {
+            clients.get(clientID).makeReady();
+            boolean start = true;
+            for (Client c : clients.get(clientID).getGame().getPlayers()) {
+                if (!c.getReady()) {
+                    start = false;
+                }
+            }
+            if (start) {
+                startGame(clients.get(clientID).getID());
+            }
+        } else {
+            clients.get(clientID).makeUnready();
+        }
     }
 
 }

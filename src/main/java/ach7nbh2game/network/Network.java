@@ -3,6 +3,7 @@ package ach7nbh2game.network;
 import ach7nbh2game.main.Constants;
 import ach7nbh2game.network.packets.*;
 import ach7nbh2game.main.Constants.*;
+import ach7nbh2game.util.id.Pair;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
 
@@ -31,6 +32,8 @@ public class Network {
         kryo.register(PlayerObservableState.class, 3392);
         kryo.register(Constants.ServerToClientSound.class, 3394);
         kryo.register(Constants.Item.class, 3395);
+        kryo.register(Boolean.class, 3397);
+        kryo.register(Pair.class, 3398);
 
         kryo.register(RegisterMessage.class, 3370);
         kryo.register(TextMessage.class, 3371);
@@ -44,6 +47,7 @@ public class Network {
         kryo.register(LobbyList.class, 3379);
         kryo.register(JoinLobby.class, 3380);
         kryo.register(EndGame.class, 3393);
+        kryo.register(ReadyMessage.class, 3396);
     }
 
     static public class RegisterMessage {
@@ -85,7 +89,7 @@ public class Network {
 
     static public class LobbyList {
         public Map<Integer, String> lobbies;
-        public Map<Integer, String> players;
+        public Map<Integer, Pair<String, Boolean>> players;
         public Map<Integer, Set<Integer>> lobbyToPlayers;
     }
 
@@ -95,5 +99,10 @@ public class Network {
 
     static public class EndGame {
         public PlayerInfo client;
+    }
+
+    static public class ReadyMessage {
+        public String uname;
+        public boolean value;
     }
 }

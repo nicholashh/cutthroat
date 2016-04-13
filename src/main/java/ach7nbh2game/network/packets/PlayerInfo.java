@@ -1,7 +1,5 @@
 package ach7nbh2game.network.packets;
 
-import ach7nbh2game.main.Constants;
-
 public class PlayerInfo {
 
     private String username;
@@ -32,5 +30,4 @@ public class PlayerInfo {
     public int getID () {
         return id;
     }
-
 }

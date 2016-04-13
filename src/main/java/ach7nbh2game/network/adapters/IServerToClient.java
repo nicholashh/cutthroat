@@ -2,6 +2,7 @@ package ach7nbh2game.network.adapters;
 
 import ach7nbh2game.network.packets.GameState;
 import ach7nbh2game.network.packets.PlayerInfo;
+import ach7nbh2game.util.id.Pair;
 
 import java.util.Map;
 import java.util.Set;
@@ -24,7 +25,7 @@ public interface IServerToClient {
      */
     void announceLobbies (int clientID,
             Map<Integer, String> lobbies,
-            Map<Integer, String> players,
+            Map<Integer, Pair<String, Boolean>> players,
             Map<Integer, Set<Integer>> lobbyToPlayers);
 
 }

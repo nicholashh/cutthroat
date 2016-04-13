@@ -8,6 +8,7 @@ import ach7nbh2game.network.packets.GameState;
 import ach7nbh2game.network.packets.PlayerInfo;
 import ach7nbh2game.util.Logger;
 import ach7nbh2game.util.Utility;
+import ach7nbh2game.util.id.Pair;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -29,6 +30,11 @@ public class ClientModel {
     private boolean inGame = false; // TODO state design pattern
 
     private Set<Thread> infoRequestThreads = new HashSet<>();
+
+    private Map<Integer, String> mlobbies = new HashMap<>();
+    private Map<Integer, Pair<String, Boolean>> mplayers = new HashMap<>();
+    private Map<Integer, Set<Integer>> mlobbyToPlayers = new HashMap<>();
+    private Object[] pInL = new Object[]{};
 
     private int numLobbies = 0;
     private int numPlayers = 0;
@@ -133,10 +139,6 @@ public class ClientModel {
         updateLobbyMenu();
     }
 
-    private Map<Integer, String> mlobbies = new HashMap<>();
-    private Map<Integer, String> mplayers = new HashMap<>();
-    private Map<Integer, Set<Integer>> mlobbyToPlayers = new HashMap<>();
-
     private void updateLobbyMenu() {
         Object[] lobbyIDs = mlobbies.keySet().toArray();
         numLobbies = lobbyIDs.length;
@@ -184,7 +186,7 @@ public class ClientModel {
                     }
                 }
                 prompt += "|";
-                Object[] pInL = mlobbyToPlayers.get(lobbyIDs[selected]).toArray();
+                pInL = mlobbyToPlayers.get(lobbyIDs[selected]).toArray();
                 numPlayers = pInL.length;
                 if (pInL.length > 0 && i < pInL.length) {
                     if (focus == PLAYERS && pselected == i) {
@@ -192,10 +194,13 @@ public class ClientModel {
                     } else {
                         prompt += " ";
                     }
-                    for (int p = 0; p < Constants.clientMapWidth / 2 - 2; p++) {
-                        if (p < mplayers.get(pInL[i]).length()) {
-                            prompt += mplayers.get(pInL[i]).toCharArray()[p];
+                    for (int p = 0; p < Constants.clientMapWidth / 2 - 2-5; p++) {
+                        if (p < mplayers.get(pInL[i]).first.length()) {
+                            prompt += mplayers.get(pInL[i]).first.toCharArray()[p];
                         }
+                    }
+                    if (mplayers.get(pInL[i]).second) {
+                        prompt += "READY";
                     }
                 }
                 prompt += "\n";
@@ -208,7 +213,7 @@ public class ClientModel {
 
     public void updateLobbyList (
             final Map<Integer, String> lobbies,
-            final Map<Integer, String> players,
+            final Map<Integer, Pair<String, Boolean>> players,
             final Map<Integer, Set<Integer>> lobbyToPlayers) {
 
         Logger.Singleton.log(this, 0, "updateLobbyList:");
@@ -268,7 +273,7 @@ public class ClientModel {
                         }
                     }
                     prompt += "|";
-                    Object[] pInL = lobbyToPlayers.get(lobbyIDs[selected]).toArray();
+                    pInL = lobbyToPlayers.get(lobbyIDs[selected]).toArray();
                     numPlayers = pInL.length;
                     if (pInL.length > 0 && i < pInL.length) {
                         if (focus == PLAYERS && pselected == i) {
@@ -276,10 +281,13 @@ public class ClientModel {
                         } else {
                             prompt += " ";
                         }
-                        for (int p = 0; p < Constants.clientMapWidth/2-2; p++) {
-                            if (p < players.get(pInL[i]).length()) {
-                                prompt += players.get(pInL[i]).toCharArray()[p];
+                        for (int p = 0; p < Constants.clientMapWidth/2-2-5; p++) {
+                            if (p < players.get(pInL[i]).first.length()) {
+                                prompt += players.get(pInL[i]).first.toCharArray()[p];
                             }
+                        }
+                        if (players.get(pInL[i]).second) {
+                            prompt += "READY";
                         }
                     }
                     prompt += "\n";
@@ -329,45 +337,60 @@ public class ClientModel {
 //                            Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: requesting lobbies...");
 //
 //                            server.requestLobbies(playerInfo.getID());
-                            if (!lobbies.isEmpty()) {
-                                if (myLobby == (int)lobbyIDs[selected]) {
-                                    server.startGame(myLobby);
-                                } else {
-                                    server.joinLobby(playerInfo.getID(), (int)lobbyIDs[selected]);
-                                    myLobby = (int)lobbyIDs[selected];
-                                }
-                            } else {
-                                server.requestLobbies((playerInfo.getID()));
+                            switch(focus) {
+                                case LOBBIES:
+                                    if (!lobbies.isEmpty()) {
+                                        if (myLobby == (int)lobbyIDs[selected]) {
+                                            //server.startGame(myLobby);
+                                        } else {
+                                            server.joinLobby(playerInfo.getID(), (int)lobbyIDs[selected]);
+                                            myLobby = (int)lobbyIDs[selected];
+                                        }
+                                    } else {
+                                        server.requestLobbies(playerInfo.getID());
+                                    }
+                                    break;
+                                case PLAYERS:
+                                    if (pInL.length != 0) {
+                                        if (players.get(pInL[pselected]).first.contentEquals(
+                                                playerInfo.getUsername())) {
+                                            if (!players.get(playerInfo.getUsername()).second) {
+                                                server.playerReady(playerInfo.getID(), true);
+                                            } else {
+                                                server.playerReady(playerInfo.getID(), false);
+                                            }
+                                        }
+                                    }
                             }
 
                         } else {
 
                             if (Utility.isInteger(action)) {
 
-                                int smallInt = Integer.parseInt(action);
-                                if (smallIntToLobbyID.containsKey(smallInt)) {
-                                    int lobbyID = smallIntToLobbyID.get(smallInt);
-
-                                    if (myLobby == lobbyID) {
-
-                                        Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: starting game " + lobbyID + "...");
-
-                                        server.startGame(lobbyID);
-
-                                    } else {
-
-                                        Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: joining lobby " + lobbyID + "...");
-                                        Logger.Singleton.log(ClientModel.this, 1, "myLobby = " + myLobby);
-
-                                        server.joinLobby(playerInfo.getID(), lobbyID);
-
-                                    }
-
-                                } else {
-
-                                    server.requestLobbies(playerInfo.getID());
-
-                                }
+//                                int smallInt = Integer.parseInt(action);
+//                                if (smallIntToLobbyID.containsKey(smallInt)) {
+//                                    int lobbyID = smallIntToLobbyID.get(smallInt);
+//
+//                                    if (myLobby == lobbyID) {
+//
+//                                        Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: starting game " + lobbyID + "...");
+//
+//                                        server.startGame(lobbyID);
+//
+//                                    } else {
+//
+//                                        Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: joining lobby " + lobbyID + "...");
+//                                        Logger.Singleton.log(ClientModel.this, 1, "myLobby = " + myLobby);
+//
+//                                        server.joinLobby(playerInfo.getID(), lobbyID);
+//
+//                                    }
+//
+//                                } else {
+//
+//                                    server.requestLobbies(playerInfo.getID());
+//
+//                                }
 
                             } else if (Utility.isAlphanumeric(action)) {
 

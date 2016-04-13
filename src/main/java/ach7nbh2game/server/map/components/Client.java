@@ -24,6 +24,7 @@ public abstract class Client extends AMapComponent {
     private final ClientID id;
     private final PlayerInfo info;
     private PlayerState state = new PlayerState();
+    private boolean ready = false;
 
     // client objects know how to communicate with the clients they represent
     public abstract void enterGame ();
@@ -47,6 +48,18 @@ public abstract class Client extends AMapComponent {
 
     public PlayerInfo getInfo () {
         return info;
+    }
+
+    public void makeReady() {
+        ready = true;
+    }
+
+    public void makeUnready() {
+        ready = false;
+    }
+
+    public boolean getReady() {
+        return ready;
     }
 
     public int getHealth () {

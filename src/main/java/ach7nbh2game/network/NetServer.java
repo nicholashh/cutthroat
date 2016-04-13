@@ -7,6 +7,7 @@ import ach7nbh2game.network.packets.ClientAction;
 import ach7nbh2game.network.packets.GameState;
 import ach7nbh2game.network.packets.PlayerInfo;
 import ach7nbh2game.util.Logger;
+import ach7nbh2game.util.id.Pair;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
@@ -133,6 +134,15 @@ public class NetServer {
                     adapter.joinLobby(connection.getID(), msg.lobbyID);
                     return;
                 }
+
+                if (object instanceof ReadyMessage) {
+                    if (connection.name == null) {
+                        return;
+                    }
+                    ReadyMessage msg = (ReadyMessage) object;
+                    adapter.playerReady(connection.getID(), msg.value);
+                    return;
+                }
             }
 
             public void disconnected (Connection c) {}
@@ -160,7 +170,7 @@ public class NetServer {
 
     public void announceLobbies(int clientID,
             Map<Integer, String> lobbies,
-            Map<Integer, String> players,
+            Map<Integer, Pair<String, Boolean>> players,
             Map<Integer, Set<Integer>> lobbyToPlayers) {
         Logger.Singleton.log(this, 0, "sending: LobbyList");
         LobbyList listMsg = new LobbyList();

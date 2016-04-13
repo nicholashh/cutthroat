@@ -8,6 +8,7 @@ import ach7nbh2game.network.packets.GameState;
 import ach7nbh2game.network.packets.PlayerInfo;
 import ach7nbh2game.util.id.ClientID;
 import ach7nbh2game.util.id.GameID;
+import ach7nbh2game.util.id.Pair;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -55,6 +56,10 @@ public class GameServer {
                 return true;
             }
 
+            public void playerReady(int clientID, boolean value) {
+                model.playerReady(clientID, value);
+            }
+
         });
 
         model = new ServerModel(new IServerToClient() {
@@ -72,7 +77,7 @@ public class GameServer {
             }
 
             public void announceLobbies(int clientID, Map<Integer, String> lobbies,
-                    Map<Integer, String> players, Map<Integer, Set<Integer>> lobbyToPlayers) {
+                    Map<Integer, Pair<String, Boolean>> players, Map<Integer, Set<Integer>> lobbyToPlayers) {
                 network.announceLobbies(clientID, lobbies, players, lobbyToPlayers);
             }
 
