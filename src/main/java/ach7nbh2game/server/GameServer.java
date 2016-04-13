@@ -57,7 +57,7 @@ public class GameServer {
             }
 
             public void playerReady(int clientID, boolean value) {
-                model.playerReady(clientID, value);
+                model.playerReady(new ClientID(clientID), value);
             }
 
         });

@@ -194,9 +194,11 @@ public class ClientModel {
                     } else {
                         prompt += " ";
                     }
-                    for (int p = 0; p < Constants.clientMapWidth / 2 - 2-5; p++) {
+                    for (int p = 0; p < Constants.clientMapWidth / 2-5; p++) {
                         if (p < mplayers.get(pInL[i]).first.length()) {
                             prompt += mplayers.get(pInL[i]).first.toCharArray()[p];
+                        } else {
+                            prompt += " ";
                         }
                     }
                     if (mplayers.get(pInL[i]).second) {
@@ -281,9 +283,11 @@ public class ClientModel {
                         } else {
                             prompt += " ";
                         }
-                        for (int p = 0; p < Constants.clientMapWidth/2-2-5; p++) {
+                        for (int p = 0; p < Constants.clientMapWidth/2-5; p++) {
                             if (p < players.get(pInL[i]).first.length()) {
                                 prompt += players.get(pInL[i]).first.toCharArray()[p];
+                            } else {
+                                prompt += " ";
                             }
                         }
                         if (players.get(pInL[i]).second) {
@@ -354,7 +358,7 @@ public class ClientModel {
                                     if (pInL.length != 0) {
                                         if (players.get(pInL[pselected]).first.contentEquals(
                                                 playerInfo.getUsername())) {
-                                            if (!players.get(playerInfo.getUsername()).second) {
+                                            if (!players.get(pInL[pselected]).second) {
                                                 server.playerReady(playerInfo.getID(), true);
                                             } else {
                                                 server.playerReady(playerInfo.getID(), false);
@@ -365,50 +369,20 @@ public class ClientModel {
 
                         } else {
 
-                            if (Utility.isInteger(action)) {
-
-//                                int smallInt = Integer.parseInt(action);
-//                                if (smallIntToLobbyID.containsKey(smallInt)) {
-//                                    int lobbyID = smallIntToLobbyID.get(smallInt);
-//
-//                                    if (myLobby == lobbyID) {
-//
-//                                        Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: starting game " + lobbyID + "...");
-//
-//                                        server.startGame(lobbyID);
-//
-//                                    } else {
-//
-//                                        Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: joining lobby " + lobbyID + "...");
-//                                        Logger.Singleton.log(ClientModel.this, 1, "myLobby = " + myLobby);
-//
-//                                        server.joinLobby(playerInfo.getID(), lobbyID);
-//
-//                                    }
-//
-//                                } else {
-//
-//                                    server.requestLobbies(playerInfo.getID());
-//
-//                                }
-
-                            } else if (Utility.isAlphanumeric(action)) {
+                            if (Utility.isAlphanumeric(action)) {
 
                                 Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: creating lobby " + action + "...");
 
                                 server.createNewLobby(playerInfo.getID(), action);
 
-                            } else {
-
-                                Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: invalid input. trying again...");
-
-                                updateLobbyList(lobbies, players, lobbyToPlayers);
-
-                                server.requestLobbies(playerInfo.getID());
-
                             }
 
                         }
+                        Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: invalid input. trying again...");
+
+                        updateLobbyList(lobbies, players, lobbyToPlayers);
+
+                        server.requestLobbies(playerInfo.getID());
 
                         waitingForInput = false;
 

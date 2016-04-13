@@ -202,7 +202,7 @@ public class ServerModel {
 
     }
 
-    public void playerReady(int clientID, boolean value) {
+    public void playerReady(ClientID clientID, boolean value) {
         if (value) {
             clients.get(clientID).makeReady();
             boolean start = true;
@@ -217,6 +217,7 @@ public class ServerModel {
         } else {
             clients.get(clientID).makeUnready();
         }
+        announceAllLobbies();
     }
 
 }
