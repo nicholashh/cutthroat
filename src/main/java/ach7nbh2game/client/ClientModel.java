@@ -139,6 +139,8 @@ public class ClientModel {
         updateLobbyMenu();
     }
 
+    final String PIPE = "\u2502";
+
     private void updateLobbyMenu() {
         Object[] lobbyIDs = mlobbies.keySet().toArray();
         numLobbies = lobbyIDs.length;
@@ -148,7 +150,7 @@ public class ClientModel {
         for (int i = 0; i < (Constants.clientMapWidth/2)-"lobbies".length()-1; i++) {
             prompt += " ";
         }
-        prompt += "|";
+        prompt += PIPE;
         prompt += "Players\n";
 
         //final Set<Integer> myLobbies = new HashSet<Integer>();
@@ -160,7 +162,7 @@ public class ClientModel {
                 for (int j = 0; j < Constants.clientMapWidth/2-1; j++) {
                     prompt += " ";
                 }
-                prompt += "|\n";
+                prompt += PIPE + "\n";
             }
 
         } else {
@@ -185,7 +187,7 @@ public class ClientModel {
                         prompt += " ";
                     }
                 }
-                prompt += "|";
+                prompt += PIPE;
                 pInL = mlobbyToPlayers.get(lobbyIDs[selected]).toArray();
                 numPlayers = pInL.length;
                 if (pInL.length > 0 && i < pInL.length) {
@@ -237,7 +239,7 @@ public class ClientModel {
             for (int i = 0; i < (Constants.clientMapWidth/2)-"lobbies".length()-1; i++) {
                 prompt += " ";
             }
-            prompt += "|";
+            prompt += PIPE;
             prompt += "Players\n";
 
             //final Set<Integer> myLobbies = new HashSet<Integer>();
@@ -249,7 +251,7 @@ public class ClientModel {
                     for (int j = 0; j < Constants.clientMapWidth/2-1; j++) {
                         prompt += " ";
                     }
-                    prompt += "|\n";
+                    prompt += PIPE + "\n";
                 }
 
             } else {
@@ -274,7 +276,7 @@ public class ClientModel {
                             prompt += " ";
                         }
                     }
-                    prompt += "|";
+                    prompt += PIPE;
                     pInL = lobbyToPlayers.get(lobbyIDs[selected]).toArray();
                     numPlayers = pInL.length;
                     if (pInL.length > 0 && i < pInL.length) {
