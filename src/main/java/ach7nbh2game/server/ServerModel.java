@@ -69,7 +69,7 @@ public class ServerModel {
 
     }
 
-    public void createNewGameLobby (String name) {
+    public void createNewGameLobby (ClientID clientID, String name) {
 
         Logger.Singleton.log(this, 0, "createNewGameLobby:");
         Logger.Singleton.log(this, 1, "name = " + name);
@@ -83,6 +83,7 @@ public class ServerModel {
         };
 
         games.put(id, newLobby);
+        joinLobby(clientID, id);
 
         newLobby.announceLobbies();
 

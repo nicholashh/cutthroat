@@ -28,7 +28,7 @@ public class GameServer {
         network = new NetServer(new IClientToServer () {
 
             public void createNewLobby(int clientID, String name) {
-                model.createNewGameLobby(name);
+                model.createNewGameLobby(new ClientID(clientID), name);
             }
 
             public void requestLobbies(int clientID) {

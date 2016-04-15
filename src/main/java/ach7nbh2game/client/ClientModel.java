@@ -84,7 +84,7 @@ public class ClientModel {
     }
     
     private boolean waitingForInput = false;
-    private int myLobby;
+    private Integer myLobby = null;
 //    public enum Column {LOBBIES, PLAYERS}
 //    private Column focus = LOBBIES;
     private int selected = 0;
@@ -93,8 +93,11 @@ public class ClientModel {
     public void selectUp() {
         Logger.Singleton.log(this, 0, "moved selection up");
         if (selected > 0) {
+            if (mplayers.get(playerInfo.getID()).second) {
+                server.playerReady(playerInfo.getID(), false);
+            }
             selected--;
-            myLobby = selected;
+            myLobby = (int)mlobbies.keySet().toArray()[selected];
             server.joinLobby(playerInfo.getID(), (int)mlobbies.keySet().toArray()[selected]);
             updateLobbyMenu();
         }
@@ -117,8 +120,11 @@ public class ClientModel {
     public void selectDown() {
         Logger.Singleton.log(this, 0, "moved selection down");
         if (selected < numLobbies-1) {
+            if (mplayers.get(playerInfo.getID()).second) {
+                server.playerReady(playerInfo.getID(), false);
+            }
             selected++;
-            myLobby = selected;
+            myLobby = (int)mlobbies.keySet().toArray()[selected];
             server.joinLobby(playerInfo.getID(), (int)mlobbies.keySet().toArray()[selected]);
             updateLobbyMenu();
         }
@@ -175,6 +181,10 @@ public class ClientModel {
             }
 
         } else {
+            if (myLobby == null) {
+                myLobby = (int)mlobbies.keySet().toArray()[selected];
+                server.joinLobby(playerInfo.getID(), (int)mlobbies.keySet().toArray()[selected]);
+            }
 
             for (int i = 0; i < Constants.clientMapHeight - 2; i++) {
                 if (selected == i) { // if (focus == LOBBIES && selected == i) {
@@ -269,6 +279,10 @@ public class ClientModel {
                 }
 
             } else {
+                if (myLobby == null) {
+                    myLobby = (int)mlobbies.keySet().toArray()[selected];
+                    server.joinLobby(playerInfo.getID(), (int)mlobbies.keySet().toArray()[selected]);
+                }
 
                 for (int i = 0; i < Constants.clientMapHeight-2; i++) {
                     if (selected == i) { // if (focus == LOBBIES && selected == i) {
@@ -397,7 +411,6 @@ public class ClientModel {
                                 Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: creating lobby " + action + "...");
 
                                 server.createNewLobby(playerInfo.getID(), action);
-
                             }
 
                         }
