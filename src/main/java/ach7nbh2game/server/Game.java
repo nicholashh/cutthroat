@@ -32,11 +32,14 @@ public abstract class Game extends AGameActor {
 
     private ArrayList<ServerToClientSound> sounds = new ArrayList<>();
 
+    private ServerModel host;
+
     public abstract void announceLobbies () ;
 
-    public Game (GameID idIn, String name) {
+    public Game (GameID idIn, String name, ServerModel server) {
         super(name);
         id = idIn;
+        host = server;
     }
 
     public GameID getID () {
@@ -128,6 +131,7 @@ public abstract class Game extends AGameActor {
             client.endGame(winner);
         for (Client client : players.values())
             client.gameHasEnded();
+        host.endGame(this);
     }
 
     public GameState fillGameStateInfo() {

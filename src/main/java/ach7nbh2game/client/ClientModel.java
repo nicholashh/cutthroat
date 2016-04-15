@@ -11,6 +11,7 @@ import ach7nbh2game.util.Utility;
 import ach7nbh2game.util.id.Pair;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -361,13 +362,14 @@ public class ClientModel {
 
                 Thread newThread = new Thread() {
                     public void run() {
+                        try {
 
-                        waitingForInput = true;
+                            waitingForInput = true;
 
-                        String action = view.askForThing(promptFinal, "", ClientView.VerticalAlignment.CENTER,
-                                ClientView.HorizontalAlignment.LEFT);
+                            String action = view.askForThing(promptFinal, "", ClientView.VerticalAlignment.CENTER,
+                                    ClientView.HorizontalAlignment.LEFT);
 
-                        if (action.equals("")) {
+                            if (action.equals("")) {
 
 //                            Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: requesting lobbies...");
 //
@@ -398,29 +400,32 @@ public class ClientModel {
 //                                        }
 //                                    }
 //                            }
-                            if (!players.get(playerInfo.getID()).second) {
-                                server.playerReady(playerInfo.getID(), true);
+                                if (!players.get(playerInfo.getID()).second) {
+                                    server.playerReady(playerInfo.getID(), true);
+                                } else {
+                                    server.playerReady(playerInfo.getID(), false);
+                                }
+
                             } else {
-                                server.playerReady(playerInfo.getID(), false);
+
+                                if (Utility.isAlphanumeric(action)) {
+
+                                    Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: creating lobby " + action + "...");
+
+                                    server.createNewLobby(playerInfo.getID(), action);
+                                }
+
                             }
+                            Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: invalid input. trying again...");
 
-                        } else {
+                            updateLobbyList(lobbies, players, lobbyToPlayers);
 
-                            if (Utility.isAlphanumeric(action)) {
+                            server.requestLobbies(playerInfo.getID());
 
-                                Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: creating lobby " + action + "...");
-
-                                server.createNewLobby(playerInfo.getID(), action);
-                            }
-
+                            waitingForInput = false;
+                        } catch (Exception e) {
+                            Thread.currentThread().interrupt();
                         }
-                        Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: invalid input. trying again...");
-
-                        updateLobbyList(lobbies, players, lobbyToPlayers);
-
-                        server.requestLobbies(playerInfo.getID());
-
-                        waitingForInput = false;
 
                     }
                 };
@@ -465,6 +470,7 @@ public class ClientModel {
         view.endGame(client);
         try {Thread.sleep(5000);} catch (InterruptedException e) {}
         view.clearMenus();
+        myLobby = null;
         server.requestLobbies(playerInfo.getID());
         SoundEffect.MENU_BGM.loop();
     }

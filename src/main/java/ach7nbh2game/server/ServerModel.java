@@ -76,7 +76,7 @@ public class ServerModel {
 
         GameID id = new GameID(rand.nextInt());
 
-        Game newLobby = new Game(id, name) {
+        Game newLobby = new Game(id, name, this) {
             // use this object's closure over the network object
             // to send updated lobby information to every client
             @Override public void announceLobbies () { announceAllLobbies(); }
@@ -87,6 +87,13 @@ public class ServerModel {
 
         newLobby.announceLobbies();
 
+    }
+
+    public void endGame(Game g) {
+        for (Client players : g.getPlayers()) {
+            players.makeUnready();
+        }
+        games.remove(g.getID());
     }
 
     private void announceAllLobbies () {
