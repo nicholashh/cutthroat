@@ -99,7 +99,16 @@ public abstract class Game extends AGameActor {
 
         startGameTimer();
 
+        // 30 * 60 = 1 minute
+        requestCallback(new Callback(30 * 60, -1, () -> {
+            for (int i = 0; i < numCavernSpawns; i++)
+                makeRandomCavern();
+            numCavernSpawns++;
+        }));
+
     }
+
+    private int numCavernSpawns = 1;
 
     private void updateAllPlayers () {
 
@@ -262,15 +271,10 @@ public abstract class Game extends AGameActor {
 
     }
 
-    private int numRespawns = 0;
-
-    public void playerRespawn () {
-        if (++numRespawns % players.size() == 0) {
-            makeRandomCavern();
-        }
-    }
-
     private void makeRandomCavern () {
+
+        Logger.Singleton.log(this, 0, "makeRandomCavern()");
+
         GameMap map = getMap();
         int numTries = 0;
         Coordinate place;
