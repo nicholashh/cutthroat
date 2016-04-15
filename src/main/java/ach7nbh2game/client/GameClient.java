@@ -59,13 +59,13 @@ public class GameClient {
                 model.selectDown();
             }
 
-            public void selectLeft() {
-                model.selectLeft();
-            }
+//            public void selectLeft() {
+//                model.selectLeft();
+//            }
 
-            public void selectRight() {
-                model.selectRight();
-            }
+//            public void selectRight() {
+//                model.selectRight();
+//            }
 
         });
 
@@ -145,6 +145,11 @@ public class GameClient {
 
             public void clearMenus() {
                 view.clearMenus();
+            }
+
+            public void showPrompt(String prompt, Window.Component component, ClientView.VerticalAlignment valign,
+                                   ClientView.HorizontalAlignment halign) {
+                view.showPrompt(prompt, component, valign, halign);
             }
 
         });

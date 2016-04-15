@@ -16,9 +16,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static ach7nbh2game.client.ClientModel.Column.LOBBIES;
-import static ach7nbh2game.client.ClientModel.Column.PLAYERS;
-
 public class ClientModel {
 
     private IClientToServer server;
@@ -88,56 +85,68 @@ public class ClientModel {
     
     private boolean waitingForInput = false;
     private int myLobby;
-    public enum Column {LOBBIES, PLAYERS}
-    private Column focus = LOBBIES;
+//    public enum Column {LOBBIES, PLAYERS}
+//    private Column focus = LOBBIES;
     private int selected = 0;
-    private int pselected = 0;
+//    private int pselected = 0;
 
     public void selectUp() {
         Logger.Singleton.log(this, 0, "moved selection up");
-        switch(focus) {
-            case LOBBIES:
-                if (selected > 0) {
-                    selected--;
-                    updateLobbyMenu();
-                }
-                break;
-            case PLAYERS:
-                if (pselected > 0) {
-                    pselected--;
-                    updateLobbyMenu();
-                }
-                break;
+        if (selected > 0) {
+            selected--;
+            myLobby = selected;
+            server.joinLobby(playerInfo.getID(), (int)mlobbies.keySet().toArray()[selected]);
+            updateLobbyMenu();
         }
+//        switch(focus) {
+//            case LOBBIES:
+//                if (selected > 0) {
+//                    selected--;
+//                    updateLobbyMenu();
+//                }
+//                break;
+//            case PLAYERS:
+//                if (pselected > 0) {
+//                    pselected--;
+//                    updateLobbyMenu();
+//                }
+//                break;
+//        }
     }
 
     public void selectDown() {
         Logger.Singleton.log(this, 0, "moved selection down");
-        switch(focus) {
-            case LOBBIES:
-                if (selected < numLobbies-1) {
-                    selected++;
-                    updateLobbyMenu();
-                }
-                break;
-            case PLAYERS:
-                if (pselected < numPlayers-1) {
-                    pselected++;
-                    updateLobbyMenu();
-                }
-                break;
+        if (selected < numLobbies-1) {
+            selected++;
+            myLobby = selected;
+            server.joinLobby(playerInfo.getID(), (int)mlobbies.keySet().toArray()[selected]);
+            updateLobbyMenu();
         }
+//        switch(focus) {
+//            case LOBBIES:
+//                if (selected < numLobbies-1) {
+//                    selected++;
+//                    updateLobbyMenu();
+//                }
+//                break;
+//            case PLAYERS:
+//                if (pselected < numPlayers-1) {
+//                    pselected++;
+//                    updateLobbyMenu();
+//                }
+//                break;
+//        }
     }
 
-    public void selectLeft() {
-        focus = LOBBIES;
-        updateLobbyMenu();
-    }
-
-    public void selectRight() {
-        focus = PLAYERS;
-        updateLobbyMenu();
-    }
+//    public void selectLeft() {
+//        focus = LOBBIES;
+//        updateLobbyMenu();
+//    }
+//
+//    public void selectRight() {
+//        focus = PLAYERS;
+//        updateLobbyMenu();
+//    }
 
     final String PIPE = "\u2502";
 
@@ -168,7 +177,7 @@ public class ClientModel {
         } else {
 
             for (int i = 0; i < Constants.clientMapHeight - 2; i++) {
-                if (focus == LOBBIES && selected == i) {
+                if (selected == i) { // if (focus == LOBBIES && selected == i) {
                         prompt += "*";
                 } else {
                     prompt += " ";
@@ -191,11 +200,12 @@ public class ClientModel {
                 pInL = mlobbyToPlayers.get(lobbyIDs[selected]).toArray();
                 numPlayers = pInL.length;
                 if (pInL.length > 0 && i < pInL.length) {
-                    if (focus == PLAYERS && pselected == i) {
-                        prompt += "*";
-                    } else {
-                        prompt += " ";
-                    }
+//                    if (focus == PLAYERS && pselected == i) {
+//                        prompt += "*";
+//                    } else {
+//                        prompt += " ";
+//                    }
+                    prompt += " ";
                     for (int p = 0; p < Constants.clientMapWidth / 2-5; p++) {
                         if (p < mplayers.get(pInL[i]).first.length()) {
                             prompt += mplayers.get(pInL[i]).first.toCharArray()[p];
@@ -230,6 +240,10 @@ public class ClientModel {
             mplayers = players;
             mlobbyToPlayers = lobbyToPlayers;
 
+            String instructions = "\u2191/\u2193: Select  Enter: READY";
+            view.showPrompt(instructions, Window.Component.BottomPanel, ClientView.VerticalAlignment.CENTER,
+                    ClientView.HorizontalAlignment.LEFT);
+
             // NORMAL BEHAVIOR
             Object[] lobbyIDs = lobbies.keySet().toArray();
             numLobbies = lobbyIDs.length;
@@ -257,7 +271,7 @@ public class ClientModel {
             } else {
 
                 for (int i = 0; i < Constants.clientMapHeight-2; i++) {
-                    if (focus == LOBBIES && selected == i) {
+                    if (selected == i) { // if (focus == LOBBIES && selected == i) {
                         prompt += "*";
                     } else {
                         prompt += " ";
@@ -280,11 +294,12 @@ public class ClientModel {
                     pInL = lobbyToPlayers.get(lobbyIDs[selected]).toArray();
                     numPlayers = pInL.length;
                     if (pInL.length > 0 && i < pInL.length) {
-                        if (focus == PLAYERS && pselected == i) {
-                            prompt += "*";
-                        } else {
-                            prompt += " ";
-                        }
+//                        if (focus == PLAYERS && pselected == i) {
+//                            prompt += "*";
+//                        } else {
+//                            prompt += " ";
+//                        }
+                        prompt += " ";
                         for (int p = 0; p < Constants.clientMapWidth/2-5; p++) {
                             if (p < players.get(pInL[i]).first.length()) {
                                 prompt += players.get(pInL[i]).first.toCharArray()[p];
@@ -343,30 +358,36 @@ public class ClientModel {
 //                            Logger.Singleton.log(ClientModel.this, 0, "updateLobbyList: requesting lobbies...");
 //
 //                            server.requestLobbies(playerInfo.getID());
-                            switch(focus) {
-                                case LOBBIES:
-                                    if (!lobbies.isEmpty()) {
-                                        if (myLobby == (int)lobbyIDs[selected]) {
-                                            //server.startGame(myLobby);
-                                        } else {
-                                            server.joinLobby(playerInfo.getID(), (int)lobbyIDs[selected]);
-                                            myLobby = (int)lobbyIDs[selected];
-                                        }
-                                    } else {
-                                        server.requestLobbies(playerInfo.getID());
-                                    }
-                                    break;
-                                case PLAYERS:
-                                    if (pInL.length != 0) {
-                                        if (players.get(pInL[pselected]).first.contentEquals(
-                                                playerInfo.getUsername())) {
-                                            if (!players.get(pInL[pselected]).second) {
-                                                server.playerReady(playerInfo.getID(), true);
-                                            } else {
-                                                server.playerReady(playerInfo.getID(), false);
-                                            }
-                                        }
-                                    }
+
+//                            switch(focus) {
+//                                case LOBBIES:
+//                                    if (!lobbies.isEmpty()) {
+//                                        if (myLobby == (int)lobbyIDs[selected]) {
+//                                            //server.startGame(myLobby);
+//                                        } else {
+//                                            server.joinLobby(playerInfo.getID(), (int)lobbyIDs[selected]);
+//                                            myLobby = (int)lobbyIDs[selected];
+//                                        }
+//                                    } else {
+//                                        server.requestLobbies(playerInfo.getID());
+//                                    }
+//                                    break;
+//                                case PLAYERS:
+//                                    if (pInL.length != 0) {
+//                                        if (players.get(pInL[pselected]).first.contentEquals(
+//                                                playerInfo.getUsername())) {
+//                                            if (!players.get(pInL[pselected]).second) {
+//                                                server.playerReady(playerInfo.getID(), true);
+//                                            } else {
+//                                                server.playerReady(playerInfo.getID(), false);
+//                                            }
+//                                        }
+//                                    }
+//                            }
+                            if (!players.get(playerInfo.getID()).second) {
+                                server.playerReady(playerInfo.getID(), true);
+                            } else {
+                                server.playerReady(playerInfo.getID(), false);
                             }
 
                         } else {

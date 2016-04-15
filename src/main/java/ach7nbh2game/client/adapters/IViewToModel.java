@@ -6,6 +6,6 @@ public interface IViewToModel {
     void performAction (ClientAction actionIn);
     void selectUp();
     void selectDown();
-    void selectLeft();
-    void selectRight();
+//    void selectLeft();
+//    void selectRight();
 }

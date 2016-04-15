@@ -52,8 +52,9 @@ public class ClientView {
 			" \\______  /____/ |__|  |__| |___|  /__|   \\____(____  /__|  \n" +
 			"        \\/                       \\/                 \\/      \n\nVersion 0.7\n\n";
     private final String usernamePrompt = welcomeMessage + "Username: ";
-    private final String serverPrompt = "\n\nServer Hostname: ";
-	private final String serverPromptFailed = "Couldn't find the specified server.\n\nServer Hostname: ";
+    private final String serverPrompt = welcomeMessage + "Server Hostname: ";
+	private final String serverPromptFailed = welcomeMessage + "Couldn't find the specified server.\n\nServer " +
+			"Hostname: ";
 	private boolean userInputDone = false;
     private String userInput = "";
 
@@ -255,14 +256,20 @@ public class ClientView {
 	}
 
 	public String askForUsername () {
+		String instructions = "Enter: Submit input";
+		showPrompt(instructions, Component.BottomPanel, VerticalAlignment.CENTER, HorizontalAlignment.LEFT);
 		return askForThing(usernamePrompt, "");
 	}
 	
 	public String askForServerIP () {
+		String instructions = "Enter: Submit input";
+		showPrompt(instructions, Component.BottomPanel, VerticalAlignment.CENTER, HorizontalAlignment.LEFT);
 		return askForThing(serverPrompt, Constants.defaultHostname);
 	}
 
 	public String askForServerIPFailed() {
+		String instructions = "Enter: Submit input";
+		showPrompt(instructions, Component.BottomPanel, VerticalAlignment.CENTER, HorizontalAlignment.LEFT);
 		return askForThing(serverPromptFailed, Constants.defaultHostname);
 	}
 	
@@ -333,7 +340,7 @@ public class ClientView {
 		showPrompt(prompt, component, VerticalAlignment.CENTER, HorizontalAlignment.CENTER);
 	}
 
-	private void showPrompt (final String prompt, final Component component,
+	public void showPrompt (final String prompt, final Component component,
 			final VerticalAlignment verticalAlignment,
 			final HorizontalAlignment horizontalAlignment) {
 
@@ -467,14 +474,14 @@ public class ClientView {
 								model.selectDown();
 								window.repaint();
 								break;
-							case moveLeft:
-								model.selectLeft();
-								window.repaint();
-								break;
-							case moveRight:
-								model.selectRight();
-								window.repaint();
-								break;
+//							case moveLeft:
+//								model.selectLeft();
+//								window.repaint();
+//								break;
+//							case moveRight:
+//								model.selectRight();
+//								window.repaint();
+//								break;
                 		}
 
                 		updatePrompt.run();
