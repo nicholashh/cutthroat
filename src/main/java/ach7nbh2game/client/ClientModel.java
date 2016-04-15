@@ -461,6 +461,7 @@ public class ClientModel {
 
     public void endGame(PlayerInfo client) {
         inGame = false;
+        waitingForInput = false;
         view.endGame(client);
         try {Thread.sleep(5000);} catch (InterruptedException e) {}
         view.clearMenus();
