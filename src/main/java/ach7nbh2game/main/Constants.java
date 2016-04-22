@@ -74,7 +74,7 @@ public class Constants {
         TR_APPEAR}
 
     // game mechanics tuning parameters
-    public static final int killsToWin = 2;
+    public static final int killsToWin = 10;
     public static double bountyPercent = 0.15;
     public static final int initAmmo = 10;
     public static final int initRocketAmmo = 1;
