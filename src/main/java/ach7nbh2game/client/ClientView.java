@@ -135,6 +135,9 @@ public class ClientView {
                 case ROCKET_EXPLODE:
                     SoundEffect.ROCKET_EXPLODE.play();
                     break;
+				case TR_APPEAR:
+					SoundEffect.TR_APPEAR.play();
+					break;
 			}
 		}
 	}
@@ -256,19 +259,19 @@ public class ClientView {
 	}
 
 	public String askForUsername () {
-		String instructions = "Enter: Submit input";
+		String instructions = "Enter: Submit username";
 		showPrompt(instructions, Component.BottomPanel, VerticalAlignment.CENTER, HorizontalAlignment.LEFT);
 		return askForThing(usernamePrompt, "");
 	}
 	
 	public String askForServerIP () {
-		String instructions = "Enter: Submit input";
+		String instructions = "Enter: Submit server hostname";
 		showPrompt(instructions, Component.BottomPanel, VerticalAlignment.CENTER, HorizontalAlignment.LEFT);
 		return askForThing(serverPrompt, Constants.defaultHostname);
 	}
 
 	public String askForServerIPFailed() {
-		String instructions = "Enter: Submit input";
+		String instructions = "Enter: Submit server hostname";
 		showPrompt(instructions, Component.BottomPanel, VerticalAlignment.CENTER, HorizontalAlignment.LEFT);
 		return askForThing(serverPromptFailed, Constants.defaultHostname);
 	}

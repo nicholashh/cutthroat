@@ -161,6 +161,17 @@ public class ClientModel {
         Object[] lobbyIDs = mlobbies.keySet().toArray();
         numLobbies = lobbyIDs.length;
 
+        String instructions;
+        if (mplayers.get(playerInfo.getID()).second) {
+            instructions = "\u2191/\u2193: Select  Enter: UNREADY";
+            view.showPrompt(instructions, Window.Component.BottomPanel, ClientView.VerticalAlignment.CENTER,
+                    ClientView.HorizontalAlignment.LEFT);
+        } else {
+            instructions = "\u2191/\u2193: Select  Enter: READY";
+            view.showPrompt(instructions, Window.Component.BottomPanel, ClientView.VerticalAlignment.CENTER,
+                    ClientView.HorizontalAlignment.LEFT);
+        }
+
         String prompt = "";
         prompt += "Lobbies";
         for (int i = 0; i < (Constants.clientMapWidth/2)-"lobbies".length()-1; i++) {
@@ -217,7 +228,7 @@ public class ClientModel {
 //                        prompt += " ";
 //                    }
                     prompt += " ";
-                    for (int p = 0; p < Constants.clientMapWidth / 2-5; p++) {
+                    for (int p = 0; p < Constants.clientMapWidth / 2-9; p++) {
                         if (p < mplayers.get(pInL[i]).first.length()) {
                             prompt += mplayers.get(pInL[i]).first.toCharArray()[p];
                         } else {
@@ -225,7 +236,9 @@ public class ClientModel {
                         }
                     }
                     if (mplayers.get(pInL[i]).second) {
-                        prompt += "READY";
+                        prompt += "    READY";
+                    } else {
+                        prompt += "NOT READY";
                     }
                 }
                 prompt += "\n";
@@ -251,9 +264,16 @@ public class ClientModel {
             mplayers = players;
             mlobbyToPlayers = lobbyToPlayers;
 
-            String instructions = "\u2191/\u2193: Select  Enter: READY";
-            view.showPrompt(instructions, Window.Component.BottomPanel, ClientView.VerticalAlignment.CENTER,
-                    ClientView.HorizontalAlignment.LEFT);
+            String instructions;
+            if (players.get(playerInfo.getID()).second) {
+                instructions = "\u2191/\u2193: Select  Enter: UNREADY";
+                view.showPrompt(instructions, Window.Component.BottomPanel, ClientView.VerticalAlignment.CENTER,
+                        ClientView.HorizontalAlignment.LEFT);
+            } else {
+                instructions = "\u2191/\u2193: Select  Enter: READY";
+                view.showPrompt(instructions, Window.Component.BottomPanel, ClientView.VerticalAlignment.CENTER,
+                        ClientView.HorizontalAlignment.LEFT);
+            }
 
             // NORMAL BEHAVIOR
             Object[] lobbyIDs = lobbies.keySet().toArray();
@@ -315,7 +335,7 @@ public class ClientModel {
 //                            prompt += " ";
 //                        }
                         prompt += " ";
-                        for (int p = 0; p < Constants.clientMapWidth/2-5; p++) {
+                        for (int p = 0; p < Constants.clientMapWidth/2-9; p++) {
                             if (p < players.get(pInL[i]).first.length()) {
                                 prompt += players.get(pInL[i]).first.toCharArray()[p];
                             } else {
@@ -323,7 +343,9 @@ public class ClientModel {
                             }
                         }
                         if (players.get(pInL[i]).second) {
-                            prompt += "READY";
+                            prompt += "    READY";
+                        } else {
+                            prompt += "NOT READY";
                         }
                     }
                     prompt += "\n";
@@ -472,6 +494,8 @@ public class ClientModel {
         view.clearMenus();
         myLobby = null;
         server.requestLobbies(playerInfo.getID());
+        selectDown();
+        selectUp();
         SoundEffect.MENU_BGM.loop();
     }
 

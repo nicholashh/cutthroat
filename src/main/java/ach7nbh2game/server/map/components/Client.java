@@ -378,6 +378,7 @@ public abstract class Client extends AMapComponent {
 
     public void gameHasEnded () {
         state = new PlayerState();
+        isDead = false;
         setMap(null);
     }
     public boolean canDie () {return true;}

@@ -1,5 +1,7 @@
 package ach7nbh2game.main;
 
+import static ach7nbh2game.client.SoundEffect.TR_APPEAR;
+
 public class Constants {
 
     // client display settings
@@ -68,7 +70,8 @@ public class Constants {
         BULLET_HIT_WALL, BULLET_HIT_PLAYER, BULLET_HIT_BULLET,
         PICKUP_ITEM,
         PLAYER_SPAWNS, PLAYER_DIES,
-        ROCKET_LAUNCH, ROCKET_EXPLODE}
+        ROCKET_LAUNCH, ROCKET_EXPLODE,
+        TR_APPEAR}
 
     // game mechanics tuning parameters
     public static final int killsToWin = 2;

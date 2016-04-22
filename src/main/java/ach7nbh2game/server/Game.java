@@ -135,6 +135,7 @@ public abstract class Game extends AGameActor {
     }
 
     public void iJustWon (Client winner) {
+        updateAllPlayers();
         gameHasStarted = false;
         for (Client client : players.values())
             client.endGame(winner);
@@ -326,6 +327,7 @@ public abstract class Game extends AGameActor {
                 newWall.placeOnMap(map, place.x + j, place.y + i);
             }
         }
+        addSound(ServerToClientSound.TR_APPEAR);
     }
 
     @Override
